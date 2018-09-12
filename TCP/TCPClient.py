@@ -1,6 +1,6 @@
 from socket import *
 serverName = "servername"
-serverPort = 13000
+serverPort = 12000
 clientSocket = socket(AF_INET, SOCK_STREAM)
 clientSocket.connect(("", serverPort))
 sentence = input("Ingrese en minusculas el mensaje: ")
