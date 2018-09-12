@@ -1,10 +1,10 @@
 from socket import *
 serverName = "servername"
-serverPort = 12000
+serverPort = 13000
 clientSocket = socket(AF_INET, SOCK_STREAM)
-clientSocket.connect((serverName, serverPort))
-sentence = input("Input lowercase sentence: ")
-clientSocket.send(sentence)
+clientSocket.connect(("", serverPort))
+sentence = input("Ingrese en minusculas el mensaje: ")
+clientSocket.sendall(sentence.encode('utf-8'))
 modifiedSentence = clientSocket.recv(1024)
-print ("From Server: " + modifiendSentence)
+print ("Desde el Servidor: " + modifiedSentence.decode('utf-8'))
 clientSocket.close()
