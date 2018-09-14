@@ -1,8 +1,8 @@
 from socket import *
-serverName = "servername"
-serverPort = 12000
+serverName = str(input("Ingrese un ip, please: "))
+serverPort = int(input("Ingrese un puerto, please: "))
 clientSocket = socket(AF_INET, SOCK_STREAM)
-clientSocket.connect(("", serverPort))
+clientSocket.connect((serverName, serverPort))
 sentence = input("Ingrese en minusculas el mensaje: ")
 clientSocket.send(sentence.encode('utf-8'))
 modifiedSentence = clientSocket.recv(1024)

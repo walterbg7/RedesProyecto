@@ -1,0 +1,17 @@
+Tabla de alcanzabilidad: una cosa rara ahí.
+Costo: numero positivo > 0.
+Mascara como numero de bits, tine que ser entre 8 y 30.
+Proceso de entrada de datos libre(incluso grafico). 
+Que alguno de los procesos habra una terminal extra (cliente o servidor).
+Abrir una nueva terminal por conexion (recomendacion).
+Formato de los mensajes solo va a ser necesario para el envio y recibimiento de mensajes.
+Se necesita serializar las actualizaciones de las tabla de alcanzabilidad.
+TCP estructura para manejar las conexiones ya creadas.
+Guardar: Quien le esta mandando el mensaje?, es decir direccion ip del origen del mensaje.
+Costo: para esta etapa no se calcula, se recibe por mensaje.
+Para debugear se recomienda imprimir todo en una bitacora(tablas especialmente).
+Se insta a presentar en la clase como se resolvio el problema. Estrcuturas de datos interesantes. Maximo 5 filminas por grupo. Deciciones de diseño.
+¡¡¡Implementar con hilos (cliente/servidor)!!!
+
+Wireshark:
+
