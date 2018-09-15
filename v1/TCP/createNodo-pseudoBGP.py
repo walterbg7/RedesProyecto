@@ -12,7 +12,7 @@ def print_error_invalid_mask():
 def print_error_invalid_port():
     print("Error: invalid port")
 
-def printErrorOption():
+def print_error_option():
     print("Select a valid option idiot!")
 
 def validate_ip_address(ip):
@@ -33,12 +33,48 @@ def validate_ip_address(ip):
     return True
 
 #Server
-def serverThread():
-    print("Server running!")
+def server_thread():
+    # We need to create a new terminal
+    print("Server running!") # We need to print this message on the newly created terminal
     global alcanzabilityTable
     alcanzabilityTable = alcanzabilityTable.upper()
+    global beingDeleted
     while(not beingDeleted): 
         True    
+
+#Client
+def delete_node():
+    global beingDeleted
+    beingDeleted = True
+
+def send_message():
+    print ("Do something!")
+
+def print_alcanzability_table():
+    global alcanzabilityTable
+    print (alcanzabilityTable)
+
+def client_thread():
+    clientMenu = '''
+Select an option:
+    0 : Delete node
+    1 : Send message
+    2 : Print alcanzabiliy table
+
+'''
+    global beingDeleted
+    while(not beingDeleted):
+        option = input(clientMenu)
+        try:
+            option = int(option)
+        except ValueError:
+            print_error_option()
+        if(option == 0):
+            delete_node()
+        elif(option == 1):
+            send_message()
+        elif(option == 2):
+            print_alcanzability_table()
 
 #Program
 # We need to parse the arguments pass by the user
@@ -74,26 +110,9 @@ alcanzabilityTable = "alcanzability table"
 beingDeleted = False
 
 # We need to create a thread for the server functionality of the node
-serverT = threading.Thread(target=serverThread, args=())
+serverT = threading.Thread(target=server_thread, args=())
 serverT.start()
 
-#Client
-clientMenu = '''
-Select an option:
-    0 : Delete node
-    1 : Send message
-    2 : Print alcanzabiliy table
+client_thread()
 
-'''
-
-while(not beingDeleted):
-    option = input(clientMenu)
-    try:
-        option = int(option)
-    except ValueError:
-        printErrorOption()
-    if(option == 0):
-        beingDeleted = True
-    elif(option == 2):
-        print(alcanzabilityTable)
 sys.exit(0)
