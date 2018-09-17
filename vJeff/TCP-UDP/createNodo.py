@@ -2,6 +2,7 @@ import sys
 import argparse
 import threading
 import fileinput
+import numpy
 
 # Funtions
 
