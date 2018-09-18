@@ -37,6 +37,8 @@ class ClientNodeUDP():
         print("ClientNodeUDP : Constructor :)")
 
     # Overwrite father class send method
+    def sendMessage(self):
+        print("ClientNodeUDP : Sending message")
 
 class ClientNodeTCP():
 
@@ -46,6 +48,8 @@ class ClientNodeTCP():
         print("ClientNodeTCP : Constructor :)")
 
     # Overwrite father class send method
+    def sendMessage(self):
+        print("ClientNodeTCP : Sending message")
 
 class ServerNode(Thread):
 
@@ -110,7 +114,30 @@ class Node():
 
     # This is the method that execute everything the program need to work
     def run(self):
-        print("Node : I basically do everything")
+        #print("Node : I basically do everything")
+        # We need to create the corresponding client node and server node
+        if(self.isPseudoBGP):
+            self.serverNode = ServerNodeTCP(self.port)
+            self.clientNode = ClientNodeTCP()
+        else:
+            self.serverNode = ServerNodeUDP(self.port)
+            self.clientNode = ClientNodeUDP()
+        # We need to put the server instance (thread) to run concurrently
+        self.serverNode.start()
+        # We need to start the interaction with the user
+        beingDeleted = False
+        while(not beingDeleted):
+            option = input(clientMenu)
+            try:
+                option = int(option)
+            except ValueError:
+                print_error_option()
+            if(option == 0):
+                beingDeleted = True
+            elif(option == 1):
+                self.clientNode.sendMessage()
+            elif(option == 2):
+                print("Tabla de alcanzabilidad")
 
 # Program main funtion
 if __name__ == '__main__':
