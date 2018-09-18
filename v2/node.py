@@ -14,23 +14,54 @@ class ClientNode():
         print("ClientNode : Constructor :)")
 
     # Ask the user for the message he/she wants to send to other nodes.
-    # Fisrt we need to ask for the receiver node ip and port
-    # Then we ask for the number of lines of the message(n)
+    # First we ask for the number of lines of the message(n)
     # Then we ask for each line of the message
     # Finally this method returns a str with the format desided((n)\n(<ip>/<mask>/<cost>)\n...)
     def askUserMessage(self):
         print("ClientNode : Give it to me!")
+        print(askClientMessage)
+        n = input(askNMessage)
+        try:
+            n = int(n)
+        except ValueError:
+            print_error_invalid_n()
+            return
+        clientMessage = ""
+        clientMessage += str(n) + "\n"
+        for i in range (n):
+            clientMessage += input("l: ") + "\n"
+        return clientMessage
     
     # Pack the message given by the user in the requested format: n (2 bytes), ip (4 bytes), mask(1 byte), cost (3 bytes)
     # Returns the packed message
-    def packMessage(self):
+    def packMessage(self, message):
         print("ClientNode : Packing the message ...")
+        return message
 
     # Send the packed message past by the user and send it to the destination also past by the user.	
-    def sendMessage(self):
+    def sendMessage(self, serverName, serverPort, message):
         print("ClientNode : Sending message")
 
-class ClientNodeUDP():
+    def run(self):
+        print("ClientNode : Running!")
+        print("ClientNodeUDP : Sending message")
+        # First we need to ask the user who do he/she wants to send the message
+        serverName = input(askIPAddressMessage)
+        serverPort = int(input(askPortMessage))
+        # We need to verify the ip address and port number past by the user?
+
+        # We need to ask the user for the message he/she wants to send
+        userMessage = self.askUserMessage()
+        print(userMessage)
+        
+        # We need to pack the message in order to send it
+        packedMessage = self.packMessage(userMessage)
+        print(packedMessage)
+
+        # We need to sent the message
+        self.sendMessage(serverName, serverPort, packedMessage)
+
+class ClientNodeUDP(ClientNode):
 
     # Constructor
     def __init__(self):
@@ -38,10 +69,16 @@ class ClientNodeUDP():
         print("ClientNodeUDP : Constructor :)")
 
     # Overwrite father class send method
-    def sendMessage(self):
-        print("ClientNodeUDP : Sending message")
+    def sendMessage(self, serverName, serverPort, message):
+        # We need to send the message
+        print("Holy shit, Python!")
+        clientSocket = socket(AF_INET, SOCK_DGRAM)
+        clientSocket.sendto(message.encode('utf-8'), (serverName, serverPort))
+        modifiedMessage, serverAddress = clientSocket.recvfrom(2048)
+        print ("From Server: " + modifiedMessage.decode('utf-8'))
+        clientSocket.close()
 
-class ClientNodeTCP():
+class ClientNodeTCP(ClientNode):
 
     #Constructor
     def __init__(self):
@@ -49,8 +86,15 @@ class ClientNodeTCP():
         print("ClientNodeTCP : Constructor :)")
 
     # Overwrite father class send method
-    def sendMessage(self):
-        print("ClientNodeTCP : Sending message")
+    def sendMessage(self, serverName, serverPort, message):
+        # We need to send the message
+        print("Holy shit, Python!")
+        clientSocket = socket(AF_INET, SOCK_STREAM)
+        clientSocket.connect((serverName, serverPort))
+        clientSocket.send(message.encode('utf-8'))
+        modifiedSentence = clientSocket.recv(1024)
+        print ("From Server: " + modifiedSentence.decode('utf-8'))
+        clientSocket.close()
 
 ############################################# Servers #############################################
 class ServerNode(Thread):
@@ -83,6 +127,18 @@ class ServerNodeUDP(ServerNode):
         print("ServerNodeUDP : Constructor :(")
 
     # Overwite the father class relevant methods!
+    def run(self):
+        print("ServerNode : Receiving shit and stuff!")
+        serverSocket = socket(AF_INET, SOCK_DGRAM)
+        serverSocket.bind(("", self.port))
+        print ("The server is ready to receive")
+        while (1):
+	        message, clientAddress = serverSocket.recvfrom(2048)
+	        print(str(clientAddress))
+	        print(str(message))
+	        modifiedMessage = message.upper()
+	        serverSocket.sendto(modifiedMessage, clientAddress)
+        print("ServerNode : I'm dying!")
 
 class ServerNodeTCP(ServerNode):
 
@@ -93,6 +149,20 @@ class ServerNodeTCP(ServerNode):
         print("ServerNodeTCP : Constructor :(")
     
     # Overwite the father class relevant methods!
+    def run(self):
+        serverSocket = socket(AF_INET, SOCK_STREAM)
+        serverSocket.bind(("", self.port))
+        serverSocket.listen(1)
+        print("ServerNode : Receiving shit and stuff!")
+        while (1):
+	        connectionSocket, addr = serverSocket.accept()
+	        message = connectionSocket.recv(1024)
+	        print (str(addr))
+	        print (str(message))
+	        capitalizedSentence = message.upper()
+	        connectionSocket.send(capitalizedSentence)
+	        connectionSocket.close()
+        print("ServerNode : I'm dying!")
 
 ############################################# General #############################################
 class Node():
@@ -139,7 +209,7 @@ class Node():
             if(option == 0):
                 beingDeleted = True
             elif(option == 1):
-                self.clientNode.sendMessage()
+                self.clientNode.run()
             elif(option == 2):
                 self.printAlcanzabilityTable()
             else:
@@ -189,4 +259,4 @@ if __name__ == '__main__':
     node = Node(args.pseudoBGP, args.ip, args.mask, args.port)
     node.run()
 
-    print('Main Terminating...')	
+    print('Main Terminating...')

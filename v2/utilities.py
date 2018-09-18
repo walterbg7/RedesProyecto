@@ -7,6 +7,22 @@ Select an option:
 
 '''
 
+askClientMessage = '''
+Please enter the message:
+Remember the message struture is:
+    ni
+    ip/mask/cost
+    ip/mask/cost
+    .
+    .
+    .
+
+'''
+
+askIPAddressMessage = "Please, put the destination ip address: "
+askPortMessage = "Please, put the destination port number: "
+askNMessage = "Write the number of lines of the message (n): "
+
 # Funtions
 def print_error_invalid_ip():
     print("Error: invalid ip address")
@@ -19,6 +35,9 @@ def print_error_invalid_port():
 
 def print_error_option():
     print("Select a valid option idiot!")
+
+def print_error_invalid_n():
+    print("Please select a valid number of message lines (n > 0)")
 
 def validate_ip_address(ip):
     # Fisrt we split the string with the ip address, using the dot as separator, to obtain the decimal parts of the ip address
