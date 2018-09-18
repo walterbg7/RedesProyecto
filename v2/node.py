@@ -1,5 +1,6 @@
 import sys
 import argparse
+import threading
 from threading import Thread
 from socket import *
 from utilities import *
@@ -94,11 +95,18 @@ class Node():
         self.ip = ip
         self.mask = mask
         self.port = port
-        #self.alcanzabilityTable = decided structure
+        self.lock = threading.Lock()
+        self.alcanzabilityTable = []
+        self.printAlcanzabilityTable()
         print("Node (The real mvp!) : Constructor ")
     
     def printAlcanzabilityTable(self):
-        print("Node : Table :v")    
+        self.lock.acquire()
+        print ("Alcanzability Table: ")
+        print (["Network Address","Mask","Cost", "Origin"])
+        for index in range(len(self.alcanzabilityTable)):
+            print(self.alcanzabilityTable[index])    
+        self.lock.release()
 
     # This is the method that execute everything the program need to work
     def run(self):
