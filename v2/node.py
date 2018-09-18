@@ -27,9 +27,9 @@ class ClientNode():
             print_error_invalid_n()
             return
         clientMessage = ""
-        clientMessage += str(n) + "\n"
+        clientMessage += str(n) + "/"
         for i in range (n):
-            clientMessage += input("l: ") + "\n"
+            clientMessage += input("l: ") + "/"
         return clientMessage
     
     # Pack the message given by the user in the requested format: n (2 bytes), ip (4 bytes), mask(1 byte), cost (3 bytes)
@@ -100,10 +100,10 @@ class ClientNodeTCP(ClientNode):
 class ServerNode(Thread):
 
     # Constructor
-    def __init__(self, port):
+    def __init__(self, port, table):
         Thread.__init__(self)
         self.port = port
-        # Missing alcanzability table field
+        self.alcanzabilityTable = table
         print("ServerNode : Constructor :(")
     
     def run(self):
@@ -115,14 +115,40 @@ class ServerNode(Thread):
 
     # Update the alcanzavility table structure with the data of the recieved message
     # This method should be another thread by it self, one thread for conection    
-    def proccessMessage():
+    def proccessMessage(self, clientAddr, msj):
         print("ServerNode : this thread is proccesing the message!")
+        if(int(msg[0]) == 0):
+            ## Borrar ipEmisor de la lista de conexiones
+            print("No me quiero ir Señor Nodo")
+        else:
+            msg = msj.split('/')
+            maximo = int(msg[0]) * 3
+            i = 1
+            while(i < maximo):
+                tupla = []
+                tupla.append(clientAddr)
+                tupla.append(str(msg[i]))
+                tupla.append(str(msg[i+1]))
+                tupla.append(str(msg[i+2]))
+                if(len(self.alcanzabilityTable) == 0):
+                    self.alcanzabilityTable.append(tupla)
+                else:
+                    found = False
+                    for it in self.alcanzabilityTable:
+                        if(it[1] == tupla[1] and it[2] == tupla[2]):
+                            if(int(it[3]) > int(tupla[3])):
+                                it[3] = tupla[3]
+                            found = True
+                            break
+                    if(not found):
+                        self.alcanzabilityTable.append(tupla)
+            i += 3
 
 class ServerNodeUDP(ServerNode):
     
     # Constructor
-    def __init__(self, port):
-        ServerNode.__init__(self, port)
+    def __init__(self, port, table):
+        ServerNode.__init__(self, port, table)
         # Missing alcanzability table field
         print("ServerNodeUDP : Constructor :(")
 
@@ -143,8 +169,8 @@ class ServerNodeUDP(ServerNode):
 class ServerNodeTCP(ServerNode):
 
     #Constructor
-    def __init__(self, port):
-        ServerNode.__init__(self, port)
+    def __init__(self, port, table):
+        ServerNode.__init__(self, port, table)
         # Missing alcanzability table field
         print("ServerNodeTCP : Constructor :(")
     
@@ -191,10 +217,10 @@ class Node():
         #print("Node : I basically do everything")
         # We need to create the corresponding client node and server node
         if(self.isPseudoBGP):
-            self.serverNode = ServerNodeTCP(self.port)
+            self.serverNode = ServerNodeTCP(self.port, self.alcanzabilityTable)
             self.clientNode = ClientNodeTCP()
         else:
-            self.serverNode = ServerNodeUDP(self.port)
+            self.serverNode = ServerNodeUDP(self.port, self.alcanzabilityTable)
             self.clientNode = ClientNodeUDP()
         # We need to put the server instance (thread) to run concurrently
         self.serverNode.start()
