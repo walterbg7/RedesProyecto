@@ -6,6 +6,7 @@ from socket import *
 from utilities import *
 
 # Clases
+############################################# Clients #############################################
 class ClientNode():
 
     # Constructor
@@ -51,6 +52,7 @@ class ClientNodeTCP():
     def sendMessage(self):
         print("ClientNodeTCP : Sending message")
 
+############################################# Servers #############################################
 class ServerNode(Thread):
 
     # Constructor
@@ -60,8 +62,9 @@ class ServerNode(Thread):
         # Missing alcanzability table field
         print("ServerNode : Constructor :(")
     
-    def receiveMessage(self):
+    def run(self):
         print("ServerNode : Receiving shit and stuff!")
+        print("ServerNode : I'm dying!")
 
     def unpackMessage(self):
         print("ServerNode : Unpacking the message ...")
@@ -91,6 +94,7 @@ class ServerNodeTCP(ServerNode):
     
     # Overwite the father class relevant methods!
 
+############################################# General #############################################
 class Node():
     
     # Constructor
@@ -101,7 +105,7 @@ class Node():
         self.port = port
         self.lock = threading.Lock()
         self.alcanzabilityTable = []
-        self.printAlcanzabilityTable()
+        #self.printAlcanzabilityTable()
         print("Node (The real mvp!) : Constructor ")
     
     def printAlcanzabilityTable(self):
@@ -137,8 +141,12 @@ class Node():
             elif(option == 1):
                 self.clientNode.sendMessage()
             elif(option == 2):
-                print("Tabla de alcanzabilidad")
+                self.printAlcanzabilityTable()
+            else:
+                print_error_option()
 
+
+############################################# Main #############################################
 # Program main funtion
 if __name__ == '__main__':
     # We need to parse the arguments pass by the user
