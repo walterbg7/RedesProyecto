@@ -126,6 +126,9 @@ class ClientNode():
         # We need to sent the message
         self.sendMessage(serverName, serverPort, packedMessage)
 
+    def stop(self):
+        print("ClientNode: Stoping!")
+
 class ClientNodeUDP(ClientNode):
 
     # Constructor
@@ -155,7 +158,6 @@ class ClientNodeTCP(ClientNode):
     # Overwrite father class send method
     def sendMessage(self, serverName, serverPort, message):
        # We need to send the message
-        print("Holy shit, Python!")
         idConection = str(serverName) + "-" + str(serverPort)
         if(idConection in self.conections):
             print("Existing connection")
@@ -163,9 +165,6 @@ class ClientNodeTCP(ClientNode):
                 self.conections[idConection].send(message)
                 modifiedSentence = self.conections[idConection].recv(1024)
                 print ("From Server: " + modifiedSentence.decode('utf-8'))
-                if message[0] == 0:
-                    self.conections[idConection].close()
-                    del self.conections[idConection]
             except:
                 print("The conection with",idConection,"has expired, try again")
                 del self.conections[idConection]                
@@ -178,10 +177,15 @@ class ClientNodeTCP(ClientNode):
                 clientSocket.send(message)
                 modifiedSentence = clientSocket.recv(1024)
                 print ("From Server: " + modifiedSentence.decode('utf-8'))
-                if message == "0":
-                    clientSocket.close()
             except Exception as e:
-                print("No connection can be established: ",e)
+                print("No connection can't be established: ",e)
+    def stop(self):
+        print("Client TCP: Stoping!")
+        stopMessage = self.packMessage("0")
+        for key in self.conections:
+            self.conections[key].send(stopMessage)
+            self.conections[key].close()
+            #del self.conections[key]
 
 ############################################# Servers #############################################
 class ServerNode(Thread):
@@ -320,7 +324,7 @@ class ServerNodeTCP(ServerNode):
                 conectionThread = Thread(target=self.proccessMessage, args=(addrs, message))
                 conectionThread.start()
                 clientSocket.sendto("✓✓".encode('utf-8'), addrs)
-                if message == 0:
+                if message[0] == 0:
                   break
             except Exception as e:
                 print("The conection with",addrs,"has expired") 
@@ -369,6 +373,7 @@ class Node():
             except ValueError:
                 print_error_option()
             if(option == 0):
+                self.clientNode.stop()
                 beingDeleted = True
             elif(option == 1):
                 self.clientNode.run()
