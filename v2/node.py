@@ -148,19 +148,30 @@ class ClientNodeTCP(ClientNode):
     #Constructor
     def __init__(self):
         ClientNode.__init__(self)
+        #We need to keep a list of conections
+        self.conections = {}
         print("ClientNodeTCP : Constructor :)")
 
     # Overwrite father class send method
     def sendMessage(self, serverName, serverPort, message):
-        # We need to send the message
+       # We need to send the message
         print("Holy shit, Python!")
-        clientSocket = socket(AF_INET, SOCK_STREAM)
-        clientSocket.connect((serverName, serverPort))
-        #clientSocket.send(message.encode('utf-8'))
-        clientSocket.send(message)
-        modifiedSentence = clientSocket.recv(1024)
-        print ("From Server: " + modifiedSentence.decode('utf-8'))
-        clientSocket.close()
+        idConection = str(serverName) + "-" + str(serverPort)
+        if(idConection in self.conections):
+            print("Existing connection")
+            self.conections[idConection].send(message)
+            if message == "0":
+                self.conections[idConection].close()
+        else:
+            print("New connection")
+            clientSocket = socket(AF_INET, SOCK_STREAM)
+            self.conections[idConection] = clientSocket
+            clientSocket.connect((serverName, serverPort))
+            clientSocket.send(message)
+            modifiedSentence = clientSocket.recv(1024)
+            if message == "0":
+                clientSocket.close()
+        #print ("From Server: " + modifiedSentence.decode('utf-8'))
 
 ############################################# Servers #############################################
 class ServerNode(Thread):
@@ -281,13 +292,23 @@ class ServerNodeTCP(ServerNode):
         print("ServerNode : Receiving shit and stuff!")
         while (1):
 	        connectionSocket, addr = serverSocket.accept()
-	        message = connectionSocket.recv(1024)
-	        print (str(addr))
-	        print (str(message))
-	        capitalizedSentence = message.upper()
-	        connectionSocket.send(capitalizedSentence)
-	        connectionSocket.close()
+	        newConection = Thread(target=self.onNewClient, args = (connectionSocket, addr))
+	        newConection.start()
         print("ServerNode : I'm dying!")
+
+    def onNewClient(self, clientSocket, addrs):
+       while(1):
+            # We need to recieve the packed message from the client
+            packedMessage, clientAddress = clientSocket.recvfrom(2048)
+            # We need to unpack the recieved message             
+            message = self.unpackMessage(packedMessage)
+            print("Client ip: " + str(addrs) + "\nClient message: " + message)
+            # We need to create a thread to proccess the recived message
+            conectionThread = Thread(target=self.proccessMessage, args=(addrs, message))
+            conectionThread.start()
+            clientSocket.sendto("✓✓".encode('utf-8'), addrs)
+            if message == 0:
+                break
 
 ############################################# General #############################################
 class Node():
