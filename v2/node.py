@@ -1,6 +1,5 @@
 import sys
 import argparse
-import threading
 from threading import Thread
 from socket import *
 from utilities import *
@@ -112,12 +111,12 @@ class ServerNode(Thread):
 
     def unpackMessage(self, packedMessage):
         print("ServerNode : Unpacking the message ...")
-        return packedMessage
+        return str(packedMessage)
 
     # Update the alcanzavility table structure with the data of the recieved message
     # This method should be another thread by it self, one thread for conection    
     def proccessMessage(self, clientAddr, msj):
-        #self.lock.acquire()
+        aTLock.acquire()
         print("ServerNode : this thread is proccesing the message!")
         if(msj == "0"):
             ## Borrar ipEmisor de la lista de conexiones
@@ -145,7 +144,7 @@ class ServerNode(Thread):
                     if(not found):
                         self.alcanzabilityTable.append(tupla)
                 i += 3
-            #self.lock.release()
+        aTLock.release()
 
 class ServerNodeUDP(ServerNode):
     
@@ -165,13 +164,12 @@ class ServerNodeUDP(ServerNode):
             # We need to recieve the packed message from the client
             packedMessage, clientAddress = serverSocket.recvfrom(2048)
             # We need to unpack the recieved message
-            message = self.unpackMessage(packedMessage)
-            print("Client ip: " + str(clientAddress) + "\nClient message: " + str(message))
+            message = self.unpackMessage(packedMessage.decode('utf-8'))
+            print("Client ip: " + str(clientAddress) + "\nClient message: " + message)
             # We need to create a thread to proccess the recived message
-            conectionThread = threading.Thread(target=self.proccessMessage(str(clientAddress), str(message.decode('utf-8'))), args=())
+            conectionThread = Thread(target=self.proccessMessage, args=(clientAddress, message))
             conectionThread.start()
-            answer = "✓✓"
-            serverSocket.sendto(answer.encode('utf-8'), clientAddress)
+            serverSocket.sendto("✓✓".encode('utf-8'), clientAddress)
         print("ServerNode : I'm dying!")
 
 class ServerNodeTCP(ServerNode):
@@ -191,11 +189,11 @@ class ServerNodeTCP(ServerNode):
         while (1):
 	        connectionSocket, addr = serverSocket.accept()
 	        message = connectionSocket.recv(1024)
-	        conectionThread = threading.Thread(target=self.proccessMessage(str(addr), str(message.decode('utf-8'))), args=())
-	        conectionThread.start()
-	        answer = "✓✓"
-	        serverSocket.sendto(answer.encode('utf-8'), clientAddress)
-                #connectionSocket.close()
+	        print (str(addr))
+	        print (str(message))
+	        capitalizedSentence = message.upper()
+	        connectionSocket.send(capitalizedSentence)
+	        connectionSocket.close()
         print("ServerNode : I'm dying!")
 
 ############################################# General #############################################
@@ -207,18 +205,17 @@ class Node():
         self.ip = ip
         self.mask = mask
         self.port = port
-        self.lock = threading.Lock()
         self.alcanzabilityTable = []
         #self.printAlcanzabilityTable()
         print("Node (The real mvp!) : Constructor ")
     
     def printAlcanzabilityTable(self):
-        self.lock.acquire()
+        aTLock.acquire()
         print ("Alcanzability Table: ")
         print (["Network Address","Mask","Cost", "Origin"])
         for index in range(len(self.alcanzabilityTable)):
             print(self.alcanzabilityTable[index])    
-        self.lock.release()
+        aTLock.release()
 
     # This is the method that execute everything the program need to work
     def run(self):

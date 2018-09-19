@@ -1,3 +1,5 @@
+import threading
+
 # Constants
 clientMenu = '''
 Select an option:
@@ -18,6 +20,8 @@ Remember the message struture is:
     .
 
 '''
+
+aTLock = threading.Lock()
 
 askIPAddressMessage = "Please, put the destination ip address: "
 askPortMessage = "Please, put the destination port number: "
