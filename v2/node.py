@@ -155,22 +155,33 @@ class ClientNodeTCP(ClientNode):
     # Overwrite father class send method
     def sendMessage(self, serverName, serverPort, message):
        # We need to send the message
+        print("Holy shit, Python!")
         idConection = str(serverName) + "-" + str(serverPort)
         if(idConection in self.conections):
             print("Existing connection")
-            self.conections[idConection].send(message)
-            if message == "0":
-                self.conections[idConection].close()
+            try:
+                self.conections[idConection].send(message)
+                modifiedSentence = self.conections[idConection].recv(1024)
+                print ("From Server: " + modifiedSentence.decode('utf-8'))
+                if message[0] == 0:
+                    self.conections[idConection].close()
+                    del self.conections[idConection]
+            except:
+                print("The conection with",idConection,"has expired, try again")
+                del self.conections[idConection]                
         else:
             print("New connection")
             clientSocket = socket(AF_INET, SOCK_STREAM)
             self.conections[idConection] = clientSocket
-            clientSocket.connect((serverName, serverPort))
-            clientSocket.send(message)
-            modifiedSentence = clientSocket.recv(1024)
-            if message == "0":
-                clientSocket.close()
-        print ("From Server: " + modifiedSentence.decode('utf-8'))
+            try:
+                clientSocket.connect((serverName, serverPort))
+                clientSocket.send(message)
+                modifiedSentence = clientSocket.recv(1024)
+                print ("From Server: " + modifiedSentence.decode('utf-8'))
+                if message == "0":
+                    clientSocket.close()
+            except Exception as e:
+                print("No connection can be established: ",e)
 
 ############################################# Servers #############################################
 class ServerNode(Thread):
@@ -290,7 +301,7 @@ class ServerNodeTCP(ServerNode):
         serverSocket = socket(AF_INET, SOCK_STREAM)
         serverSocket.bind(("", self.port))
         serverSocket.listen(1)
-        print("ServerNode : Receiving messages and stuff!")
+        print("ServerNode : Receiving shit and stuff!")
         while (1):
 	        connectionSocket, addr = serverSocket.accept()
 	        newConection = Thread(target=self.onNewClient, args = (connectionSocket, addr))
@@ -300,15 +311,19 @@ class ServerNodeTCP(ServerNode):
     def onNewClient(self, clientSocket, addrs):
        while(1):
             # We need to recieve the packed message from the client
-            packedMessage, clientAddress = clientSocket.recvfrom(2048)
-            # We need to unpack the recieved message             
-            message = self.unpackMessage(packedMessage)
-            #print("Client ip: " + str(addrs) + "\nClient message: " + message)
-            # We need to create a thread to proccess the recived message
-            conectionThread = Thread(target=self.proccessMessage, args=(addrs, message))
-            conectionThread.start()
-            clientSocket.sendto("✓✓".encode('utf-8'), addrs)
-            if message == 0:
+            try:
+                packedMessage, clientAddress = clientSocket.recvfrom(2048)
+                # We need to unpack the recieved message             
+                message = self.unpackMessage(packedMessage)
+                print("Client ip: " + str(addrs) + "\nClient message: " + message)
+                # We need to create a thread to proccess the recived message
+                conectionThread = Thread(target=self.proccessMessage, args=(addrs, message))
+                conectionThread.start()
+                clientSocket.sendto("✓✓".encode('utf-8'), addrs)
+                if message == 0:
+                  break
+            except Exception as e:
+                print("The conection with",addrs,"has expired") 
                 break
 
 ############################################# General #############################################
