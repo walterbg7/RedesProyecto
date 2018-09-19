@@ -117,9 +117,9 @@ class ServerNode(Thread):
     # Update the alcanzavility table structure with the data of the recieved message
     # This method should be another thread by it self, one thread for conection    
     def proccessMessage(self, clientAddr, msj):
-        self.lock.acquire()
+        #self.lock.acquire()
         print("ServerNode : this thread is proccesing the message!")
-        if(int(msg[0]) == 0):
+        if(msj == "0"):
             ## Borrar ipEmisor de la lista de conexiones
             print("No me quiero ir Señor Nodo")
         else:
@@ -145,7 +145,7 @@ class ServerNode(Thread):
                     if(not found):
                         self.alcanzabilityTable.append(tupla)
                 i += 3
-            self.lock.release()
+            #self.lock.release()
 
 class ServerNodeUDP(ServerNode):
     
@@ -166,11 +166,12 @@ class ServerNodeUDP(ServerNode):
             packedMessage, clientAddress = serverSocket.recvfrom(2048)
             # We need to unpack the recieved message
             message = self.unpackMessage(packedMessage)
-            print("Client ip: " + clientAddress + "\nClient message: " + message)
+            print("Client ip: " + str(clientAddress) + "\nClient message: " + str(message))
             # We need to create a thread to proccess the recived message
-            conectionThread = Thread(target=self.proccessMessage, args=(clientAddress, message))
+            conectionThread = threading.Thread(target=self.proccessMessage(str(clientAddress), str(message.decode('utf-8'))), args=())
             conectionThread.start()
-            serverSocket.sendto("✓✓", clientAddress)
+            answer = "✓✓"
+            serverSocket.sendto(answer.encode('utf-8'), clientAddress)
         print("ServerNode : I'm dying!")
 
 class ServerNodeTCP(ServerNode):
@@ -190,11 +191,11 @@ class ServerNodeTCP(ServerNode):
         while (1):
 	        connectionSocket, addr = serverSocket.accept()
 	        message = connectionSocket.recv(1024)
-	        print (str(addr))
-	        print (str(message))
-	        capitalizedSentence = message.upper()
-	        connectionSocket.send(capitalizedSentence)
-	        connectionSocket.close()
+	        conectionThread = threading.Thread(target=self.proccessMessage(str(addr), str(message.decode('utf-8'))), args=())
+	        conectionThread.start()
+	        answer = "✓✓"
+	        serverSocket.sendto(answer.encode('utf-8'), clientAddress)
+                #connectionSocket.close()
         print("ServerNode : I'm dying!")
 
 ############################################# General #############################################
