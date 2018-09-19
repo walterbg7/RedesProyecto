@@ -110,12 +110,14 @@ class ServerNode(Thread):
         print("ServerNode : Receiving shit and stuff!")
         print("ServerNode : I'm dying!")
 
-    def unpackMessage(self):
+    def unpackMessage(self, packedMessage):
         print("ServerNode : Unpacking the message ...")
+        return packedMessage
 
     # Update the alcanzavility table structure with the data of the recieved message
     # This method should be another thread by it self, one thread for conection    
     def proccessMessage(self, clientAddr, msj):
+        self.lock.acquire()
         print("ServerNode : this thread is proccesing the message!")
         if(int(msg[0]) == 0):
             ## Borrar ipEmisor de la lista de conexiones
@@ -142,7 +144,8 @@ class ServerNode(Thread):
                             break
                     if(not found):
                         self.alcanzabilityTable.append(tupla)
-            i += 3
+                i += 3
+            self.lock.release()
 
 class ServerNodeUDP(ServerNode):
     
@@ -159,11 +162,15 @@ class ServerNodeUDP(ServerNode):
         serverSocket.bind(("", self.port))
         print ("The server is ready to receive")
         while (1):
-	        message, clientAddress = serverSocket.recvfrom(2048)
-	        print(str(clientAddress))
-	        print(str(message))
-	        modifiedMessage = message.upper()
-	        serverSocket.sendto(modifiedMessage, clientAddress)
+            # We need to recieve the packed message from the client
+            packedMessage, clientAddress = serverSocket.recvfrom(2048)
+            # We need to unpack the recieved message
+            message = self.unpackMessage(packedMessage)
+            print("Client ip: " + clientAddress + "\nClient message: " + message)
+            # We need to create a thread to proccess the recived message
+            conectionThread = Thread(target=self.proccessMessage, args=(clientAddress, message))
+            conectionThread.start()
+            serverSocket.sendto("✓✓", clientAddress)
         print("ServerNode : I'm dying!")
 
 class ServerNodeTCP(ServerNode):
@@ -223,6 +230,7 @@ class Node():
             self.serverNode = ServerNodeUDP(self.port, self.alcanzabilityTable)
             self.clientNode = ClientNodeUDP()
         # We need to put the server instance (thread) to run concurrently
+        self.serverNode.daemon = True
         self.serverNode.start()
         # We need to start the interaction with the user
         beingDeleted = False
