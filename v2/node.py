@@ -222,8 +222,10 @@ class ServerNode(Thread):
         aTLock.acquire()
         print("ServerNode : this thread is proccesing the message!")
         if(msj == "0"):
-            ## Borrar ipEmisor de la lista de conexiones
-            print("No me quiero ir Señor Nodo")
+            # Delete clientAddr to the alcanzabilityTable
+            for itr in self.alcanzabilityTable:
+                if(itr[0] == clientAddr):
+                    del itr
         else:
             msg = msj.split('/')
             maximo = int(msg[0]) * 3
