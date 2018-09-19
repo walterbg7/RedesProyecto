@@ -11,6 +11,7 @@ class ClientNode():
     # Constructor
     def __init__(self):
         print("ClientNode : Constructor :)")
+        pass
 
     # Ask the user for the message he/she wants to send to other nodes.
     # First we ask for the number of lines of the message(n)
@@ -37,7 +38,7 @@ class ClientNode():
     # Pack the message given by the user in the requested format: n (2 bytes), ip (4 bytes), mask(1 byte), cost (3 bytes)
     # Returns the packed message
     def packMessage(self, message):
-        print(message)
+        #print(message)
         print("ClientNode : Packing the message ...")
         # If the message is a deleting node message
         if(message == "0"):
@@ -45,7 +46,7 @@ class ClientNode():
             return packedMessage
         else:
             messageTokens = message.split('/')
-            print(messageTokens)
+            #print(messageTokens)
             try:
                 n = int(messageTokens[0])
             except ValueError:
@@ -61,7 +62,7 @@ class ClientNode():
                     ipTokens = messageTokens[i].split('.')
                     #print(ipTokens)
                     for indIp in range(0,4):
-                        print(ipTokens[indIp])
+                        #print(ipTokens[indIp])
                         packedMessage += int(ipTokens[indIp]).to_bytes(1, byteorder='little')
                 else:
                     print_error_invalid_ip()
@@ -69,14 +70,14 @@ class ClientNode():
                 try:
                     mask = int(messageTokens[i+1])
                 except ValueError:
-                    print (messageTokens[i+1])
+                    #print (messageTokens[i+1])
                     print_error_invalid_mask()
                     return -1
                 if(mask < 8 or mask > 30):
                     print_error_invalid_mask()
                     return -1
                 else:
-                    print(mask)
+                    #print(mask)
                     packedMessage += mask.to_bytes(1, byteorder='little')
                 try:
                     cost = int(messageTokens[i+2])
@@ -87,7 +88,7 @@ class ClientNode():
                     print_error_invalid_cost()
                     return -1
                 else:
-                    print(cost)
+                    #print(cost)
                     packedMessage += cost.to_bytes(3, byteorder='little')
                 i += 3
             return packedMessage
@@ -113,14 +114,14 @@ class ClientNode():
         if(userMessage == -1):
             print_error_invalid_message()
             return
-        print(userMessage)
+        #print(userMessage)
         
         # We need to pack the message in order to send it
         packedMessage = self.packMessage(userMessage)
         if(packedMessage == -1):
             print_error_invalid_message()
             return
-        print(packedMessage)
+        #print(packedMessage)
 
         # We need to sent the message
         self.sendMessage(serverName, serverPort, packedMessage)
@@ -135,7 +136,6 @@ class ClientNodeUDP(ClientNode):
     # Overwrite father class send method
     def sendMessage(self, serverName, serverPort, message):
         # We need to send the message
-        print("Holy shit, Python!")
         clientSocket = socket(AF_INET, SOCK_DGRAM)
         #clientSocket.sendto(message.encode('utf-8'), (serverName, serverPort))
         clientSocket.sendto(message, (serverName, serverPort))
@@ -155,7 +155,6 @@ class ClientNodeTCP(ClientNode):
     # Overwrite father class send method
     def sendMessage(self, serverName, serverPort, message):
        # We need to send the message
-        print("Holy shit, Python!")
         idConection = str(serverName) + "-" + str(serverPort)
         if(idConection in self.conections):
             print("Existing connection")
@@ -171,7 +170,7 @@ class ClientNodeTCP(ClientNode):
             modifiedSentence = clientSocket.recv(1024)
             if message == "0":
                 clientSocket.close()
-        #print ("From Server: " + modifiedSentence.decode('utf-8'))
+        print ("From Server: " + modifiedSentence.decode('utf-8'))
 
 ############################################# Servers #############################################
 class ServerNode(Thread):
@@ -181,19 +180,19 @@ class ServerNode(Thread):
         Thread.__init__(self)
         self.port = port
         self.alcanzabilityTable = table
-        print("ServerNode : Constructor :(")
+        print("ServerNode : Constructor :)")
     
     def run(self):
-        print("ServerNode : Receiving shit and stuff!")
+        print("ServerNode : Receiving messages and stuff!")
         print("ServerNode : I'm dying!")
 
     def unpackMessage(self, packedMessage):
         print("ServerNode : Unpacking the message ...")
-        print(packedMessage)
-        n = packedMessage[0] + packedMessage[1]
+        #print(packedMessage)
+        n = int.from_bytes(packedMessage[0:2], byteorder='little')
         message = ""
         message = str(n) + "/"
-        print(n)
+        #print(n)
         endOfPackedMessage = n*8+2
         ind = 2
         while(ind < endOfPackedMessage):
@@ -204,15 +203,15 @@ class ServerNode(Thread):
                 ipAddress += str(ipPart)
                 if(i < 3):
                     ipAddress += "."
-            print(ipAddress)
+            #print(ipAddress)
             message += ipAddress + "/"
             ind += 4
             mask = packedMessage[ind]
             message += str(mask) + "/"
-            print(mask)
-            cost = packedMessage[ind+1] + packedMessage[ind+2] + packedMessage[ind+3]
+            #print(mask)
+            cost = int.from_bytes(packedMessage[ind+1:ind+3], byteorder='little')
             message += str(cost) + "/"
-            print(cost)
+            #print(cost)
             ind += 4
         return(message)
 
@@ -257,7 +256,7 @@ class ServerNodeUDP(ServerNode):
     def __init__(self, port, table):
         ServerNode.__init__(self, port, table)
         # Missing alcanzability table field
-        print("ServerNodeUDP : Constructor :(")
+        print("ServerNodeUDP : Constructor :)")
 
     # Overwite the father class relevant methods!
     def run(self):
@@ -271,7 +270,7 @@ class ServerNodeUDP(ServerNode):
             # We need to unpack the recieved message
             #message = self.unpackMessage(packedMessage.decode('utf-8'))
             message = self.unpackMessage(packedMessage)
-            print("Client ip: " + str(clientAddress) + "\nClient message: " + message)
+            #print("Client ip: " + str(clientAddress) + "\nClient message: " + message)
             # We need to create a thread to proccess the recived message
             conectionThread = Thread(target=self.proccessMessage, args=(clientAddress, message))
             conectionThread.start()
@@ -284,14 +283,14 @@ class ServerNodeTCP(ServerNode):
     def __init__(self, port, table):
         ServerNode.__init__(self, port, table)
         # Missing alcanzability table field
-        print("ServerNodeTCP : Constructor :(")
+        print("ServerNodeTCP : Constructor :)")
     
     # Overwite the father class relevant methods!
     def run(self):
         serverSocket = socket(AF_INET, SOCK_STREAM)
         serverSocket.bind(("", self.port))
         serverSocket.listen(1)
-        print("ServerNode : Receiving shit and stuff!")
+        print("ServerNode : Receiving messages and stuff!")
         while (1):
 	        connectionSocket, addr = serverSocket.accept()
 	        newConection = Thread(target=self.onNewClient, args = (connectionSocket, addr))
@@ -304,7 +303,7 @@ class ServerNodeTCP(ServerNode):
             packedMessage, clientAddress = clientSocket.recvfrom(2048)
             # We need to unpack the recieved message             
             message = self.unpackMessage(packedMessage)
-            print("Client ip: " + str(addrs) + "\nClient message: " + message)
+            #print("Client ip: " + str(addrs) + "\nClient message: " + message)
             # We need to create a thread to proccess the recived message
             conectionThread = Thread(target=self.proccessMessage, args=(addrs, message))
             conectionThread.start()
