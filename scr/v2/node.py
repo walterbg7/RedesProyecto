@@ -237,31 +237,25 @@ class ServerNode(Thread):
         print("ServerNode : this thread is proccesing the message!")
         if(msj == "0"):
             # Delete clientAddr to the alcanzabilityTable
+            listDel = []
             for itr in self.alcanzabilityTable:
-                if(itr[0] == clientAddr):
-                    del itr
+                if(itr[1] == clientAddr):
+                    listDel.append(itr)
+            for it in listDel:
+                del self.alcanzabilityTable[it]
+            del listDel
         else:
             msg = msj.split('/')
             maximo = int(msg[0]) * 3
             i = 1
             while(i < maximo):
-                tupla = []
-                tupla.append(clientAddr)
-                tupla.append(str(msg[i]))
-                tupla.append(str(msg[i+1]))
-                tupla.append(str(msg[i+2]))
-                if(len(self.alcanzabilityTable) == 0):
-                    self.alcanzabilityTable.append(tupla)
+                tupleK = (str(msg[i]), str(msg[i+1])) # key
+                tupleV = (str(msg[i+2]), clientAddr)
+                if(tupleK in self.alcanzabilityTable):
+                    if(int(self.alcanzabilityTable[tupleK][0]) > int(tupleV[0])):
+                        self.alcanzabilityTable[tupleK] = tupleV
                 else:
-                    found = False
-                    for it in self.alcanzabilityTable:
-                        if(it[1] == tupla[1] and it[2] == tupla[2]):
-                            if(int(it[3]) > int(tupla[3])):
-                                it[3] = tupla[3]
-                            found = True
-                            break
-                    if(not found):
-                        self.alcanzabilityTable.append(tupla)
+                    self.alcanzabilityTable[tupleK] = tupleV
                 i += 3
         aTLock.release()
 
@@ -334,21 +328,19 @@ class ServerNodeTCP(ServerNode):
 class Node():
     
     # Constructor
-    def __init__(self, isPseudoBGP, ip, mask, port):
+    def __init__(self, isPseudoBGP, ip, port):
         self.isPseudoBGP = isPseudoBGP
         self.ip = ip
-        self.mask = mask
         self.port = port
-        self.alcanzabilityTable = []
-        #self.printAlcanzabilityTable()
+        self.alcanzabilityTable = {}
         print("Node (The real mvp!) : Constructor ")
     
     def printAlcanzabilityTable(self):
         aTLock.acquire()
         print ("Alcanzability Table: ")
         print (["Network Address","Mask","Cost", "Origin"])
-        for index in range(len(self.alcanzabilityTable)):
-            print(self.alcanzabilityTable[index])    
+        for i in self.alcanzabilityTable:
+            print(i+self.alcanzabilityTable[i])
         aTLock.release()
 
     # This is the method that execute everything the program need to work
@@ -392,10 +384,9 @@ if __name__ == '__main__':
     group.add_argument("-tcp", "--pseudoBGP", action="store_true")
     group.add_argument("-udp", "--intAS", action="store_true")
     parser.add_argument("ip", help="recive the node ip address")
-    parser.add_argument("mask", help="recive the subnet mask, it must be a integer between 8 and 30", type=int)
     parser.add_argument("port", help="recive the server port number", type=int)
     args = parser.parse_args()
-    print ("ip address: " + args.ip + "\nsubnet mask: " + str(args.mask) + "\nport number: " + str(args.port))
+    print ("ip address: " + args.ip + "\nport number: " + str(args.port))
 
     # We need to make sure the arg pass by the user are valid
 
@@ -405,10 +396,10 @@ if __name__ == '__main__':
         args.pseudoBGP = True
 
     # We need to check if the subnet mask pass by the user is valid, ie is in the range [8, 30]
-    if(args.mask < 8 or args.mask > 30):
-        print_error_invalid_mask()
-        sys.exit(-1)
-    print ("The provided subnet mask is valid! Hooray!")
+    #if(args.mask < 8 or args.mask > 30):
+    #    print_error_invalid_mask()
+    #    sys.exit(-1)
+    #print ("The provided subnet mask is valid! Hooray!")
 
     # We need to check if the port pass by the user is valid, ie is in the range [1, 65535]
     if(args.port < 0 or args.port > 65535):
@@ -423,7 +414,7 @@ if __name__ == '__main__':
     print ("The provided ip address is valid! Hooray!")
 
     # If all the arguments pass by the user are valid, we continue creating the node and executing it
-    node = Node(args.pseudoBGP, args.ip, args.mask, args.port)
+    node = Node(args.pseudoBGP, args.ip, args.port)
     node.run()
 
     print('Main Terminating...')
