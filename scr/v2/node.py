@@ -57,7 +57,7 @@ class ClientNode():
             i = 1
             while(i < endOfMessage):
                 # We need to check the ip pass by the user is valid
-                if(validate_ip_address(messageTokens[i])):
+                if(is_valid_ipv4_address(messageTokens[i])):
                     # I need to pack the ip address
                     ipTokens = messageTokens[i].split('.')
                     #print(ipTokens)
@@ -67,6 +67,7 @@ class ClientNode():
                 else:
                     print_error_invalid_ip()
                     return -1
+                #'''
                 try:
                     mask = int(messageTokens[i+1])
                 except ValueError:
@@ -235,11 +236,11 @@ class ServerNode(Thread):
     def proccessMessage(self, clientAddr, msj):
         aTLock.acquire()
         print("ServerNode : this thread is proccesing the message!")
-        if(msj == "0"):
+        if(msj == "0/"):
             # Delete clientAddr to the alcanzabilityTable
             listDel = []
             for itr in self.alcanzabilityTable:
-                if(itr[1] == clientAddr):
+                if(self.alcanzabilityTable[itr][1] == clientAddr):
                     listDel.append(itr)
             for it in listDel:
                 del self.alcanzabilityTable[it]
@@ -250,7 +251,7 @@ class ServerNode(Thread):
             i = 1
             while(i < maximo):
                 tupleK = (str(msg[i]), str(msg[i+1])) # key
-                tupleV = (str(msg[i+2]), clientAddr)
+                tupleV = (str(msg[i+2]), clientAddr) # value
                 if(tupleK in self.alcanzabilityTable):
                     if(int(self.alcanzabilityTable[tupleK][0]) > int(tupleV[0])):
                         self.alcanzabilityTable[tupleK] = tupleV
@@ -408,10 +409,11 @@ if __name__ == '__main__':
     print ("The provided port is valid! Hooray!")
 
     # We need to check if the ip address pass by the user is a valid ip address
-    if(not validate_ip_address(args.ip)):
+    if(is_valid_ipv4_address(args.ip)):
+        print ("The provided ip address is valid! Hooray!")
+    else:
         print_error_invalid_ip()
         sys.exit(-1)
-    print ("The provided ip address is valid! Hooray!")
 
     # If all the arguments pass by the user are valid, we continue creating the node and executing it
     node = Node(args.pseudoBGP, args.ip, args.port)

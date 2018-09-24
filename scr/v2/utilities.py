@@ -1,4 +1,5 @@
 import threading
+from socket import *
 
 # Constants
 clientMenu = '''
@@ -48,7 +49,7 @@ def print_error_invalid_message():
 
 def print_error_invalid_cost():
     print("Error: invalid cost")
-
+'''
 def validate_ip_address(ip):
     # Fisrt we split the string with the ip address, using the dot as separator, to obtain the decimal parts of the ip address
     ipTokens = ip.split(".")
@@ -64,4 +65,19 @@ def validate_ip_address(ip):
             return False
         if(decimalPart < 0 or decimalPart > 255):
             return False
+    return True
+'''
+
+def is_valid_ipv4_address(address):
+    try:
+        inet_pton(socket.AF_INET, address)
+    except AttributeError:  # no inet_pton here, sorry
+        try:
+            inet_aton(address)
+        except error:
+            return False
+        return address.count('.') == 3
+    except error:  # not a valid address
+        return False
+
     return True
