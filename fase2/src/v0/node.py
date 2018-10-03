@@ -2,9 +2,7 @@ import sys
 import argparse
 from utilities import *
 from clientNodeUDP import *
-from clientNodeTCP import *
 from serverNodeUDP import *
-from serverNodeTCP import *
 
 class Node():
     
@@ -15,25 +13,16 @@ class Node():
         self.port = port
         self.alcanzabilityTable = {}
         print("Node (The real mvp!) : Constructor ")
-    
-    def printAlcanzabilityTable(self):
-        aTLock.acquire()
-        print ("Alcanzability Table: ")
-        print (["Network Address","Mask","Cost","Origin"])
-        for i in self.alcanzabilityTable:
-            print(i+self.alcanzabilityTable[i])
-        aTLock.release()
 
     # This is the method that execute everything the program need to work
     def run(self):
         #print("Node : I basically do everything")
         # We need to create the corresponding client node and server node
-        if(self.isPseudoBGP):
-            self.serverNode = ServerNodeTCP(self.port, self.alcanzabilityTable)
-            self.clientNode = ClientNodeTCP(self.ip, self.port)
-        else:
-            self.serverNode = ServerNodeUDP(self.port, self.alcanzabilityTable)
-            self.clientNode = ClientNodeUDP(self.ip, self.port)
+        
+        # I always create an UDP node, because it's fase two!
+        self.serverNode = ServerNodeUDP(self.port, self.alcanzabilityTable)
+        self.clientNode = ClientNodeUDP(self.ip, self.port)
+
         # We need to put the server instance (thread) to run concurrently
         self.serverNode.daemon = True
         self.serverNode.start()
@@ -50,8 +39,6 @@ class Node():
                 beingDeleted = True
             elif(option == 1):
                 self.clientNode.run()
-            elif(option == 2):
-                self.printAlcanzabilityTable()
             else:
                 print_error_option()
 
@@ -73,7 +60,7 @@ if __name__ == '__main__':
     # We need to check if the user select a node type
     if(not args.pseudoBGP and not args.intAS):
         # If the user did not select a node type, the node type will be pseudoBGP by default
-        args.pseudoBGP = True
+        args.intAS = True
 
     # We need to check if the subnet mask pass by the user is valid, ie is in the range [8, 30]
     #if(args.mask < 8 or args.mask > 30):
