@@ -21,7 +21,7 @@ class ClientNodeTCP(ClientNode):
                 modifiedSentence = self.conections[idConection].recv(1024)
                 print ("From Server: " + modifiedSentence.decode('utf-8'))
                 # If the server died
-                if((modifiedSentence.decode('utf-8')) != "✓✓"):
+                if(not (modifiedSentence.decode('utf-8'))):
                     print("RIP server")
                     del self.conections[idConection]
             except:
