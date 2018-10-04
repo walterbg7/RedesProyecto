@@ -1,6 +1,7 @@
 from socket import *
 from clientNode import *
 
+#This is the client UDP
 class ClientNodeUDP(ClientNode):
 
     # Constructor
