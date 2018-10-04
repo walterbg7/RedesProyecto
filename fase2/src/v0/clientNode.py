@@ -15,21 +15,6 @@ class ClientNode():
     # Finally this method returns a str with the format desided((n)\n(<ip>/<mask>/<cost>)\n...)
     def askUserMessage(self):
         print("ClientNode : Give it to me!")
-        print(askClientMessage)
-        n = input(askNMessage)
-        try:
-            n = int(n)
-        except ValueError:
-            print_error_invalid_n()
-            return -1
-        if(n <= 0):
-            print_error_invalid_n()
-            return -1
-        clientMessage = ""
-        clientMessage += str(n) + "/"
-        for i in range (n):
-            clientMessage += input("l: ") + "/"
-        return clientMessage
     
     # Pack the message given by the user in the requested format: n (2 bytes), ip (4 bytes), mask(1 byte), cost (3 bytes)
     # Returns the packed message
@@ -96,37 +81,6 @@ class ClientNode():
 
     def run(self):
         print("ClientNode : Running!")
-        # First we need to ask the user who do he/she wants to send the message
-        serverName = input(askIPAddressMessage)
-        if(not is_valid_ipv4_address(serverName)):
-            print_error_invalid_ip()
-            return
-        try:
-            serverPort = int(input(askPortMessage))
-        except ValueError:
-            print_error_invalid_port()
-            return
-        if(serverPort < 0 or serverPort > 65535):
-            print_error_invalid_port()
-            return
-        # We need to verify the ip address and port number past by the user?
-
-        # We need to ask the user for the message he/she wants to send
-        userMessage = self.askUserMessage()
-        if(userMessage == -1):
-            print_error_invalid_message()
-            return
-        #print(userMessage)
-        
-        # We need to pack the message in order to send it
-        packedMessage = self.packMessage(userMessage)
-        if(packedMessage == -1):
-            print_error_invalid_message()
-            return
-        #print(packedMessage)
-
-        # We need to sent the message
-        self.sendMessage(serverName, serverPort, packedMessage)
 
     def stop(self):
         print("ClientNode: Stoping!")
