@@ -32,7 +32,7 @@ class ServerNodeTCP(ServerNode):
                 # We need to create a thread to proccess the recived message
                 conectionThread = Thread(target=self.proccessMessage, args=(addrs, message))
                 conectionThread.start()
-                clientSocket.sendto("✓✓".encode('utf-8'), addrs)
+                clientSocket.send("✓✓".encode('utf-8'))
                 if(message == "0"):
                     connectionSocket.close()
                     break
