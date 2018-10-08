@@ -15,7 +15,7 @@ class SocketPseudoTCP:
     # Methods
 
     # "Client" side
-    # connect, starts and finnishes the 3-way handshake with the server socket
+    # connect, starts and finnishes the 3-way handshake with the server socket 
     def connect(self, serverAddr):
         print("SocketPseudoTCP : Connecting!")
         pass
