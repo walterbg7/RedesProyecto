@@ -11,7 +11,7 @@ class SocketPseudoTCP:
         # connectionSockets, dictionary with key: a connectionAddr, and with value: instance of this class
         self.connectionSockets = {}
         # socketUDP, UDP socket use to actually send and recv messages
-        socketUDP = socket(AF_INET, SOCK_DGRAM)
+        self.socketUDP = socket(AF_INET, SOCK_DGRAM)
         print("SocketPseudoTCP : Constructor :)")
 
     # Methods
@@ -38,7 +38,7 @@ class SocketPseudoTCP:
         pass
 
     # "Server" side
-    # bind, calls the bind method of the UDP port and starts the despacher. It also initialize the self.messageQueue with the maximun size pass as arg. 
+    # bind, calls the bind method of the UDP port and starts the despacher. It also initialize the self.messageQueue with the maximun size pass as arg.
     def bind(self, selfaddr):
         print("SocketPseudoTCP : Binding!")
         pass
