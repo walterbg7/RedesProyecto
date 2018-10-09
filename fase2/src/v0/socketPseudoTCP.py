@@ -1,7 +1,7 @@
 from socket import *
 
 class SocketPseudoTCP:
-    
+
     # Constructor
     def __init__(self):
         # Fields
@@ -9,13 +9,15 @@ class SocketPseudoTCP:
         # connectioAddr, connection ip addr and port
         # messageQueue, Queue to store the recived message to this sockect
         # connectionSockets, dictionary with key: a connectionAddr, and with value: instance of this class
-        self.connectionSockets = {}   
+        self.connectionSockets = {}
+        # socketUDP, UDP socket use to actually send and recv messages
+        socketUDP = socket(AF_INET, SOCK_DGRAM)
         print("SocketPseudoTCP : Constructor :)")
-    
+
     # Methods
 
     # "Client" side
-    # connect, starts and finnishes the 3-way handshake with the server socket 
+    # connect, starts and finnishes the 3-way handshake with the server socket
     def connect(self, serverAddr):
         print("SocketPseudoTCP : Connecting!")
         pass
@@ -36,7 +38,7 @@ class SocketPseudoTCP:
         pass
 
     # "Server" side
-    # bind, calls the bind method of the UDP port and starts the despacher
+    # bind, calls the bind method of the UDP port and starts the despacher. It also initialize the self.messageQueue with the maximun size pass as arg. 
     def bind(self, selfaddr):
         print("SocketPseudoTCP : Binding!")
         pass
@@ -49,11 +51,10 @@ class SocketPseudoTCP:
     # accept, returns a instance of this class as the connection with the client socket that initiated the communication. Add the new connectionSocket (instance) to the connectionSockets dictionary
     def accept(self):
         print("SocketPseudoTCP : Accepting!")
-        pass 
+        pass
 
     # Private methods
-    # despatch, thread!, demultiplex all the messages send to the serverPort. 
+    # despatch, thread!, demultiplex all the messages send to the serverPort.
     def despatch(self):
         print("SocketPseudoTCP : Despatching!")
         pass
-
