@@ -1,4 +1,6 @@
 from socket import *
+from queue import *
+from random import randint
 
 class SocketPseudoTCP:
 
@@ -8,6 +10,7 @@ class SocketPseudoTCP:
         # selfAddr, self ip addr and port
         # connectioAddr, connection ip addr and port
         # messageQueue, Queue to store the recived message to this sockect
+        messageQueue = Queue();
         # connectionSockets, dictionary with key: a connectionAddr, and with value: instance of this class
         self.connectionSockets = {}
         # socketUDP, UDP socket use to actually send and recv messages
@@ -20,7 +23,22 @@ class SocketPseudoTCP:
     # connect, starts and finnishes the 3-way handshake with the server socket
     def connect(self, serverAddr):
         print("SocketPseudoTCP : Connecting!")
-        pass
+
+        # I need to check if the parameters are valid
+
+        # I need to create a new random port number (it is also a socket id) and make bind on it
+        successfulBind = False
+        while( not successfulBind ):
+            self.selfAddr = ("", randint(1024, 65535))
+            print("clientSocketSide : this is my selfAddr " + str(self.selfAddr))
+            try:
+                self.socketUDP.bind(self.selfAddr)
+            except:
+                print("clientSocketSide : unsuccessful bind, repeating!")
+                continue
+            successfulBind = True
+
+        # I need to send the SYN message to start the handshake process with the wanted serverSocket 
 
     # send, sends a byte array or encoded message.
     def send(self, message):
@@ -58,3 +76,7 @@ class SocketPseudoTCP:
     def despatch(self):
         print("SocketPseudoTCP : Despatching!")
         pass
+
+
+
+s = SocketPseudoTCP()
