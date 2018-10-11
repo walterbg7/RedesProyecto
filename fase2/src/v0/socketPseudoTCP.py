@@ -14,9 +14,8 @@ class SocketPseudoTCP:
         # selfAddr, self ip addr and port
         # connectioAddr, connection ip addr and port
         # messageQueue, Queue to store the recived message to this sockect
-        messageQueue = Queue();
+        self.messageQueue = Queue()
         # connectionSockets, dictionary with key: a connectionAddr, and with value: instance of this class
-        self.messageQueue = queue.Queue()
         self.connectionSockets = {}
         # socketUDP, UDP socket use to actually send and recv messages
         self.socketUDP = socket(AF_INET, SOCK_DGRAM)
@@ -49,7 +48,7 @@ class SocketPseudoTCP:
         print(str(SYNMessage))
         encodedSYNMessage = self.encodeMessage(SYNMessage)
         print(str(encodedSYNMessage))
-        
+
         self.socketUDP.sendto(encodedSYNMessage, serverAddr)
 
     # send, sends a byte array or encoded message.
@@ -70,8 +69,6 @@ class SocketPseudoTCP:
     # "Server" side
     # bind, calls the bind method of the UDP port and starts the despacher. It also initialize the self.messageQueue with the maximun size pass as arg.
     def bind(self, selfaddr):
-        ipAddrs, port = selfaddr #We need obtain ip and port
-        socketUDP.bind(str(ipAddrs), int(port))
         print("SocketPseudoTCP : Binding!")
         self.socketUDP.bind(selfaddr)
         # I need to start the despacher thread
@@ -80,7 +77,7 @@ class SocketPseudoTCP:
         despacherThread.start()
 
     # listen, thread!, search the server socket messageQueue for a SYN message and proccess it.
-    def listen(self, serverQueueSize):    
+    def listen(self, serverQueueSize):
         print("SocketPseudoTCP : Listening!")
         pass
 
