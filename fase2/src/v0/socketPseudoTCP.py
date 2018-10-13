@@ -1,5 +1,5 @@
-from socket import *
 from queue import *
+from socket import *
 from random import randint
 from threading import Thread
 from collections import namedtuple
@@ -60,7 +60,47 @@ class SocketPseudoTCP:
         encodedSYNMessage = self.encodeMessage(SYNMessage)
         print(str(encodedSYNMessage))
 
-        self.socketUDP.sendto(encodedSYNMessage, self.connectionAddr)
+        while True:
+            self.socketUDP.sendto(encodedSYNMessage, self.connectionAddr)
+
+            # I need to wait for the SYNACK message, if it doesn't arrive before the timeout the SYN message is resent
+            try:
+                serverSYNACKMessage = self.messageQueue.get(True, 1)
+            except Empty:
+                continue
+            SYNACKMessage = serverSYNACKMessage[1]
+            if(SYNACKMessage.SYN and SYNACKMessage.ACK and SYNACKMessage.RN != self.SN):
+                self.SN = SYNACKMessage.RN
+                self.RN = SYNACKMessage.SN % 2
+                self.messageQueue.task_done()
+                break
+            else:
+                self.messageQueue.put_nowait(serverSYNACKMessage)
+                self.messageQueue.task_done()
+
+        # I need to send the ACK message to finnish the handshake process with the wanted serverSocket
+        ACKMessage = Message._make([self.selfAddr[1], self.connectionAddr[1], self.SN, self.RN, 8, False, True, False, "".encode('utf-8')])
+        print(str(ACKMessage))
+        encodedACKMessage = self.encodeMessage(ACKMessage)
+        print(str(encodedACKMessage))
+
+        while True:
+            self.socketUDP.sendto(encodedACKMessage, self.connectionAddr)
+
+            # I need to wait for the SYNACK message, if it doesn't arrive before the timeout the SYN message is resent
+            try:
+                serverACKMessage = self.messageQueue.get(True, 1)
+            except Empty:
+                continue
+            ACKMessage = serverACKMessage[1]
+            if(ACKMessage.ACK and not ACKMessage.SYN and ACKMessage.RN != self.SN):
+                self.SN = ACKMessage.RN
+                self.RN = ACKMessage.SN % 2
+                self.messageQueue.task_done()
+                break
+            else:
+                self.messageQueue.put_nowait(serverACKMessage)
+                self.messageQueue.task_done()
 
     # send, sends a byte array or encoded message.
     def send(self, message):
@@ -81,6 +121,7 @@ class SocketPseudoTCP:
     # bind, calls the bind method of the UDP port and starts the despacher. It also initialize the self.messageQueue with the maximun size pass as arg.
     def bind(self, selfaddr):
         print("SocketPseudoTCP : Binding!")
+        self.selfAddr = selfaddr
         self.socketUDP.bind(selfaddr)
         # I need to start the despacher thread
         despacherThread = Thread(target=self.despatch)
@@ -90,12 +131,35 @@ class SocketPseudoTCP:
     # listen, thread!, search the server socket messageQueue for a SYN message and proccess it.
     def listen(self, serverQueueSize):
         print("SocketPseudoTCP : Listening!")
-        pass
+        self.SN = randint(0, 1)
+        listenerThread = Thread(target=self.listenThread)
+        listenerThread.daemon = True
+        listenerThread.start()
+
+    def listenThread(self):
+        print("SocketPseudoTCP : Actually listening!")
+        while True:
+            clientSYNMessage = self.messageQueue.get()
+            SYNMessage = clientSYNMessage[1]
+            if(SYNMessage.SYN and not SYNMessage.ACK):
+                if(not((clientSYNMessage[0], SYNMessage.originPort) in self.connectionSockets)):
+                    self.connectionSockets[(clientSYNMessage[0], SYNMessage.originPort)] = 0
+                    self.RN = SYNMessage.SN % 2
+                    SYNACKMessage = Message._make([self.selfAddr[1], SYNMessage.originPort, self.SN, self.RN, 8, True, True, False, "".encode('utf-8')])
+                    print(str(SYNACKMessage))
+                    encodedSYNACKMessage = self.encodeMessage(SYNACKMessage)
+                    self.socketUDP.sendto(encodedSYNACKMessage, (clientSYNMessage[0], SYNMessage.originPort))
+                else:
+                    self.messageQueue.task_done()
+            else:
+                self.messageQueue.put_nowait(clientSYNMessage)
+                self.messageQueue.task_done()
 
     # accept, returns a instance of this class as the connection with the client socket that initiated the communication. Add the new connectionSocket (instance) to the connectionSockets dictionary
     def accept(self):
         print("SocketPseudoTCP : Accepting!")
-        pass
+        while True:
+            continue
 
     # Private methods
     # despatch, thread!, demultiplex all the messages send to the serverPort.
@@ -103,9 +167,22 @@ class SocketPseudoTCP:
         print("SocketPseudoTCP : Despatching!")
         while(1):
             message, senderAddr = self.socketUDP.recvfrom(2048)
-            print("Despacher: message = " + message.decode('utf-8') + ", sender addr = " + str(senderAddr))
+            #print("Despacher: message = " + str(message) + ", sender addr = " + str(senderAddr))
             # I need to check if the recived message is really for me
-            # If the message was really for me then I need to demultiplex it
+            decodedMessage = self.decodeMessage(message)
+            if(decodedMessage.destinyPort == self.selfAddr[1]):
+                # If the message was really for me then I need to demultiplex it
+                if(decodedMessage.SYN or decodedMessage.ACK):
+                    self.messageQueue.put((senderAddr[0], decodedMessage))
+                    #self.messageQueue.task_done()
+                else:
+                    connectionSocket = self.connectionSockets((senderAddr[0], decodedMessage.originPort))
+                    if(isinstance(connectionSocket, SocketPseudoTCP)):
+                        connectionSocket.messageQueue.put((senderAddr[0], decodedMessage))
+                        #self.messageQueue.task_done()
+                    elif(connectionSocket == 0):
+                        self.messageQueue.put((senderAddr[0], decodedMessage))
+                        #self.messageQueue.task_done()
 
     # encodeMessage
     def encodeMessage(self, message):
