@@ -23,6 +23,7 @@ Hint: Remember the message struture is:
 '''
 
 aTLock = threading.Lock()
+fileLock = threading.Lock()
 
 askIPAddressMessage = "Please, put the destination ip address: "
 askPortMessage = "Please, put the destination port number: "

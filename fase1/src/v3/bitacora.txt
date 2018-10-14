@@ -1,0 +1,63 @@
+
+
+
+New server, ip: 10.1.1.1, port: 12000
+
+
+Server, ip: 10.1.1.1, port: 12000
+Server is TCP
+
+
+Server, ip: 10.1.1.1, port: 12000
+The server is ready to receive
+
+
+New server, ip: 1.1.1.1, port: 13000
+
+
+Server, ip: 1.1.1.1, port: 13000
+Server is TCP
+
+
+Server, ip: 1.1.1.1, port: 13000
+The server is ready to receive
+
+
+Server, ip: 10.1.1.1, port: 12000
+New Message
+Client ip: ('127.0.0.1', 34372)
+Client message: 2/10.1.1.1/12/21/10.7.7.7/17/71/
+
+
+Server, ip: 10.1.1.1, port: 12000
+Alcanzability Table: 
+[Network Address, Mask, Cost, Origin]
+('10.1.1.1', '12', '21', ('127.0.0.1', 34372))
+('10.7.7.7', '17', '71', ('127.0.0.1', 34372))
+
+
+Server, ip: 1.1.1.1, port: 13000
+New Message
+Client ip: ('127.0.0.1', 37956)
+Client message: 1/10.5.5.5/15/69/
+
+
+Server, ip: 10.1.1.1, port: 12000
+Server is Closed
+
+
+Server, ip: 1.1.1.1, port: 13000
+New Message
+Client ip: ('127.0.0.1', 37956)
+Client message: 0
+
+
+Server, ip: 1.1.1.1, port: 13000
+Alcanzability Table: 
+[Network Address, Mask, Cost, Origin]
+
+
+Server, ip: 1.1.1.1, port: 13000
+Server is Closed
+
+
