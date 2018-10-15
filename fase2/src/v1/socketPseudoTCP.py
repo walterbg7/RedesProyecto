@@ -3,6 +3,7 @@ from socket import *
 from random import randint
 from threading import Thread
 from collections import namedtuple
+from random import *
 
 # Constants
 SYNACK = 6
@@ -123,8 +124,44 @@ class SocketPseudoTCP:
     # recv, recive the number of bytes passed as arg. Returns a the received message as encoded message o a byte array
     def recv(self, numberOfBytes):
         print("SocketPseudoTCP : Receiving!")
+        messageRecived = 0
+        numTimeOuts = 0
         while True:
-            continue
+            try:
+                queueMessage = self.messageQueue.get(True, 5)
+            except Empty:
+                print("Time Out")
+                ACKMessage = Message._make([self.selfAddr[1], self.connectionAddr[1], self.RN, self.SN, 8, False, True, False, "".encode('utf-8')])
+                self.socketUDP.sendto(ACKMessage, self.connectionAddr)
+                if(numTimeOuts == 5):
+                    break
+                else:
+                    numTimeOuts += 1
+                    continue
+            # If I recived something, I need to check it is a data message
+            dataMessage = queueMessage[0]
+            if(not dataMessage.SYN and not dataMessage.ACK and not dataMessage.FIN):
+                lossProb = random.randint(1,10)
+                # I need to check if the package was "lost"
+                if(lossProb == 1):
+                    print("Package lost")
+                else:
+                    # I need to check if the package is correct
+                    if(dataMessage.SN == self.RN):
+                        print("Recv: Correct package")
+                        self.SN = dataMessage.RN
+                        self.RN = (dataMessage.SN + 1)%2
+                        ACKMessage = Message._make([self.selfAddr[1], self.connectionAddr[1], self.RN, self.SN, 8, False, True, False, "".encode('utf-8')])
+                        self.socketUDP.sendto(ACKMessage, self.connectionAddr)
+                        messageRecived += dataMessage.data
+                        numTimeOuts = 0
+                    else:
+                        print("Wrong package")
+            else:
+                self.messageQueue.put(queueMessage)
+                self.printQueue(self.messageQueue)
+        return messageRecived
+
 
     # close, closes the connection, ie delete the connection sockect from the connectionSockets dictionary.
     def close(self):
