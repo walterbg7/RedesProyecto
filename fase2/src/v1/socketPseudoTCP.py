@@ -129,7 +129,7 @@ class SocketPseudoTCP:
             partOfMessage = message[currentPart:(currentPart + 8)]
             print(message[currentPart])
             currentPart += 4
-            finalMessage = Message._make([self.selfAddr[1], self.connectionAddr[1], self.SN, self.RN, 8, False, True, False, partOfMessage])
+            finalMessage = Message._make([self.selfAddr[1], self.connectionAddr[1], self.SN, self.RN, 8, False, False, False, partOfMessage])
             packedMessage = self.encodeMessage(finalMessage)
             print(finalMessage)
             self.sendMessage(packedMessage)
@@ -137,7 +137,7 @@ class SocketPseudoTCP:
 
         partOfMessage = message[currentPart:]
         print(message[currentPart])
-        finalMessage = Message._make([self.selfAddr[1], self.connectionAddr[1], self.SN, self.RN, 8, False, True, False, partOfMessage])
+        finalMessage = Message._make([self.selfAddr[1], self.connectionAddr[1], self.SN, self.RN, 8, False, False, False, partOfMessage])
         packedMessage = self.encodeMessage(finalMessage)
         print(finalMessage)
         self.sendMessage(packedMessage)
@@ -165,31 +165,36 @@ class SocketPseudoTCP:
                 break
             else:
                 print("Fail delivery!! : Not a ACK message or invalid ACK message!")
-                self.messageQueue.put(queueMessage)
+                #self.messageQueue.put(queueMessage)
                 self.printQueue(self.messageQueue)
                 continue
 
     # recv, recive the number of bytes passed as arg. Returns a the received message as encoded message o a byte array
     def recv(self, numberOfBytes):
         print("SocketPseudoTCP : Receiving!")
-        messageRecived = 0
         numTimeOuts = 0
+        messageRecived = bytearray()
+        firstPacket = True
         while True:
             try:
                 queueMessage = self.messageQueue.get(True, 5)
             except Empty:
-                print("Receive: Time Out")
-                ACKMessage = Message._make([self.selfAddr[1], self.connectionAddr[1], self.RN, self.SN, 8, False, True, False, "".encode('utf-8')])
-                self.socketUDP.sendto(ACKMessage, self.connectionAddr)
-                if(numTimeOuts == 5):
-                    break
+                if(not firstPacket):
+                    print("Receive: Time Out")
+                    ACKMessage = Message._make([self.selfAddr[1], self.connectionAddr[1], self.RN, self.SN, 8, False, True, False, "".encode('utf-8')])
+                    encodedACKMessage = self.encodeMessage(ACKMessage)
+                    self.socketUDP.sendto(encodedACKMessage, self.connectionAddr)
+                    if(numTimeOuts == 5):
+                        break
+                    else:
+                        numTimeOuts += 1
+                        continue
                 else:
-                    numTimeOuts += 1
                     continue
             # If I recived something, I need to check it is a data message
             dataMessage = queueMessage[0]
             if(not dataMessage.SYN and not dataMessage.ACK and not dataMessage.FIN):
-                lossProb = random.randint(1,10)
+                lossProb = randint(1,10)
                 # I need to check if the package was "lost"
                 if(lossProb == 1):
                     print("Receive: Package lost")
@@ -200,14 +205,16 @@ class SocketPseudoTCP:
                         self.SN = dataMessage.RN
                         self.RN = (dataMessage.SN + 1)%2
                         ACKMessage = Message._make([self.selfAddr[1], self.connectionAddr[1], self.RN, self.SN, 8, False, True, False, "".encode('utf-8')])
-                        self.socketUDP.sendto(ACKMessage, self.connectionAddr)
-                        messageRecived += dataMessage.data
+                        encodedACKMessage = self.encodeMessage(ACKMessage)
+                        self.socketUDP.sendto(encodedACKMessage, self.connectionAddr)
+                        messageRecived.extend(dataMessage.data)
                         numTimeOuts = 0
+                        firstPacket = False
                     else:
                         print("Receive: Wrong package")
             else:
                 self.messageQueue.put(queueMessage)
-                self.printQueue(self.messageQueue)
+                #self.printQueue(self.messageQueue)
         return messageRecived
 
 
