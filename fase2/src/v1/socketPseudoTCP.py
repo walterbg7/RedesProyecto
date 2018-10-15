@@ -3,7 +3,7 @@ from socket import *
 from random import randint
 from threading import Thread
 from collections import namedtuple
-from random import *
+import math
 
 # Constants
 SYNACK = 6
@@ -118,8 +118,56 @@ class SocketPseudoTCP:
     # send, sends a byte array or encoded message.
     def send(self, message):
         print("SocketPseudoTCP : Sending!")
+        print(message)
+        lenMessage = len(message)
+        numPackages = math.ceil(lenMessage / 8)
+        lastPackages = numPackages -1
+        currentPart = 0 #We need to know the current part of the message
+        partOfMessage = bytearray()
+        for number in range(0, lastPackages):
+            #We are going to send data of 8 bytes
+            partOfMessage = message[currentPart:(currentPart + 8)]
+            print(message[currentPart])
+            currentPart += 4
+            finalMessage = Message._make([self.selfAddr[1], self.connectionAddr[1], self.SN, self.RN, 8, False, True, False, partOfMessage])
+            packedMessage = self.encodeMessage(finalMessage)
+            print(finalMessage)
+            self.sendMessage(packedMessage)
+            partOfMessage = bytearray()
+
+        partOfMessage = message[currentPart:]
+        print(message[currentPart])
+        finalMessage = Message._make([self.selfAddr[1], self.connectionAddr[1], self.SN, self.RN, 8, False, True, False, partOfMessage])
+        packedMessage = self.encodeMessage(finalMessage)
+        print(finalMessage)
+        self.sendMessage(packedMessage)
+
+
+
+    def sendMessage(self, packedMessage):
+        self.socketUDP.sendto(packedMessage, self.connectionAddr)
         while True:
-            continue
+            try:
+                queueMessage = self.messageQueue.get(True, 5)
+            except Empty:
+                print("Sending timeout! : Well the server left me hanging ...")
+                self.socketUDP.sendto(packedMessage, self.connectionAddr)
+                continue
+            # If I recived something, I need to check it is a ACK message
+            ACKMessage = queueMessage[0]
+            if((ACKMessage.ACK) and (ACKMessage.RN != self.SN)):
+                # If the message is what I was waiting for
+                print("Full delivery! : A valid ACK message just what I wanted, thanks Satan!")
+                # I need to update the S&W data
+                self.SN = ACKMessage.RN
+                self.RN = (ACKMessage.SN + 1)%2
+                self.printQueue(self.messageQueue)
+                break
+            else:
+                print("Fail delivery!! : Not a ACK message or invalid ACK message!")
+                self.messageQueue.put(queueMessage)
+                self.printQueue(self.messageQueue)
+                continue
 
     # recv, recive the number of bytes passed as arg. Returns a the received message as encoded message o a byte array
     def recv(self, numberOfBytes):
