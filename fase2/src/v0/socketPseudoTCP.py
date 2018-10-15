@@ -19,7 +19,6 @@ class SocketPseudoTCP:
         # Fields
         # SN, current message sequence number
         # RN, current message responce number
-        self.RN = 0
         # selfAddr, self ip addr and port
         # connectioAddr, connection ip addr and port
         # messageQueue, Queue to store the recived message to this sockect
@@ -119,10 +118,10 @@ class SocketPseudoTCP:
 
     # "Server" side
     # bind, calls the bind method of the UDP port and starts the despacher. It also initialize the self.messageQueue with the maximun size pass as arg.
-    def bind(self, selfaddr):
+    def bind(self, selfAddr):
         print("SocketPseudoTCP : Binding!")
-        self.selfAddr = selfaddr
-        self.socketUDP.bind(selfaddr)
+        self.selfAddr = selfAddr
+        self.socketUDP.bind(self.selfAddr)
         # I need to start the despacher thread
         despacherThread = Thread(target=self.despatch)
         despacherThread.daemon = True
@@ -148,6 +147,7 @@ class SocketPseudoTCP:
                     SYNACKMessage = Message._make([self.selfAddr[1], SYNMessage.originPort, self.SN, self.RN, 8, True, True, False, "".encode('utf-8')])
                     print(str(SYNACKMessage))
                     encodedSYNACKMessage = self.encodeMessage(SYNACKMessage)
+                    print(str(encodedSYNACKMessage))
                     self.socketUDP.sendto(encodedSYNACKMessage, (clientSYNMessage[0], SYNMessage.originPort))
                 else:
                     self.messageQueue.task_done()
