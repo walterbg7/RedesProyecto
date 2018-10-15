@@ -130,7 +130,7 @@ class SocketPseudoTCP:
             try:
                 queueMessage = self.messageQueue.get(True, 5)
             except Empty:
-                print("Time Out")
+                print("Receive: Time Out")
                 ACKMessage = Message._make([self.selfAddr[1], self.connectionAddr[1], self.RN, self.SN, 8, False, True, False, "".encode('utf-8')])
                 self.socketUDP.sendto(ACKMessage, self.connectionAddr)
                 if(numTimeOuts == 5):
@@ -144,11 +144,11 @@ class SocketPseudoTCP:
                 lossProb = random.randint(1,10)
                 # I need to check if the package was "lost"
                 if(lossProb == 1):
-                    print("Package lost")
+                    print("Receive: Package lost")
                 else:
                     # I need to check if the package is correct
                     if(dataMessage.SN == self.RN):
-                        print("Recv: Correct package")
+                        print("Receive: Correct package")
                         self.SN = dataMessage.RN
                         self.RN = (dataMessage.SN + 1)%2
                         ACKMessage = Message._make([self.selfAddr[1], self.connectionAddr[1], self.RN, self.SN, 8, False, True, False, "".encode('utf-8')])
@@ -156,7 +156,7 @@ class SocketPseudoTCP:
                         messageRecived += dataMessage.data
                         numTimeOuts = 0
                     else:
-                        print("Wrong package")
+                        print("Receive: Wrong package")
             else:
                 self.messageQueue.put(queueMessage)
                 self.printQueue(self.messageQueue)
