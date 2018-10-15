@@ -3,6 +3,7 @@ from socket import *
 from random import randint
 from threading import Thread
 from collections import namedtuple
+import math
 
 # Constants
 SYNACK = 6
@@ -117,25 +118,30 @@ class SocketPseudoTCP:
     # send, sends a byte array or encoded message.
     def send(self, message):
         print("SocketPseudoTCP : Sending!")
-        realMessage = str(message)[2:-1] #we need the real message to send
-        print(realMessage)
-        lenMessage = len(realMessage)
+        print(message)
+        lenMessage = len(message)
+        numPackages = math.ceil(lenMessage / 8)
+        lastPackages = numPackages -1
         currentPart = 0 #We need to know the current part of the message
-        while(currentPart < lenMessage):
-            iterMessage = 0;
-            partOfMessage = ""
-
-            #We going to send a message of data len = 8
-            while((iterMessage < 8) and (currentPart < lenMessage)):
-                partOfMessage += realMessage[currentPart]
-                print(realMessage[currentPart])
-                currentPart += 1
-                iterMessage += 1
-
-            finalMessage = Message._make([self.selfAddr[1], self.connectionAddr[1], self.SN, self.RN, 8, False, True, False, partOfMessage.encode('utf-8')])
+        partOfMessage = bytearray()
+        for number in range(0, lastPackages):
+            #We are going to send data of 8 bytes
+            partOfMessage = message[currentPart:(currentPart + 8)]
+            print(message[currentPart])
+            currentPart += 4
+            finalMessage = Message._make([self.selfAddr[1], self.connectionAddr[1], self.SN, self.RN, 8, False, True, False, partOfMessage])
             packedMessage = self.encodeMessage(finalMessage)
             print(finalMessage)
             self.sendMessage(packedMessage)
+            partOfMessage = bytearray()
+
+        partOfMessage = message[currentPart:]
+        print(message[currentPart])
+        finalMessage = Message._make([self.selfAddr[1], self.connectionAddr[1], self.SN, self.RN, 8, False, True, False, partOfMessage])
+        packedMessage = self.encodeMessage(finalMessage)
+        print(finalMessage)
+        self.sendMessage(packedMessage)
+
 
 
     def sendMessage(self, packedMessage):
@@ -147,7 +153,7 @@ class SocketPseudoTCP:
                 print("Sending timeout! : Well the server left me hanging ...")
                 self.socketUDP.sendto(packedMessage, self.connectionAddr)
                 continue
-            # If I recived something, I need to check it is a SYNACK message
+            # If I recived something, I need to check it is a ACK message
             ACKMessage = queueMessage[0]
             if((ACKMessage.ACK) and (ACKMessage.RN != self.SN)):
                 # If the message is what I was waiting for
