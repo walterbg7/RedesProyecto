@@ -130,7 +130,7 @@ class SocketPseudoTCP:
             try:
                 queueMessage = self.messageQueue.get(True, 5)
             except Empty:
-                print("Time Out")
+                print("Receive: Time Out")
                 ACKMessage = Message._make([self.selfAddr[1], self.connectionAddr[1], self.RN, self.SN, 8, False, True, False, "".encode('utf-8')])
                 self.socketUDP.sendto(ACKMessage, self.connectionAddr)
                 if(numTimeOuts == 5):
@@ -144,11 +144,11 @@ class SocketPseudoTCP:
                 lossProb = random.randint(1,10)
                 # I need to check if the package was "lost"
                 if(lossProb == 1):
-                    print("Package lost")
+                    print("Receive: Package lost")
                 else:
                     # I need to check if the package is correct
                     if(dataMessage.SN == self.RN):
-                        print("Recv: Correct package")
+                        print("Receive: Correct package")
                         self.SN = dataMessage.RN
                         self.RN = (dataMessage.SN + 1)%2
                         ACKMessage = Message._make([self.selfAddr[1], self.connectionAddr[1], self.RN, self.SN, 8, False, True, False, "".encode('utf-8')])
@@ -156,7 +156,7 @@ class SocketPseudoTCP:
                         messageRecived += dataMessage.data
                         numTimeOuts = 0
                     else:
-                        print("Wrong package")
+                        print("Receive: Wrong package")
             else:
                 self.messageQueue.put(queueMessage)
                 self.printQueue(self.messageQueue)
@@ -239,7 +239,7 @@ class SocketPseudoTCP:
                 connectionSocket = self.connectionSockets.get((queueMessage[1], specialACKMessage.originPort))
                 if(connectionSocket.SN != specialACKMessage.RN):
                     # It is a valid one, now I need to update the connectionSocket data
-                    print("Connecting Error! : valid special ACK message!")
+                    print("Accepting! : valid special specialACK message!")
                     connectionSocket.SN = specialACKMessage.RN
                     connectionSocket.RN = (specialACKMessage.SN + 1)%2
                     connectionSocket.connectionAddr = (queueMessage[1], specialACKMessage.originPort)
@@ -254,13 +254,13 @@ class SocketPseudoTCP:
                     return(connectionSocket, connectionSocket.selfAddr)
                 else:
                     # It is a invalid one, I need to drop this message and try again
-                    print("Connecting Error! : Invalid special ACK message!")
+                    print("Accepting Error! : Invalid special ACK message!")
                     self.messageQueue.task_done()
                     self.printQueue(self.messageQueue)
                     continue
             else:
                 #If it is not a special ACK message, I need to put the message again on my messageQueue and try again
-                print("Connecting Error! : Not a special ACK message!")
+                print("Accepting Error! : Not a special ACK message!")
                 self.messageQueue.put_nowait(queueMessage)
                 self.messageQueue.task_done()
                 self.printQueue(self.messageQueue)
