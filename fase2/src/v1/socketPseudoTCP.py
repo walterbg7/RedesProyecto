@@ -239,7 +239,7 @@ class SocketPseudoTCP:
                 connectionSocket = self.connectionSockets.get((queueMessage[1], specialACKMessage.originPort))
                 if(connectionSocket.SN != specialACKMessage.RN):
                     # It is a valid one, now I need to update the connectionSocket data
-                    print("Connecting Error! : valid special ACK message!")
+                    print("Accepting! : valid special specialACK message!")
                     connectionSocket.SN = specialACKMessage.RN
                     connectionSocket.RN = (specialACKMessage.SN + 1)%2
                     connectionSocket.connectionAddr = (queueMessage[1], specialACKMessage.originPort)
@@ -254,13 +254,13 @@ class SocketPseudoTCP:
                     return(connectionSocket, connectionSocket.selfAddr)
                 else:
                     # It is a invalid one, I need to drop this message and try again
-                    print("Connecting Error! : Invalid special ACK message!")
+                    print("Accepting Error! : Invalid special ACK message!")
                     self.messageQueue.task_done()
                     self.printQueue(self.messageQueue)
                     continue
             else:
                 #If it is not a special ACK message, I need to put the message again on my messageQueue and try again
-                print("Connecting Error! : Not a special ACK message!")
+                print("Accepting Error! : Not a special ACK message!")
                 self.messageQueue.put_nowait(queueMessage)
                 self.messageQueue.task_done()
                 self.printQueue(self.messageQueue)
