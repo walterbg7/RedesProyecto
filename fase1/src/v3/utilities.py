@@ -23,6 +23,7 @@ Hint: Remember the message struture is:
 '''
 
 aTLock = threading.Lock()
+fileLock = threading.Lock()
 
 askIPAddressMessage = "Please, put the destination ip address: "
 askPortMessage = "Please, put the destination port number: "
@@ -81,3 +82,42 @@ def is_valid_ipv4_address(address):
         return False
 
     return True
+
+def validateRow(row):
+	rowList = row.split("/")
+	ipR = rowList[0]
+	if(not is_valid_ipv4_address(ipR)):
+		print("Error: The IP is invalid")
+		return False
+	try:
+		maskR = int(rowList[1])
+	except ValueError:
+		print("Error: The mask must be int")
+		return False
+	if(maskR<8 or maskR>30):
+		print("Error: The mask is invalid")
+		return False
+	try:
+		costR = int(rowList[2])
+	except ValueError:
+		print("Error: The cost must be int")
+		return False
+	ipRList = ipR.split(".")
+	ipRBin = ""
+	for i in ipRList:
+		bits = str(bin(int(i)))
+		bits = bits[2:]
+		if(len(bits)<8):
+			numBitsMissing = 8-len(bits)
+			bitsMissing = ""
+			for j in range(0, numBitsMissing):
+				bitsMissing += "0"
+			bits = bitsMissing + bits
+		ipRBin += bits
+	#print(ipRBin)
+	for it in range(maskR, 32):
+		if(ipRBin[it]!="0"):
+			print("Error: It is not a valid network address")
+			return False
+	#print("Nice One!")
+	return True

@@ -4,13 +4,33 @@ from utilities import *
 class ServerNode(Thread):
 
     # Constructor
-    def __init__(self, port, table):
+    def __init__(self, port, table, ip):
         Thread.__init__(self)
         self.port = port
         self.alcanzabilityTable = table
+        self.ip = ip
+        fileLock.acquire()
+        try:
+            fileBi = open("bitacora.txt", 'r+')
+            fileBi.read()
+        except:
+            fileBi = open("bitacora.txt", 'w')
+        fileBi.write("New server, ip: "+str(self.ip)+", port: "+str(self.port)+"\n")
+        fileBi.write("\n\n")
+        fileBi.close()
+        fileLock.release()
         print("ServerNode : Constructor :)")
     
     def run(self):
+        fileLock.acquire()
+        fileBi = open("bitacora.txt", 'r+')
+        fileBi.read()
+        fileBi.write("Server, ip: "+str(self.ip)+", port: "+str(self.port)+"\n")
+        fileBi.write("ServerNode : Receiving messages and stuff!\n")
+        fileBi.write("ServerNode : I'm dying!\n")
+        fileBi.write("\n\n")
+        fileBi.close()
+        fileLock.release()
         print("ServerNode : Receiving messages and stuff!")
         print("ServerNode : I'm dying!")
 

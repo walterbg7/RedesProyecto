@@ -28,7 +28,10 @@ class ClientNode():
         clientMessage = ""
         clientMessage += str(n) + "/"
         for i in range (n):
-            clientMessage += input("l: ") + "/"
+            messageRow = input("l: ")
+            if(not validateRow(messageRow)):
+                return -1
+            clientMessage += messageRow + "/"
         return clientMessage
     
     # Pack the message given by the user in the requested format: n (2 bytes), ip (4 bytes), mask(1 byte), cost (3 bytes)
