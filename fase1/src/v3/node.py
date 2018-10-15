@@ -18,10 +18,20 @@ class Node():
     
     def printAlcanzabilityTable(self):
         aTLock.acquire()
+        fileLock.acquire()
+        fileBi = open("bitacora.txt", 'r+')
+        fileBi.read()
+        fileBi.write("Server, ip: "+str(self.ip)+", port: "+str(self.port)+"\n")
+        fileBi.write("Alcanzability Table: \n")
         print ("Alcanzability Table: ")
+        fileBi.write("[Network Address, Mask, Cost, Origin]\n")
         print (["Network Address","Mask","Cost","Origin"])
         for i in self.alcanzabilityTable:
+            fileBi.write(str(i+self.alcanzabilityTable[i])+"\n")
             print(i+self.alcanzabilityTable[i])
+        fileBi.write("\n\n")
+        fileBi.close()
+        fileLock.release()
         aTLock.release()
 
     # This is the method that execute everything the program need to work
@@ -29,10 +39,10 @@ class Node():
         #print("Node : I basically do everything")
         # We need to create the corresponding client node and server node
         if(self.isPseudoBGP):
-            self.serverNode = ServerNodeTCP(self.port, self.alcanzabilityTable)
+            self.serverNode = ServerNodeTCP(self.port, self.alcanzabilityTable, self.ip)
             self.clientNode = ClientNodeTCP(self.ip, self.port)
         else:
-            self.serverNode = ServerNodeUDP(self.port, self.alcanzabilityTable)
+            self.serverNode = ServerNodeUDP(self.port, self.alcanzabilityTable, self.ip)
             self.clientNode = ClientNodeUDP(self.ip, self.port)
         # We need to put the server instance (thread) to run concurrently
         self.serverNode.daemon = True
@@ -48,6 +58,14 @@ class Node():
             if(option == 0):
                 self.clientNode.stop()
                 beingDeleted = True
+                fileLock.acquire()
+                fileBi = open("bitacora.txt", 'r+')
+                fileBi.read()
+                fileBi.write("Server, ip: "+str(self.ip)+", port: "+str(self.port)+"\n")
+                fileBi.write("Server is Closed\n")
+                fileBi.write("\n\n")
+                fileBi.close()
+                fileLock.release()
             elif(option == 1):
                 self.clientNode.run()
             elif(option == 2):
