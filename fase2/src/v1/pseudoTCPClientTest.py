@@ -9,3 +9,4 @@ while(1):
     modifiedSentence = clientSocket.recv(1024)
     print ("Desde el Servidor: " + modifiedSentence.decode('utf-8'))
     clientSocket.close()
+    break

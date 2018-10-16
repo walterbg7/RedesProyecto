@@ -129,7 +129,7 @@ class SocketPseudoTCP:
             #We are going to send data of 8 bytes
             partOfMessage = message[currentPart:(currentPart + 8)]
             print(message[currentPart])
-            currentPart += 4
+            currentPart += 8
             finalMessage = Message._make([self.selfAddr[1], self.connectionAddr[1], self.SN, self.RN, 8, False, False, False, partOfMessage])
             packedMessage = self.encodeMessage(finalMessage)
             print(finalMessage)
@@ -401,7 +401,7 @@ class SocketPseudoTCP:
         elif(int(message[7]) == FIN):
             decodedMessageFIN = True
         decodedMessage = Message._make([ int.from_bytes(message[0:2], byteorder='big'), int.from_bytes(message[2:4], byteorder='big'),
-        int(message[4]), int(message[5]), int(message[6]), decodedMessageSYN, decodedMessageACK, decodedMessageFIN, message[8:] ])
+        int(message[4]), int(message[5]), int(message[6]), decodedMessageSYN, decodedMessageACK, decodedMessageFIN, message[7:] ])
         return decodedMessage
 
     #printQueue
