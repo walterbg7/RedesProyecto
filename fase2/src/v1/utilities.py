@@ -2,6 +2,8 @@ import threading
 from socket import *
 
 # Constants
+separator = "-"
+
 clientMenu = '''
 Select an option:
     0 : Delete node
@@ -22,6 +24,7 @@ Hint: Remember the message struture is:
 
 '''
 
+fileLock = threading.Lock()
 aTLock = threading.Lock()
 
 askIPAddressMessage = "Please, put the destination ip address: "
@@ -81,3 +84,11 @@ def is_valid_ipv4_address(address):
         return False
 
     return True
+
+def writeOnLog(fileName, originAddr, destAddr, action, message):
+    fileLock.acquire()
+    log = open(fileName, "a")
+    log.write("Transmitter: " + str(originAddr) + "\nReceiver: " + str(destAddr)+ "\nAction: " + str(action) +  "\nMessage: " + str(message))
+    log.write("\n" + separator * 130 + "\n")
+    log.close()
+    fileLock.release()

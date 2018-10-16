@@ -1,0 +1,310 @@
+Transmitter: ('', 56975)
+Receiver: ('', 12000)
+Action: Connect: SYN message
+Message: Message(originPort=56975, destinyPort=12000, SN=1, RN=0, headerSize=8, SYN=True, ACK=False, FIN=False, data=b'')
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('', 56975)
+Action: Connect: request of SYN message, valid SYNACK message
+Message: (Message(originPort=12000, destinyPort=56975, SN=1, RN=0, headerSize=8, SYN=True, ACK=True, FIN=False, data=b'\x06'), '127.0.0.1')
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 56975)
+Receiver: ('', 12000)
+Action: Connect: request of SYNACK message
+Message: Message(originPort=56975, destinyPort=12000, SN=0, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'')
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('', 56975)
+Action: Connect: ACK of request of SYNACK message, connection stablieshed
+Message: Message(originPort=56975, destinyPort=12000, SN=0, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'')
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 56975)
+Receiver: ('', 12000)
+Action: Send: send a package of message
+Message: Message(originPort=56975, destinyPort=12000, SN=1, RN=1, headerSize=8, SYN=False, ACK=False, FIN=False, data=b'vamos a ')
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('', 56975)
+Action: Send: ACK of package sended
+Message: Message(originPort=12000, destinyPort=56975, SN=1, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 56975)
+Receiver: ('', 12000)
+Action: Send: send a package of message
+Message: Message(originPort=56975, destinyPort=12000, SN=0, RN=1, headerSize=8, SYN=False, ACK=False, FIN=False, data=b'pasar re')
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('', 56975)
+Action: Send: ACK of package sended
+Message: Message(originPort=12000, destinyPort=56975, SN=1, RN=1, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 56975)
+Receiver: ('', 12000)
+Action: Send: send a package of message
+Message: Message(originPort=56975, destinyPort=12000, SN=1, RN=1, headerSize=8, SYN=False, ACK=False, FIN=False, data=b'des papu')
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('', 56975)
+Action: Send: ACK of package sended
+Message: Message(originPort=12000, destinyPort=56975, SN=1, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 56975)
+Receiver: ('', 12000)
+Action: Send: send a package of message
+Message: Message(originPort=56975, destinyPort=12000, SN=0, RN=1, headerSize=8, SYN=False, ACK=False, FIN=False, data=b's asi qu')
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('', 56975)
+Action: Send: ACK of package sended
+Message: Message(originPort=12000, destinyPort=56975, SN=1, RN=1, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 56975)
+Receiver: ('', 12000)
+Action: Send: send a package of message
+Message: Message(originPort=56975, destinyPort=12000, SN=1, RN=1, headerSize=8, SYN=False, ACK=False, FIN=False, data=b'e tranqu')
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 56975)
+Receiver: ('', 12000)
+Action: Send: send a package of message, forwarded
+Message: b'\xde\x8f.\xe0\x01\x01\x08e tranqu'
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('', 56975)
+Action: Send: ACK of package sended
+Message: Message(originPort=12000, destinyPort=56975, SN=1, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 56975)
+Receiver: ('', 12000)
+Action: Send: send a package of message
+Message: Message(originPort=56975, destinyPort=12000, SN=0, RN=1, headerSize=8, SYN=False, ACK=False, FIN=False, data=b'ilos y v')
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('', 56975)
+Action: Send: ACK of package sended
+Message: Message(originPort=12000, destinyPort=56975, SN=1, RN=1, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 56975)
+Receiver: ('', 12000)
+Action: Send: send a package of message
+Message: Message(originPort=56975, destinyPort=12000, SN=1, RN=1, headerSize=8, SYN=False, ACK=False, FIN=False, data=b'amos a l')
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 56975)
+Receiver: ('', 12000)
+Action: Send: send a package of message, forwarded
+Message: b'\xde\x8f.\xe0\x01\x01\x08amos a l'
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('', 56975)
+Action: Send: Invalid ACK of package sended
+Message: Message(originPort=12000, destinyPort=56975, SN=1, RN=1, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('', 56975)
+Action: Send: ACK of package sended
+Message: Message(originPort=12000, destinyPort=56975, SN=1, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 56975)
+Receiver: ('', 12000)
+Action: Send: send a package of message
+Message: Message(originPort=56975, destinyPort=12000, SN=0, RN=1, headerSize=8, SYN=False, ACK=False, FIN=False, data=b'a calle ')
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('', 56975)
+Action: Send: ACK of package sended
+Message: Message(originPort=12000, destinyPort=56975, SN=1, RN=1, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 56975)
+Receiver: ('', 12000)
+Action: Send: send a package of message
+Message: Message(originPort=56975, destinyPort=12000, SN=1, RN=1, headerSize=8, SYN=False, ACK=False, FIN=False, data=b'a por un')
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('', 56975)
+Action: Send: ACK of package sended
+Message: Message(originPort=12000, destinyPort=56975, SN=1, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 56975)
+Receiver: ('', 12000)
+Action: Send: send a package of message
+Message: Message(originPort=56975, destinyPort=12000, SN=0, RN=1, headerSize=8, SYN=False, ACK=False, FIN=False, data=b'as chela')
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 56975)
+Receiver: ('', 12000)
+Action: Send: send a package of message, forwarded
+Message: b'\xde\x8f.\xe0\x00\x01\x08as chela'
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('', 56975)
+Action: Send: ACK of package sended
+Message: Message(originPort=12000, destinyPort=56975, SN=1, RN=1, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 56975)
+Receiver: ('', 12000)
+Action: Send: send a package of message
+Message: Message(originPort=56975, destinyPort=12000, SN=1, RN=1, headerSize=8, SYN=False, ACK=False, FIN=False, data=b's bien f')
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('', 56975)
+Action: Send: ACK of package sended
+Message: Message(originPort=12000, destinyPort=56975, SN=1, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 56975)
+Receiver: ('', 12000)
+Action: Send: send a package of message
+Message: Message(originPort=56975, destinyPort=12000, SN=0, RN=1, headerSize=8, SYN=False, ACK=False, FIN=False, data=b'rias')
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 56975)
+Receiver: ('', 12000)
+Action: Send: send a package of message, forwarded
+Message: b'\xde\x8f.\xe0\x00\x01\x08rias'
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('', 56975)
+Action: Send: Invalid ACK of package sended
+Message: Message(originPort=12000, destinyPort=56975, SN=1, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('', 56975)
+Action: Send: ACK of package sended
+Message: Message(originPort=12000, destinyPort=56975, SN=1, RN=1, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('127.0.0.1', 56975)
+Action: Send: send a package of message
+Message: Message(originPort=12000, destinyPort=56975, SN=1, RN=1, headerSize=8, SYN=False, ACK=False, FIN=False, data=bytearray(b'VAMOS A '))
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('127.0.0.1', 56975)
+Receiver: ('', 12000)
+Action: Send: ACK of package sended
+Message: Message(originPort=56975, destinyPort=12000, SN=1, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('127.0.0.1', 56975)
+Action: Send: send a package of message
+Message: Message(originPort=12000, destinyPort=56975, SN=0, RN=1, headerSize=8, SYN=False, ACK=False, FIN=False, data=bytearray(b'PASAR RE'))
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('127.0.0.1', 56975)
+Receiver: ('', 12000)
+Action: Send: ACK of package sended
+Message: Message(originPort=56975, destinyPort=12000, SN=1, RN=1, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('127.0.0.1', 56975)
+Action: Send: send a package of message
+Message: Message(originPort=12000, destinyPort=56975, SN=1, RN=1, headerSize=8, SYN=False, ACK=False, FIN=False, data=bytearray(b'DES PAPU'))
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('127.0.0.1', 56975)
+Receiver: ('', 12000)
+Action: Send: ACK of package sended
+Message: Message(originPort=56975, destinyPort=12000, SN=1, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('127.0.0.1', 56975)
+Action: Send: send a package of message
+Message: Message(originPort=12000, destinyPort=56975, SN=0, RN=1, headerSize=8, SYN=False, ACK=False, FIN=False, data=bytearray(b'S ASI QU'))
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('127.0.0.1', 56975)
+Action: Send: send a package of message, forwarded
+Message: b'.\xe0\xde\x8f\x00\x01\x08S ASI QU'
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('127.0.0.1', 56975)
+Receiver: ('', 12000)
+Action: Send: Invalid ACK of package sended
+Message: Message(originPort=56975, destinyPort=12000, SN=1, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('127.0.0.1', 56975)
+Receiver: ('', 12000)
+Action: Send: ACK of package sended
+Message: Message(originPort=56975, destinyPort=12000, SN=1, RN=1, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('127.0.0.1', 56975)
+Action: Send: send a package of message
+Message: Message(originPort=12000, destinyPort=56975, SN=1, RN=1, headerSize=8, SYN=False, ACK=False, FIN=False, data=bytearray(b'E TRANQU'))
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('127.0.0.1', 56975)
+Receiver: ('', 12000)
+Action: Send: ACK of package sended
+Message: Message(originPort=56975, destinyPort=12000, SN=1, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('127.0.0.1', 56975)
+Action: Send: send a package of message
+Message: Message(originPort=12000, destinyPort=56975, SN=0, RN=1, headerSize=8, SYN=False, ACK=False, FIN=False, data=bytearray(b'ILOS Y V'))
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('127.0.0.1', 56975)
+Action: Send: send a package of message, forwarded
+Message: b'.\xe0\xde\x8f\x00\x01\x08ILOS Y V'
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('127.0.0.1', 56975)
+Receiver: ('', 12000)
+Action: Send: Invalid ACK of package sended
+Message: Message(originPort=56975, destinyPort=12000, SN=1, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('127.0.0.1', 56975)
+Receiver: ('', 12000)
+Action: Send: ACK of package sended
+Message: Message(originPort=56975, destinyPort=12000, SN=1, RN=1, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('127.0.0.1', 56975)
+Action: Send: send a package of message
+Message: Message(originPort=12000, destinyPort=56975, SN=1, RN=1, headerSize=8, SYN=False, ACK=False, FIN=False, data=bytearray(b'AMOS A L'))
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('127.0.0.1', 56975)
+Receiver: ('', 12000)
+Action: Send: ACK of package sended
+Message: Message(originPort=56975, destinyPort=12000, SN=1, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('127.0.0.1', 56975)
+Action: Send: send a package of message
+Message: Message(originPort=12000, destinyPort=56975, SN=0, RN=1, headerSize=8, SYN=False, ACK=False, FIN=False, data=bytearray(b'A CALLE '))
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('127.0.0.1', 56975)
+Receiver: ('', 12000)
+Action: Send: ACK of package sended
+Message: Message(originPort=56975, destinyPort=12000, SN=1, RN=1, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('127.0.0.1', 56975)
+Action: Send: send a package of message
+Message: Message(originPort=12000, destinyPort=56975, SN=1, RN=1, headerSize=8, SYN=False, ACK=False, FIN=False, data=bytearray(b'A POR UN'))
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('127.0.0.1', 56975)
+Receiver: ('', 12000)
+Action: Send: ACK of package sended
+Message: Message(originPort=56975, destinyPort=12000, SN=1, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('127.0.0.1', 56975)
+Action: Send: send a package of message
+Message: Message(originPort=12000, destinyPort=56975, SN=0, RN=1, headerSize=8, SYN=False, ACK=False, FIN=False, data=bytearray(b'AS CHELA'))
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('127.0.0.1', 56975)
+Receiver: ('', 12000)
+Action: Send: ACK of package sended
+Message: Message(originPort=56975, destinyPort=12000, SN=1, RN=1, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('127.0.0.1', 56975)
+Action: Send: send a package of message
+Message: Message(originPort=12000, destinyPort=56975, SN=1, RN=1, headerSize=8, SYN=False, ACK=False, FIN=False, data=bytearray(b'S BIEN F'))
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('127.0.0.1', 56975)
+Receiver: ('', 12000)
+Action: Send: ACK of package sended
+Message: Message(originPort=56975, destinyPort=12000, SN=1, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('127.0.0.1', 56975)
+Action: Send: send a package of message
+Message: Message(originPort=12000, destinyPort=56975, SN=0, RN=1, headerSize=8, SYN=False, ACK=False, FIN=False, data=bytearray(b'RIAS'))
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('127.0.0.1', 56975)
+Receiver: ('', 12000)
+Action: Send: ACK of package sended
+Message: Message(originPort=56975, destinyPort=12000, SN=1, RN=1, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
