@@ -113,6 +113,7 @@ class SocketPseudoTCP:
                 self.messageQueue.put(queueMessage)
                 self.printQueue(self.messageQueue)
                 continue
+        print("CLIENT SN:",self.SN,"CLIENT RN:", self.RN)
 
 
     # send, sends a byte array or encoded message.
@@ -128,7 +129,7 @@ class SocketPseudoTCP:
             #We are going to send data of 8 bytes
             partOfMessage = message[currentPart:(currentPart + 8)]
             print(message[currentPart])
-            currentPart += 4
+            currentPart += 8
             finalMessage = Message._make([self.selfAddr[1], self.connectionAddr[1], self.SN, self.RN, 8, False, False, False, partOfMessage])
             packedMessage = self.encodeMessage(finalMessage)
             print(finalMessage)
@@ -145,10 +146,11 @@ class SocketPseudoTCP:
 
 
     def sendMessage(self, packedMessage):
+        print("MY SN",self.SN, "MY RN", self.RN)
         self.socketUDP.sendto(packedMessage, self.connectionAddr)
         while True:
             try:
-                queueMessage = self.messageQueue.get(True, 5)
+                queueMessage = self.messageQueue.get(True, 1)
             except Empty:
                 print("Sending timeout! : Well the server left me hanging ...")
                 self.socketUDP.sendto(packedMessage, self.connectionAddr)
@@ -160,7 +162,7 @@ class SocketPseudoTCP:
                 print("Full delivery! : A valid ACK message just what I wanted, thanks Satan!")
                 # I need to update the S&W data
                 self.SN = ACKMessage.RN
-                self.RN = (ACKMessage.SN + 1)%2
+                #self.RN = (self.RN + 1)%2
                 self.printQueue(self.messageQueue)
                 break
             else:
@@ -175,13 +177,14 @@ class SocketPseudoTCP:
         numTimeOuts = 0
         messageRecived = bytearray()
         firstPacket = True
+        print("MY SN",self.SN, "MY RN", self.RN)
         while True:
             try:
-                queueMessage = self.messageQueue.get(True, 5)
+                queueMessage = self.messageQueue.get(True, 1)
             except Empty:
                 if(not firstPacket):
                     print("Receive: Time Out")
-                    ACKMessage = Message._make([self.selfAddr[1], self.connectionAddr[1], self.RN, self.SN, 8, False, True, False, "".encode('utf-8')])
+                    ACKMessage = Message._make([self.selfAddr[1], self.connectionAddr[1], self.SN, self.RN, 8, False, True, False, "".encode('utf-8')])
                     encodedACKMessage = self.encodeMessage(ACKMessage)
                     self.socketUDP.sendto(encodedACKMessage, self.connectionAddr)
                     if(numTimeOuts == 5):
@@ -203,8 +206,8 @@ class SocketPseudoTCP:
                     if(dataMessage.SN == self.RN):
                         print("Receive: Correct package")
                         self.SN = dataMessage.RN
-                        self.RN = (dataMessage.SN + 1)%2
-                        ACKMessage = Message._make([self.selfAddr[1], self.connectionAddr[1], self.RN, self.SN, 8, False, True, False, "".encode('utf-8')])
+                        self.RN = (self.RN + 1)%2
+                        ACKMessage = Message._make([self.selfAddr[1], self.connectionAddr[1], self.SN, self.RN, 8, False, True, False, "".encode('utf-8')])
                         encodedACKMessage = self.encodeMessage(ACKMessage)
                         self.socketUDP.sendto(encodedACKMessage, self.connectionAddr)
                         messageRecived.extend(dataMessage.data)
@@ -213,8 +216,9 @@ class SocketPseudoTCP:
                     else:
                         print("Receive: Wrong package")
             else:
-                self.messageQueue.put(queueMessage)
-                #self.printQueue(self.messageQueue)
+                #self.messageQueue.put(queueMessage)
+                self.printQueue(self.messageQueue)
+        print("EL MESAJE FINAL ES:", str(messageRecived))
         return messageRecived
 
 
@@ -306,6 +310,7 @@ class SocketPseudoTCP:
                     self.socketUDP.sendto(encodedACKMessage, connectionSocket.connectionAddr)
                     self.messageQueue.task_done()
                     self.printQueue(self.messageQueue)
+                    print("SERVER SN:",connectionSocket.SN,"SERVER RN:", connectionSocket.RN)
                     return(connectionSocket, connectionSocket.selfAddr)
                 else:
                     # It is a invalid one, I need to drop this message and try again
@@ -319,7 +324,6 @@ class SocketPseudoTCP:
                 self.messageQueue.put_nowait(queueMessage)
                 self.messageQueue.task_done()
                 self.printQueue(self.messageQueue)
-
     # Private methods
     # despatch, thread!, demultiplex all the messages send to the serverPort.
     def despatch(self):
@@ -397,7 +401,7 @@ class SocketPseudoTCP:
         elif(int(message[7]) == FIN):
             decodedMessageFIN = True
         decodedMessage = Message._make([ int.from_bytes(message[0:2], byteorder='big'), int.from_bytes(message[2:4], byteorder='big'),
-        int(message[4]), int(message[5]), int(message[6]), decodedMessageSYN, decodedMessageACK, decodedMessageFIN, message[8:] ])
+        int(message[4]), int(message[5]), int(message[6]), decodedMessageSYN, decodedMessageACK, decodedMessageFIN, message[7:] ])
         return decodedMessage
 
     #printQueue
