@@ -100,20 +100,25 @@ class SocketPseudoTCP:
                 continue
             # If I recived something, I need to check it is a SYNACK message
             ACKMessage = queueMessage[0]
-            if((ACKMessage.ACK and not ACKMessage.SYN) and (ACKMessage.RN != self.SN)):
-                # If the message is what I was waiting for
-                print("Connecting! : A valid ACK message just what I wanted, thanks Satan!")
-                # I need to update the S&W data
-                self.SN = ACKMessage.RN
-                self.RN = (ACKMessage.SN + 1)%2
-                self.printQueue(self.messageQueue)
-                break
+            if(ACKMessage.ACK and not ACKMessage.SYN):
+                if(ACKMessage.RN != self.SN):
+                    # If the message is what I was waiting for
+                    print("Connecting! : A valid ACK message just what I wanted, thanks Satan!")
+                    # I need to update the S&W data
+                    self.SN = ACKMessage.RN
+                    self.RN = (ACKMessage.SN + 1)%2
+                    self.printQueue(self.messageQueue)
+                    break
+                else:
+                    print("Connecting! : Invalid ACK message!")
+                    self.printQueue(self.messageQueue)
+                    continue
             else:
-                print("Connecting! : Not a ACK message or invalid ACK message!")
+                print("Connecting! : Not a ACK message!")
                 self.messageQueue.put(queueMessage)
                 self.printQueue(self.messageQueue)
                 continue
-        print("CLIENT SN:",self.SN,"CLIENT RN:", self.RN)
+        print("Connecting! : CLIENT SN:",self.SN,"CLIENT RN:", self.RN)
 
 
     # send, sends a byte array or encoded message.
@@ -131,42 +136,44 @@ class SocketPseudoTCP:
             print(message[currentPart])
             currentPart += 8
             finalMessage = Message._make([self.selfAddr[1], self.connectionAddr[1], self.SN, self.RN, 8, False, False, False, partOfMessage])
-            packedMessage = self.encodeMessage(finalMessage)
             print(finalMessage)
+            packedMessage = self.encodeMessage(finalMessage)
+            print(packedMessage)
             self.sendMessage(packedMessage)
             partOfMessage = bytearray()
 
         partOfMessage = message[currentPart:]
         print(message[currentPart])
         finalMessage = Message._make([self.selfAddr[1], self.connectionAddr[1], self.SN, self.RN, 8, False, False, False, partOfMessage])
-        packedMessage = self.encodeMessage(finalMessage)
         print(finalMessage)
+        packedMessage = self.encodeMessage(finalMessage)
+        print(packedMessage)
         self.sendMessage(packedMessage)
 
 
 
     def sendMessage(self, packedMessage):
-        print("MY SN",self.SN, "MY RN", self.RN)
+        print("Sending Message! : My SN",self.SN, "My RN", self.RN)
         self.socketUDP.sendto(packedMessage, self.connectionAddr)
         while True:
             try:
                 queueMessage = self.messageQueue.get(True, 1)
             except Empty:
-                print("Sending timeout! : Well the server left me hanging ...")
+                print("Sending Message timeout! : Well the server left me hanging ...")
                 self.socketUDP.sendto(packedMessage, self.connectionAddr)
                 continue
             # If I recived something, I need to check it is a ACK message
             ACKMessage = queueMessage[0]
             if((ACKMessage.ACK) and (ACKMessage.RN != self.SN)):
                 # If the message is what I was waiting for
-                print("Full delivery! : A valid ACK message just what I wanted, thanks Satan!")
+                print("Sending Message Full delivery! : A valid ACK message just what I wanted, thanks Satan!")
                 # I need to update the S&W data
                 self.SN = ACKMessage.RN
                 #self.RN = (self.RN + 1)%2
                 self.printQueue(self.messageQueue)
                 break
             else:
-                print("Fail delivery!! : Not a ACK message or invalid ACK message!")
+                print("Sending Message Fail delivery!! : Not a ACK message or invalid ACK message!")
                 #self.messageQueue.put(queueMessage)
                 self.printQueue(self.messageQueue)
                 continue
@@ -177,13 +184,13 @@ class SocketPseudoTCP:
         numTimeOuts = 0
         messageRecived = bytearray()
         firstPacket = True
-        print("MY SN",self.SN, "MY RN", self.RN)
+        print("Receiving! : My SN",self.SN, "My RN", self.RN)
         while True:
             try:
                 queueMessage = self.messageQueue.get(True, 1)
             except Empty:
                 if(not firstPacket):
-                    print("Receive: Time Out")
+                    print("Receiving! : Time Out")
                     ACKMessage = Message._make([self.selfAddr[1], self.connectionAddr[1], self.SN, self.RN, 8, False, True, False, "".encode('utf-8')])
                     encodedACKMessage = self.encodeMessage(ACKMessage)
                     self.socketUDP.sendto(encodedACKMessage, self.connectionAddr)
@@ -200,11 +207,11 @@ class SocketPseudoTCP:
                 lossProb = randint(1,10)
                 # I need to check if the package was "lost"
                 if(lossProb == 1):
-                    print("Receive: Package lost")
+                    print("Receiving! : Package lost")
                 else:
                     # I need to check if the package is correct
                     if(dataMessage.SN == self.RN):
-                        print("Receive: Correct package")
+                        print("Receiving! : Correct package")
                         self.SN = dataMessage.RN
                         self.RN = (self.RN + 1)%2
                         ACKMessage = Message._make([self.selfAddr[1], self.connectionAddr[1], self.SN, self.RN, 8, False, True, False, "".encode('utf-8')])
@@ -214,11 +221,11 @@ class SocketPseudoTCP:
                         numTimeOuts = 0
                         firstPacket = False
                     else:
-                        print("Receive: Wrong package")
+                        print("Receiving! : Wrong package")
             else:
                 #self.messageQueue.put(queueMessage)
                 self.printQueue(self.messageQueue)
-        print("EL MESAJE FINAL ES:", str(messageRecived))
+        print("Receiving! : EL MESAJE FINAL ES:", str(messageRecived))
         return messageRecived
 
 
@@ -296,7 +303,7 @@ class SocketPseudoTCP:
             if(specialACKMessage.ACK and not specialACKMessage.SYN):
                 # If it is a special ACK message, I need to check if it is a valid one
                 connectionSocket = self.connectionSockets.get((queueMessage[1], specialACKMessage.originPort))
-                if(connectionSocket.SN != specialACKMessage.RN):
+                if(connectionSocket.RN == specialACKMessage.SN):
                     # It is a valid one, now I need to update the connectionSocket data
                     print("Accepting! : valid special specialACK message!")
                     connectionSocket.SN = specialACKMessage.RN
