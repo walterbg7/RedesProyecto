@@ -150,8 +150,6 @@ class SocketPseudoTCP:
         writeOnLog("Log", self.selfAddr, self.connectionAddr, "Send: send a package of message", finalMessage)
         self.sendMessage(packedMessage)
 
-
-
     def sendMessage(self, packedMessage):
         writeOnLog("Log", "", "", "", "Sending Message! : My SN " + str(self.SN) + "  My RN "+ str(self.RN), 0)
         self.socketUDP.sendto(packedMessage, self.connectionAddr)
@@ -240,6 +238,16 @@ class SocketPseudoTCP:
     # close, closes the connection, ie delete the connection sockect from the connectionSockets dictionary.
     def close(self):
         print("SocketPseudoTCP : Closing!")
+        # I need to send a FIN message
+        FINMMessage = Message._make([self.selfAddr[1], self.connectionAddr[1], self.SN, self.RN, 8, False, False, True, "".encode('utf-8')])
+        encodedFINMessage = self.encodeMessage(FINMMessage)
+        self.socketUDP.sendto(encodedFINMessage, self.connectionAddr)
+        # I need to wait for a ACK message of my FIN message or another FIN message and answer it
+        # First I wait for my connection FIN messages and answer it
+        # Then I wait for the ack message of my FIN message
+        # Finally I need to close the connection after some time
+        self.connectionAddr = ("", -1)
+
 
     # "Server" side
     # bind, calls the bind method of the UDP port and starts the despacher. It also initialize the self.messageQueue with the maximun size pass as arg.
