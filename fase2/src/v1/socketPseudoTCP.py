@@ -1,5 +1,6 @@
 from queue import *
 from socket import *
+from utilities import *
 from random import randint
 from threading import Thread
 from collections import namedtuple
@@ -60,6 +61,7 @@ class SocketPseudoTCP:
         print(str(SYNMessage))
         encodedSYNMessage = self.encodeMessage(SYNMessage)
         print(str(encodedSYNMessage))
+        writeOnLog("log", self.selfAddr, self.connectionAddr, "Connect: SYN message", SYNMessage)
         self.socketUDP.sendto(encodedSYNMessage, self.connectionAddr)
         # I need to wait for the SYNACK message from the server
         while True:
@@ -75,12 +77,14 @@ class SocketPseudoTCP:
                 # If the message is what I was waiting for
                 print("Connecting! : A valid SYNACK message just what I wanted, thanks Satan!")
                 # I need to update the S&W data
+                writeOnLog("log", self.connectionAddr, self.selfAddr, "Connect: request of SYN message, valid SYNACK message", queueMessage)
                 self.SN = SYNACKMessage.RN
                 self.RN = (SYNACKMessage.SN + 1)%2
                 self.printQueue(self.messageQueue)
                 break
             else:
                 print("Connecting! : Not a SYNACK message or invalid SYNACK message!")
+                writeOnLog("log", self.connectionAddr, self.selfAddr, "Connect: request of SYN message, Not a SYNACK message or invalid SYNACK message", queueMessage)
                 self.messageQueue.put(queueMessage)
                 self.printQueue(self.messageQueue)
                 continue
@@ -89,6 +93,7 @@ class SocketPseudoTCP:
         print(str(specialACKMessage))
         encodedSpecialACKMessage = self.encodeMessage(specialACKMessage)
         print(str(encodedSpecialACKMessage))
+        writeOnLog("log", self.selfAddr, self.connectionAddr, "Connect: request of SYNACK message", specialACKMessage)
         self.socketUDP.sendto(encodedSpecialACKMessage, self.connectionAddr)
         # I need to wait for the ACK message from the server
         while True:
@@ -96,6 +101,7 @@ class SocketPseudoTCP:
                 queueMessage = self.messageQueue.get(True, 5)
             except Empty:
                 print("Connecting timeout! : Well the server left me hanging ...")
+                writeOnLog("log", self.selfAddr, self.connectionAddr, "Connect: request of SYNACK message, forwarded", specialACKMessage)
                 self.socketUDP.sendto(encodedSpecialACKMessage, self.connectionAddr)
                 continue
             # If I recived something, I need to check it is a SYNACK message
@@ -105,16 +111,19 @@ class SocketPseudoTCP:
                     # If the message is what I was waiting for
                     print("Connecting! : A valid ACK message just what I wanted, thanks Satan!")
                     # I need to update the S&W data
+                    writeOnLog("log", self.connectionAddr, self.selfAddr,"Connect: ACK of request of SYNACK message, connection stablieshed", specialACKMessage)
                     self.SN = ACKMessage.RN
                     self.RN = (ACKMessage.SN + 1)%2
                     self.printQueue(self.messageQueue)
                     break
                 else:
+                    writeOnLog("log", self.connectionAddr, self.selfAddr,"Connect: ACK of request of SYNACK message, invalid ACK message", specialACKMessage)
                     print("Connecting! : Invalid ACK message!")
                     self.printQueue(self.messageQueue)
                     continue
             else:
                 print("Connecting! : Not a ACK message!")
+                writeOnLog("log", self.connectionAddr, self.selfAddr,"Connect: ACK of request of SYNACK message, is not a ACK message", specialACKMessage)
                 self.messageQueue.put(queueMessage)
                 self.printQueue(self.messageQueue)
                 continue
@@ -139,6 +148,7 @@ class SocketPseudoTCP:
             print(finalMessage)
             packedMessage = self.encodeMessage(finalMessage)
             print(packedMessage)
+            writeOnLog("log", self.selfAddr, self.connectionAddr, "Send: send a package of message", finalMessage)
             self.sendMessage(packedMessage)
             partOfMessage = bytearray()
 
@@ -148,6 +158,7 @@ class SocketPseudoTCP:
         print(finalMessage)
         packedMessage = self.encodeMessage(finalMessage)
         print(packedMessage)
+        writeOnLog("log", self.selfAddr, self.connectionAddr, "Send: send a package of message", finalMessage)
         self.sendMessage(packedMessage)
 
 
@@ -160,12 +171,14 @@ class SocketPseudoTCP:
                 queueMessage = self.messageQueue.get(True, 1)
             except Empty:
                 print("Sending Message timeout! : Well the server left me hanging ...")
+                writeOnLog("log", self.selfAddr, self.connectionAddr, "Send: send a package of message, forwarded", packedMessage)
                 self.socketUDP.sendto(packedMessage, self.connectionAddr)
                 continue
             # If I recived something, I need to check it is a ACK message
             ACKMessage = queueMessage[0]
             if((ACKMessage.ACK) and (ACKMessage.RN != self.SN)):
                 # If the message is what I was waiting for
+                writeOnLog("log", self.connectionAddr, self.selfAddr, "Send: ACK of package sended", ACKMessage)
                 print("Sending Message Full delivery! : A valid ACK message just what I wanted, thanks Satan!")
                 # I need to update the S&W data
                 self.SN = ACKMessage.RN
@@ -173,6 +186,7 @@ class SocketPseudoTCP:
                 self.printQueue(self.messageQueue)
                 break
             else:
+                writeOnLog("log", self.connectionAddr, self.selfAddr, "Send: Invalid ACK of package sended", ACKMessage)
                 print("Sending Message Fail delivery!! : Not a ACK message or invalid ACK message!")
                 #self.messageQueue.put(queueMessage)
                 self.printQueue(self.messageQueue)
