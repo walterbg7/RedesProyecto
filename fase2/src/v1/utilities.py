@@ -85,10 +85,13 @@ def is_valid_ipv4_address(address):
 
     return True
 
-def writeOnLog(fileName, originAddr, destAddr, action, message):
+def writeOnLog(fileName, originAddr, destAddr, action, message, type = 1):
     fileLock.acquire()
     log = open(fileName, "a")
-    log.write("Transmitter: " + str(originAddr) + "\nReceiver: " + str(destAddr)+ "\nAction: " + str(action) +  "\nMessage: " + str(message))
+    if type:
+        log.write("Transmitter: " + str(originAddr) + "\nReceiver: " + str(destAddr)+ "\nAction: " + str(action) +  "\nMessage: " + str(message))
+    else:
+        log.write("Control Message: "+ message)
     log.write("\n" + separator * 130 + "\n")
     log.close()
     fileLock.release()

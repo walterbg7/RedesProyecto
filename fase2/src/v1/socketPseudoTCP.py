@@ -33,14 +33,16 @@ class SocketPseudoTCP:
         self.connectionSockets = {}
         # socketUDP, UDP socket use to actually send and recv messages
         self.socketUDP = socket(AF_INET, SOCK_DGRAM)
-        print("SocketPseudoTCP : Constructor :)")
+
+
+        writeOnLog("Log", "", "", "", "SocketPseudoTCP : Constructor :)", 0)
 
     # Methods
 
     # "Client" side
     # connect, starts and finnishes the 3-way handshake with the server socket
     def connect(self, serverAddr):
-        print("SocketPseudoTCP : Connecting!")
+        writeOnLog("Log", "", "", "","SocketPseudoTCP : Connecting!",0)
         # I need to assign my connectionAddr
         self.connectionAddr = serverAddr
         # I need to create a new random port number (it is also a socket id) and make bind on it
@@ -48,60 +50,56 @@ class SocketPseudoTCP:
         while( not successfulBind ):
             self.selfAddr = ("", randint(1024, 65535))
             #self.selfAddr = ("", 80)
-            print("Connecting! : this is my selfAddr " + str(self.selfAddr))
+            writeOnLog("Log", "", "", "","Connecting! : this is my selfAddr " + str(self.selfAddr), 0)
             try:
                 self.bind(self.selfAddr)
             except Exception as e:
-                print("Connecting Error! : Unsuccessful bind: " + str(e))
+                writeOnLog("Log", "", "", "", "Connecting Error! : Unsuccessful bind: " + str(e), 0)
                 continue
             successfulBind = True
         self.SN = self.selfAddr[1]%2
         # I need to send the SYN message to start the handshake process with the wanted serverSocket
         SYNMessage = Message._make([self.selfAddr[1], self.connectionAddr[1], self.SN, self.RN, 8, True, False, False, "".encode('utf-8')])
-        print(str(SYNMessage))
         encodedSYNMessage = self.encodeMessage(SYNMessage)
-        print(str(encodedSYNMessage))
-        writeOnLog("log", self.selfAddr, self.connectionAddr, "Connect: SYN message", SYNMessage)
+        writeOnLog("Log", self.selfAddr, self.connectionAddr, "Connect: SYN message", SYNMessage)
         self.socketUDP.sendto(encodedSYNMessage, self.connectionAddr)
         # I need to wait for the SYNACK message from the server
         while True:
             try:
                 queueMessage = self.messageQueue.get(True, 5)
             except Empty:
-                print("Connecting timeout! : Well the server left me hanging ...")
+                writeOnLog("Log", "", "", "", "Connecting timeout! : Well the server left me hanging ...",0)
                 self.socketUDP.sendto(encodedSYNMessage, self.connectionAddr)
                 continue
             # If I recived something, I need to check it is a SYNACK message
             SYNACKMessage = queueMessage[0]
             if((SYNACKMessage.SYN and SYNACKMessage.ACK) and (SYNACKMessage.RN != self.SN)):
                 # If the message is what I was waiting for
-                print("Connecting! : A valid SYNACK message just what I wanted, thanks Satan!")
+                writeOnLog("Log", "", "", "","Connecting! : A valid SYNACK message just what I wanted, thanks Satan!",0)
                 # I need to update the S&W data
-                writeOnLog("log", self.connectionAddr, self.selfAddr, "Connect: request of SYN message, valid SYNACK message", queueMessage)
+                writeOnLog("Log", self.connectionAddr, self.selfAddr, "Connect: response of SYN message, valid SYNACK message", queueMessage)
                 self.SN = SYNACKMessage.RN
                 self.RN = (SYNACKMessage.SN + 1)%2
                 self.printQueue(self.messageQueue)
                 break
             else:
-                print("Connecting! : Not a SYNACK message or invalid SYNACK message!")
-                writeOnLog("log", self.connectionAddr, self.selfAddr, "Connect: request of SYN message, Not a SYNACK message or invalid SYNACK message", queueMessage)
+                writeOnLog("Log", "", "", "","Connecting! : Not a SYNACK message or invalid SYNACK message!",0)
+                writeOnLog("Log", self.connectionAddr, self.selfAddr, "Connect: response of SYN message, Not a SYNACK message or invalid SYNACK message", queueMessage)
                 self.messageQueue.put(queueMessage)
                 self.printQueue(self.messageQueue)
                 continue
         # Finally I need to sent an ACK message to close the handshake
         specialACKMessage = Message._make([self.selfAddr[1], self.connectionAddr[1], self.SN, self.RN, 8, False, True, False, "".encode('utf-8')])
-        print(str(specialACKMessage))
         encodedSpecialACKMessage = self.encodeMessage(specialACKMessage)
-        print(str(encodedSpecialACKMessage))
-        writeOnLog("log", self.selfAddr, self.connectionAddr, "Connect: request of SYNACK message", specialACKMessage)
+        writeOnLog("Log", self.selfAddr, self.connectionAddr, "Connect: response of SYNACK message", specialACKMessage)
         self.socketUDP.sendto(encodedSpecialACKMessage, self.connectionAddr)
         # I need to wait for the ACK message from the server
         while True:
             try:
                 queueMessage = self.messageQueue.get(True, 5)
             except Empty:
-                print("Connecting timeout! : Well the server left me hanging ...")
-                writeOnLog("log", self.selfAddr, self.connectionAddr, "Connect: request of SYNACK message, forwarded", specialACKMessage)
+                writeOnLog("Log", "", "", "","Connecting timeout! : Well the server left me hanging ...", 0)
+                writeOnLog("Log", self.selfAddr, self.connectionAddr, "Connect: response of SYNACK message, forwarded", specialACKMessage)
                 self.socketUDP.sendto(encodedSpecialACKMessage, self.connectionAddr)
                 continue
             # If I recived something, I need to check it is a SYNACK message
@@ -109,31 +107,28 @@ class SocketPseudoTCP:
             if(ACKMessage.ACK and not ACKMessage.SYN):
                 if(ACKMessage.RN != self.SN):
                     # If the message is what I was waiting for
-                    print("Connecting! : A valid ACK message just what I wanted, thanks Satan!")
+                    writeOnLog("Log", "", "", "", "Connecting! : A valid ACK message just what I wanted, thanks Satan!", 0)
                     # I need to update the S&W data
-                    writeOnLog("log", self.connectionAddr, self.selfAddr,"Connect: ACK of request of SYNACK message, connection stablieshed", specialACKMessage)
+                    writeOnLog("Log", self.connectionAddr, self.selfAddr,"Connect: ACK of response of SYNACK message, connection stablieshed", specialACKMessage)
                     self.SN = ACKMessage.RN
                     self.RN = (ACKMessage.SN + 1)%2
-                    self.printQueue(self.messageQueue)
                     break
                 else:
-                    writeOnLog("log", self.connectionAddr, self.selfAddr,"Connect: ACK of request of SYNACK message, invalid ACK message", specialACKMessage)
-                    print("Connecting! : Invalid ACK message!")
-                    self.printQueue(self.messageQueue)
+                    writeOnLog("Log", self.connectionAddr, self.selfAddr,"Connect: ACK of response of SYNACK message, invalid ACK message", specialACKMessage)
+                    writeOnLog("Log", "", "", "","Connecting! : Invalid ACK message!", 0)
                     continue
             else:
-                print("Connecting! : Not a ACK message!")
-                writeOnLog("log", self.connectionAddr, self.selfAddr,"Connect: ACK of request of SYNACK message, is not a ACK message", specialACKMessage)
+                writeOnLog("Log", "", "", "","Connecting! : Not a ACK message!", 0)
+                writeOnLog("Log", self.connectionAddr, self.selfAddr,"Connect: ACK of response of SYNACK message, is not a ACK message", specialACKMessage)
                 self.messageQueue.put(queueMessage)
                 self.printQueue(self.messageQueue)
                 continue
-        print("Connecting! : CLIENT SN:",self.SN,"CLIENT RN:", self.RN)
+        writeOnLog("Log", "", "", "", "Connecting! : CLIENT SN: " + str(self.SN) + " CLIENT RN:" +  str(self.RN), 0)
 
 
     # send, sends a byte array or encoded message.
     def send(self, message):
-        print("SocketPseudoTCP : Sending!")
-        print(message)
+        writeOnLog("Log", "", "", "", "SocketPseudoTCP : Sending!", 0)
         lenMessage = len(message)
         numPackages = math.ceil(lenMessage / 8)
         lastPackages = numPackages -1
@@ -142,71 +137,66 @@ class SocketPseudoTCP:
         for number in range(0, lastPackages):
             #We are going to send data of 8 bytes
             partOfMessage = message[currentPart:(currentPart + 8)]
-            print(message[currentPart])
             currentPart += 8
             finalMessage = Message._make([self.selfAddr[1], self.connectionAddr[1], self.SN, self.RN, 8, False, False, False, partOfMessage])
-            print(finalMessage)
             packedMessage = self.encodeMessage(finalMessage)
-            print(packedMessage)
-            writeOnLog("log", self.selfAddr, self.connectionAddr, "Send: send a package of message", finalMessage)
+            writeOnLog("Log", self.selfAddr, self.connectionAddr, "Send: send a package of message", finalMessage)
             self.sendMessage(packedMessage)
             partOfMessage = bytearray()
 
         partOfMessage = message[currentPart:]
-        print(message[currentPart])
         finalMessage = Message._make([self.selfAddr[1], self.connectionAddr[1], self.SN, self.RN, 8, False, False, False, partOfMessage])
-        print(finalMessage)
         packedMessage = self.encodeMessage(finalMessage)
-        print(packedMessage)
-        writeOnLog("log", self.selfAddr, self.connectionAddr, "Send: send a package of message", finalMessage)
+        writeOnLog("Log", self.selfAddr, self.connectionAddr, "Send: send a package of message", finalMessage)
         self.sendMessage(packedMessage)
 
 
 
     def sendMessage(self, packedMessage):
-        print("Sending Message! : My SN",self.SN, "My RN", self.RN)
+        writeOnLog("Log", "", "", "", "Sending Message! : My SN " + str(self.SN) + "  My RN "+ str(self.RN), 0)
         self.socketUDP.sendto(packedMessage, self.connectionAddr)
         while True:
             try:
                 queueMessage = self.messageQueue.get(True, 1)
             except Empty:
-                print("Sending Message timeout! : Well the server left me hanging ...")
-                writeOnLog("log", self.selfAddr, self.connectionAddr, "Send: send a package of message, forwarded", packedMessage)
+                writeOnLog("Log", "", "", "", "Sending Message timeout! : Well the server left me hanging ...", 0)
+                writeOnLog("Log", self.selfAddr, self.connectionAddr, "Send: send a package of message, forwarded", packedMessage)
                 self.socketUDP.sendto(packedMessage, self.connectionAddr)
                 continue
             # If I recived something, I need to check it is a ACK message
             ACKMessage = queueMessage[0]
             if((ACKMessage.ACK) and (ACKMessage.RN != self.SN)):
                 # If the message is what I was waiting for
-                writeOnLog("log", self.connectionAddr, self.selfAddr, "Send: ACK of package sended", ACKMessage)
-                print("Sending Message Full delivery! : A valid ACK message just what I wanted, thanks Satan!")
+                writeOnLog("Log", self.connectionAddr, self.selfAddr, "Send: ACK of package sended", ACKMessage)
+                writeOnLog("Log", "", "", "", "Sending Message Full delivery! : A valid ACK message just what I wanted, thanks Satan!", 0)
                 # I need to update the S&W data
                 self.SN = ACKMessage.RN
                 #self.RN = (self.RN + 1)%2
                 self.printQueue(self.messageQueue)
                 break
             else:
-                writeOnLog("log", self.connectionAddr, self.selfAddr, "Send: Invalid ACK of package sended", ACKMessage)
-                print("Sending Message Fail delivery!! : Not a ACK message or invalid ACK message!")
+                writeOnLog("Log", self.connectionAddr, self.selfAddr, "Send: Invalid ACK of package sended", ACKMessage)
+                writeOnLog("Log", "", "", "", "Sending Message Fail delivery!! : Not a ACK message or invalid ACK message!", 0)
                 #self.messageQueue.put(queueMessage)
                 self.printQueue(self.messageQueue)
                 continue
 
     # recv, recive the number of bytes passed as arg. Returns a the received message as encoded message o a byte array
     def recv(self, numberOfBytes):
-        print("SocketPseudoTCP : Receiving!")
+        writeOnLog("Log", "", "", "", "SocketPseudoTCP : Receiving!", 0)
         numTimeOuts = 0
         messageRecived = bytearray()
         firstPacket = True
-        print("Receiving! : My SN",self.SN, "My RN", self.RN)
+        writeOnLog("Log", "", "", "", "Receiving! : My SN " + str(self.SN) + "  My RN " + str(self.RN) , 0)
         while True:
             try:
                 queueMessage = self.messageQueue.get(True, 1)
             except Empty:
                 if(not firstPacket):
-                    print("Receiving! : Time Out")
+                    writeOnLog("Log", "", "", "", "Receiving! : Time Out", 0)
                     ACKMessage = Message._make([self.selfAddr[1], self.connectionAddr[1], self.SN, self.RN, 8, False, True, False, "".encode('utf-8')])
                     encodedACKMessage = self.encodeMessage(ACKMessage)
+                    writeOnLog("Log", self.selfAddr, self.connectionAddr, "RECV: ACK of a recived message ", ACKMessage)
                     self.socketUDP.sendto(encodedACKMessage, self.connectionAddr)
                     if(numTimeOuts == 5):
                         break
@@ -221,25 +211,29 @@ class SocketPseudoTCP:
                 lossProb = randint(1,10)
                 # I need to check if the package was "lost"
                 if(lossProb == 1):
-                    print("Receiving! : Package lost")
+                    writeOnLog("Log", "", "", "", "Receiving! : Package lost", 0)
+                    writeOnLog("Log", self.selfAddr, self.connectionAddr, "RECV: Package lost ", dataMessage)
                 else:
                     # I need to check if the package is correct
                     if(dataMessage.SN == self.RN):
-                        print("Receiving! : Correct package")
+                        writeOnLog("Log", "", "", "","Receiving! : Correct package", 0)
+                        writeOnLog("Log", self.connectionAddr, self.selfAddr, "RECV: valid Data package received ", dataMessage)
                         self.SN = dataMessage.RN
                         self.RN = (self.RN + 1)%2
                         ACKMessage = Message._make([self.selfAddr[1], self.connectionAddr[1], self.SN, self.RN, 8, False, True, False, "".encode('utf-8')])
                         encodedACKMessage = self.encodeMessage(ACKMessage)
+                        writeOnLog("Log", self.connectionAddr, self.selfAddr, "RECV: ACK of a recived message ", ACKMessage)
                         self.socketUDP.sendto(encodedACKMessage, self.connectionAddr)
                         messageRecived.extend(dataMessage.data)
                         numTimeOuts = 0
                         firstPacket = False
                     else:
-                        print("Receiving! : Wrong package")
+                        writeOnLog("Log", "", "", "", "Receiving! : Wrong package", 0)
+                        writeOnLog("Log", self.connectionAddr, self.selfAddr, "RECV: Wrong package received ", dataMessage)
             else:
                 #self.messageQueue.put(queueMessage)
                 self.printQueue(self.messageQueue)
-        print("Receiving! : EL MESAJE FINAL ES:", str(messageRecived))
+        writeOnLog("Log", "", "", "", "Receiving! : EL MESAJE FINAL ES: "+ str(messageRecived))
         return messageRecived
 
 
@@ -250,7 +244,7 @@ class SocketPseudoTCP:
     # "Server" side
     # bind, calls the bind method of the UDP port and starts the despacher. It also initialize the self.messageQueue with the maximun size pass as arg.
     def bind(self, selfAddr):
-        print("SocketPseudoTCP : Binding!")
+        writeOnLog("Log", "", "", "","SocketPseudoTCP : Binding!",0)
         # I need to bind my socketUDP to the given selfAddr
         self.selfAddr = selfAddr
         self.socketUDP.bind(self.selfAddr)
@@ -263,14 +257,14 @@ class SocketPseudoTCP:
 
     # listen, thread!, search the server socket messageQueue for a SYN message and proccess it.
     def listen(self, serverQueueSize):
-        print("SocketPseudoTCP : Listening!")
+        writeOnLog("Log", "", "", "", "SocketPseudoTCP : Listening!", 0)
         # I only start the listen thread
         listenerThread = Thread(target=self.listenThread)
         listenerThread.daemon = True
         listenerThread.start()
 
     def listenThread(self):
-        print("SocketPseudoTCP : Listening Thread!")
+        writeOnLog("Log", "", "", "", "SocketPseudoTCP : Listening Thread!", 0)
         while True:
             # I need to check if there is a SYN message on my messageQueue and answer it with a SYNACK message
             queueMessage = self.messageQueue.get()
@@ -279,7 +273,8 @@ class SocketPseudoTCP:
                 # I need to check if I alrrady have a connection with the sender
                 if(not (queueMessage[1], SYNMessage.originPort) in self.connectionSockets):
                     # If the SYN message is valid
-                    print("Listening Thread! : Valid SYN message!")
+                    writeOnLog("Log", "", "", "", "Listening Thread! : Valid SYN message!", 0)
+                    writeOnLog("Log", (queueMessage[1], SYNMessage.originPort), self.selfAddr, "Listen: New valid SYN Message ", SYNMessage)
                     # I need to store the new posible conection data
                     connectionSocket = SocketPseudoTCP()
                     connectionSocket.SN = randint(0, 1)
@@ -288,28 +283,29 @@ class SocketPseudoTCP:
                     self.connectionSockets[(queueMessage[1], SYNMessage.originPort)] = connectionSocket
                     # I need to send a SYNACK message in respond
                     SYNACKMessage = Message._make([connectionSocket.selfAddr[1],  SYNMessage.originPort, connectionSocket.SN, connectionSocket.RN, 8, True, True, False, "".encode('utf-8')])
-                    print(str(SYNACKMessage))
                     encodedSYNACKMessage = self.encodeMessage(SYNACKMessage)
-                    print(str(encodedSYNACKMessage))
+                    writeOnLog("Log", self.selfAddr, (queueMessage[1], SYNMessage.originPort), "Listen: SYN message response (SYNACK)", SYNACKMessage)
                     self.socketUDP.sendto(encodedSYNACKMessage, (queueMessage[1], SYNMessage.originPort))
                     self.messageQueue.task_done()
                     self.printQueue(self.messageQueue)
                 else:
                     # If the conection already existed, I need to drop the invalid SYN message
                     print("Listening Thread Error! : The connection already existed!")
+                    writeOnLog("Log", (queueMessage[1], self.selfAddr, SYNMessage.originPort), "Listen: The connection already existed", SYNMessage)
                     self.messageQueue.task_done()
                     self.printQueue(self.messageQueue)
                     continue
             else:
                 # If it is not a SYN message, I need to put the message again on my messageQueue and try again
-                print("Listening Thread Error! : Not a SYN message!")
+                writeOnLog("Log", "", "", "", "Listening Thread Error! : Not a SYN message!", 0)
+                writeOnLog("Log", (queueMessage[1], self.selfAddr, SYNMessage.originPort), "Listen: Error! : Not a SYN message!", SYNMessage)
                 self.messageQueue.put_nowait(queueMessage)
                 self.messageQueue.task_done()
                 self.printQueue(self.messageQueue)
 
     # accept, returns a instance of this class as the connection with the client socket that initiated the communication. Add the new connectionSocket (instance) to the connectionSockets dictionary
     def accept(self):
-        print("SocketPseudoTCP : Accepting!")
+        writeOnLog("Log", "", "", "", "SocketPseudoTCP : Accepting!", 0)
         while True:
             # I need to check if there is a specal ACK message on my messageQueue and answer it with a regular ACK message
             queueMessage = self.messageQueue.get()
@@ -319,57 +315,59 @@ class SocketPseudoTCP:
                 connectionSocket = self.connectionSockets.get((queueMessage[1], specialACKMessage.originPort))
                 if(connectionSocket.RN == specialACKMessage.SN):
                     # It is a valid one, now I need to update the connectionSocket data
-                    print("Accepting! : valid special specialACK message!")
+                    writeOnLog("Log", "", "", "", "Accepting! : valid special specialACK message!", 0)
                     connectionSocket.SN = specialACKMessage.RN
                     connectionSocket.RN = (specialACKMessage.SN + 1)%2
                     connectionSocket.connectionAddr = (queueMessage[1], specialACKMessage.originPort)
                     # I need to sent a regular ACK messages
+                    writeOnLog("Log", connectionSocket.connectionAddr, self.selfAddr, "Accept: valid special specialACK message", specialACKMessage)
                     ACKMessage = Message._make([connectionSocket.selfAddr[1],  connectionSocket.connectionAddr[1], connectionSocket.SN, connectionSocket.RN, 8, False, True, False, "".encode('utf-8')])
-                    print(str(ACKMessage))
                     encodedACKMessage = self.encodeMessage(ACKMessage)
-                    print(str(encodedACKMessage))
+                    writeOnLog("Log", self.selfAddr, connectionSocket.connectionAddr, "Accept: response of specialACK message", ACKMessage)
                     self.socketUDP.sendto(encodedACKMessage, connectionSocket.connectionAddr)
                     self.messageQueue.task_done()
                     self.printQueue(self.messageQueue)
-                    print("SERVER SN:",connectionSocket.SN,"SERVER RN:", connectionSocket.RN)
+                    writeOnLog("Log", "", "", "", "SERVER SN: " + str(connectionSocket.SN) + "  SERVER RN: " + str(connectionSocket.RN), 0)
                     return(connectionSocket, connectionSocket.selfAddr)
                 else:
                     # It is a invalid one, I need to drop this message and try again
-                    print("Accepting Error! : Invalid special ACK message!")
+                    writeOnLog("Log", "", "", "", "Accepting Error! : Invalid special ACK message!", 0)
+                    writeOnLog("Log", (queueMessage[1], specialACKMessage.originPort), self.selfAddr, "Accept: valid special specialACK message", specialACKMessage)
                     self.messageQueue.task_done()
                     self.printQueue(self.messageQueue)
                     continue
             else:
                 #If it is not a special ACK message, I need to put the message again on my messageQueue and try again
-                print("Accepting Error! : Not a special ACK message!")
+                writeOnLog("Log", "", "", "", "Accepting Error! : Not a special ACK message!", 0)
+                writeOnLog("Log", (queueMessage[1], specialACKMessage.originPort), self.selfAddr, "Accept: Not a special ACK message", specialACKMessage)
                 self.messageQueue.put_nowait(queueMessage)
                 self.messageQueue.task_done()
                 self.printQueue(self.messageQueue)
     # Private methods
     # despatch, thread!, demultiplex all the messages send to the serverPort.
     def despatch(self):
-        print("SocketPseudoTCP : Despatching!")
+        writeOnLog("Log", "", "", "", "SocketPseudoTCP : Despatching!", 0)
         while True:
             try:
                 encodedMessage, senderAddr = self.socketUDP.recvfrom(2048)
             except Exception as e:
-                print("Despatching Error! : " + str(e))
+                writeOnLog("Log", "", "", "", "Despatching Error! : " + str(e), 0)
                 continue
             # If everything was just fine
             # I need to demultiplex the recieved message
-            print("Despatching! : " + str(encodedMessage))
+            writeOnLog("Log", "", "", "", "Despatching! : " + str(encodedMessage), 0)
             message = self.decodeMessage(encodedMessage)
-            print("Despatching! : " + str(message))
+            writeOnLog("Log", "", "", "", "Despatching! : " + str(message), 0)
             # First I need to check if the message if actually for me
             if(message.destinyPort == self.selfAddr[1]):
-                print("Despatching! : The mesage is for me!")
+                writeOnLog("Log", "", "", "", "Despatching! : The mesage is for me!", 0)
                 # Now I need to demultiplex the message
                 # If the recieved message is a SYN or FIN it is for my messageQueue
                 if(message.SYN or message.FIN):
                     self.messageQueue.put((message, senderAddr[0]))
                     self.printQueue(self.messageQueue);
                 else:
-                    print("Despatching! : Fisrt you get the data, then you get the power, then you get the women")
+                    writeOnLog("Log", "", "", "", "Despatching! : Fisrt you get the data, then you get the power, then you get the women", 0)
                     # I need to check if the sender is a known connection
                     if((senderAddr[0], message.originPort) in self.connectionSockets):
                         # If it is I need to check if the connection was already stablish
@@ -390,7 +388,7 @@ class SocketPseudoTCP:
 
     # encodeMessage
     def encodeMessage(self, message):
-        print("Encoder : Encoding message!")
+        writeOnLog("Log", "", "", "", "Encoder : Encoding message!", 0)
         # I need to encode the message parameter into a bytearray
         encodedMessage = ( message.originPort.to_bytes(2, byteorder='big') + message.destinyPort.to_bytes(2, byteorder='big')
         + message.SN.to_bytes(1, byteorder='big') + message.RN.to_bytes(1, byteorder='big') + message.headerSize.to_bytes(1, byteorder='big'))
@@ -411,7 +409,7 @@ class SocketPseudoTCP:
 
     # decodeMessage
     def decodeMessage(self, message):
-        print("Decoder : Decoding message!")
+        writeOnLog("Log", "", "", "", "Decoder : Decoding message!", 0)
         decodedMessageSYN = decodedMessageACK = decodedMessageFIN = False
         if(int(message[7]) == SYNACK):
             decodedMessageSYN = decodedMessageACK = True

@@ -1,0 +1,1272 @@
+Control Message: SocketPseudoTCP : Constructor :)
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: SocketPseudoTCP : Binding!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: SocketPseudoTCP : Despatching!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: SocketPseudoTCP : Listening!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: SocketPseudoTCP : Listening Thread!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: SocketPseudoTCP : Accepting!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: SocketPseudoTCP : Constructor :)
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: SocketPseudoTCP : Connecting!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Connecting! : this is my selfAddr ('', 23861)
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: SocketPseudoTCP : Binding!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: SocketPseudoTCP : Despatching!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Encoder : Encoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 23861)
+Receiver: ('', 12000)
+Action: Connect: SYN message
+Message: Message(originPort=23861, destinyPort=12000, SN=1, RN=0, headerSize=8, SYN=True, ACK=False, FIN=False, data=b'')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : b']5.\xe0\x01\x00\x08\x04'
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Decoder : Decoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Message(originPort=23861, destinyPort=12000, SN=1, RN=0, headerSize=8, SYN=True, ACK=False, FIN=False, data=b'\x04')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : The mesage is for me!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Listening Thread! : Valid SYN message!
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('127.0.0.1', 23861)
+Receiver: ('', 12000)
+Action: Listen: New valid SYN Message 
+Message: Message(originPort=23861, destinyPort=12000, SN=1, RN=0, headerSize=8, SYN=True, ACK=False, FIN=False, data=b'\x04')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: SocketPseudoTCP : Constructor :)
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Encoder : Encoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('127.0.0.1', 23861)
+Action: Listen: SYN message response (SYNACK)
+Message: Message(originPort=12000, destinyPort=23861, SN=1, RN=0, headerSize=8, SYN=True, ACK=True, FIN=False, data=b'')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : b'.\xe0]5\x01\x00\x08\x06'
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Decoder : Decoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Message(originPort=12000, destinyPort=23861, SN=1, RN=0, headerSize=8, SYN=True, ACK=True, FIN=False, data=b'\x06')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : The mesage is for me!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Connecting! : A valid SYNACK message just what I wanted, thanks Satan!
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('', 23861)
+Action: Connect: response of SYN message, valid SYNACK message
+Message: (Message(originPort=12000, destinyPort=23861, SN=1, RN=0, headerSize=8, SYN=True, ACK=True, FIN=False, data=b'\x06'), '127.0.0.1')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Encoder : Encoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 23861)
+Receiver: ('', 12000)
+Action: Connect: response of SYNACK message
+Message: Message(originPort=23861, destinyPort=12000, SN=0, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : b']5.\xe0\x00\x00\x08\x02'
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Decoder : Decoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Message(originPort=23861, destinyPort=12000, SN=0, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : The mesage is for me!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Fisrt you get the data, then you get the power, then you get the women
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Accepting! : valid special specialACK message!
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('127.0.0.1', 23861)
+Receiver: ('', 12000)
+Action: Accept: valid special specialACK message
+Message: Message(originPort=23861, destinyPort=12000, SN=0, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Encoder : Encoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('127.0.0.1', 23861)
+Action: Accept: response of specialACK message
+Message: Message(originPort=12000, destinyPort=23861, SN=0, RN=1, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : b'.\xe0]5\x00\x01\x08\x02'
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: SERVER SN: 0  SERVER RN: 1
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: SocketPseudoTCP : Receiving!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Decoder : Decoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Receiving! : My SN 0  My RN 1
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Message(originPort=12000, destinyPort=23861, SN=0, RN=1, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : The mesage is for me!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Fisrt you get the data, then you get the power, then you get the women
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Connecting! : A valid ACK message just what I wanted, thanks Satan!
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('', 23861)
+Action: Connect: ACK of response of SYNACK message, connection stablieshed
+Message: Message(originPort=23861, destinyPort=12000, SN=0, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Connecting! : CLIENT SN: 1 CLIENT RN:1
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: SocketPseudoTCP : Sending!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Encoder : Encoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 23861)
+Receiver: ('', 12000)
+Action: Send: send a package of message
+Message: Message(originPort=23861, destinyPort=12000, SN=1, RN=1, headerSize=8, SYN=False, ACK=False, FIN=False, data=b'mae vio ')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Sending Message! : My SN 1  My RN 1
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : b']5.\xe0\x01\x01\x08mae vio '
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Decoder : Decoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Message(originPort=23861, destinyPort=12000, SN=1, RN=1, headerSize=8, SYN=False, ACK=False, FIN=False, data=b'mae vio ')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : The mesage is for me!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Fisrt you get the data, then you get the power, then you get the women
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Receiving! : Correct package
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('127.0.0.1', 23861)
+Receiver: ('', 12000)
+Action: RECV: valid Data package received 
+Message: Message(originPort=23861, destinyPort=12000, SN=1, RN=1, headerSize=8, SYN=False, ACK=False, FIN=False, data=b'mae vio ')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Encoder : Encoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('127.0.0.1', 23861)
+Receiver: ('', 12000)
+Action: RECV: ACK of a recived message 
+Message: Message(originPort=12000, destinyPort=23861, SN=1, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : b'.\xe0]5\x01\x00\x08\x02'
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Decoder : Decoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Message(originPort=12000, destinyPort=23861, SN=1, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : The mesage is for me!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Fisrt you get the data, then you get the power, then you get the women
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('', 23861)
+Action: Send: ACK of package sended
+Message: Message(originPort=12000, destinyPort=23861, SN=1, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Sending Message Full delivery! : A valid ACK message just what I wanted, thanks Satan!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Encoder : Encoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 23861)
+Receiver: ('', 12000)
+Action: Send: send a package of message
+Message: Message(originPort=23861, destinyPort=12000, SN=0, RN=1, headerSize=8, SYN=False, ACK=False, FIN=False, data=b'que boni')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Sending Message! : My SN 0  My RN 1
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : b']5.\xe0\x00\x01\x08que boni'
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Decoder : Decoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Message(originPort=23861, destinyPort=12000, SN=0, RN=1, headerSize=8, SYN=False, ACK=False, FIN=False, data=b'que boni')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : The mesage is for me!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Fisrt you get the data, then you get the power, then you get the women
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Receiving! : Correct package
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('127.0.0.1', 23861)
+Receiver: ('', 12000)
+Action: RECV: valid Data package received 
+Message: Message(originPort=23861, destinyPort=12000, SN=0, RN=1, headerSize=8, SYN=False, ACK=False, FIN=False, data=b'que boni')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Encoder : Encoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('127.0.0.1', 23861)
+Receiver: ('', 12000)
+Action: RECV: ACK of a recived message 
+Message: Message(originPort=12000, destinyPort=23861, SN=1, RN=1, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : b'.\xe0]5\x01\x01\x08\x02'
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Decoder : Decoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Message(originPort=12000, destinyPort=23861, SN=1, RN=1, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : The mesage is for me!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Fisrt you get the data, then you get the power, then you get the women
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('', 23861)
+Action: Send: ACK of package sended
+Message: Message(originPort=12000, destinyPort=23861, SN=1, RN=1, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Sending Message Full delivery! : A valid ACK message just what I wanted, thanks Satan!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Encoder : Encoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 23861)
+Receiver: ('', 12000)
+Action: Send: send a package of message
+Message: Message(originPort=23861, destinyPort=12000, SN=1, RN=1, headerSize=8, SYN=False, ACK=False, FIN=False, data=b'ta queda')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Sending Message! : My SN 1  My RN 1
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : b']5.\xe0\x01\x01\x08ta queda'
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Decoder : Decoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Message(originPort=23861, destinyPort=12000, SN=1, RN=1, headerSize=8, SYN=False, ACK=False, FIN=False, data=b'ta queda')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : The mesage is for me!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Fisrt you get the data, then you get the power, then you get the women
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Receiving! : Correct package
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('127.0.0.1', 23861)
+Receiver: ('', 12000)
+Action: RECV: valid Data package received 
+Message: Message(originPort=23861, destinyPort=12000, SN=1, RN=1, headerSize=8, SYN=False, ACK=False, FIN=False, data=b'ta queda')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Encoder : Encoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('127.0.0.1', 23861)
+Receiver: ('', 12000)
+Action: RECV: ACK of a recived message 
+Message: Message(originPort=12000, destinyPort=23861, SN=1, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : b'.\xe0]5\x01\x00\x08\x02'
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Decoder : Decoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Message(originPort=12000, destinyPort=23861, SN=1, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : The mesage is for me!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Fisrt you get the data, then you get the power, then you get the women
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('', 23861)
+Action: Send: ACK of package sended
+Message: Message(originPort=12000, destinyPort=23861, SN=1, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Sending Message Full delivery! : A valid ACK message just what I wanted, thanks Satan!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Encoder : Encoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 23861)
+Receiver: ('', 12000)
+Action: Send: send a package of message
+Message: Message(originPort=23861, destinyPort=12000, SN=0, RN=1, headerSize=8, SYN=False, ACK=False, FIN=False, data=b' la bita')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Sending Message! : My SN 0  My RN 1
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : b']5.\xe0\x00\x01\x08 la bita'
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Decoder : Decoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Message(originPort=23861, destinyPort=12000, SN=0, RN=1, headerSize=8, SYN=False, ACK=False, FIN=False, data=b' la bita')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : The mesage is for me!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Fisrt you get the data, then you get the power, then you get the women
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Receiving! : Correct package
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('127.0.0.1', 23861)
+Receiver: ('', 12000)
+Action: RECV: valid Data package received 
+Message: Message(originPort=23861, destinyPort=12000, SN=0, RN=1, headerSize=8, SYN=False, ACK=False, FIN=False, data=b' la bita')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Encoder : Encoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('127.0.0.1', 23861)
+Receiver: ('', 12000)
+Action: RECV: ACK of a recived message 
+Message: Message(originPort=12000, destinyPort=23861, SN=1, RN=1, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : b'.\xe0]5\x01\x01\x08\x02'
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Decoder : Decoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Message(originPort=12000, destinyPort=23861, SN=1, RN=1, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : The mesage is for me!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Fisrt you get the data, then you get the power, then you get the women
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('', 23861)
+Action: Send: ACK of package sended
+Message: Message(originPort=12000, destinyPort=23861, SN=1, RN=1, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Sending Message Full delivery! : A valid ACK message just what I wanted, thanks Satan!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Encoder : Encoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 23861)
+Receiver: ('', 12000)
+Action: Send: send a package of message
+Message: Message(originPort=23861, destinyPort=12000, SN=1, RN=1, headerSize=8, SYN=False, ACK=False, FIN=False, data=b'cora cun')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Sending Message! : My SN 1  My RN 1
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : b']5.\xe0\x01\x01\x08cora cun'
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Decoder : Decoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Message(originPort=23861, destinyPort=12000, SN=1, RN=1, headerSize=8, SYN=False, ACK=False, FIN=False, data=b'cora cun')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : The mesage is for me!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Fisrt you get the data, then you get the power, then you get the women
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Receiving! : Correct package
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('127.0.0.1', 23861)
+Receiver: ('', 12000)
+Action: RECV: valid Data package received 
+Message: Message(originPort=23861, destinyPort=12000, SN=1, RN=1, headerSize=8, SYN=False, ACK=False, FIN=False, data=b'cora cun')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Encoder : Encoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('127.0.0.1', 23861)
+Receiver: ('', 12000)
+Action: RECV: ACK of a recived message 
+Message: Message(originPort=12000, destinyPort=23861, SN=1, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : b'.\xe0]5\x01\x00\x08\x02'
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Decoder : Decoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Message(originPort=12000, destinyPort=23861, SN=1, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : The mesage is for me!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Fisrt you get the data, then you get the power, then you get the women
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('', 23861)
+Action: Send: ACK of package sended
+Message: Message(originPort=12000, destinyPort=23861, SN=1, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Sending Message Full delivery! : A valid ACK message just what I wanted, thanks Satan!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Encoder : Encoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 23861)
+Receiver: ('', 12000)
+Action: Send: send a package of message
+Message: Message(originPort=23861, destinyPort=12000, SN=0, RN=1, headerSize=8, SYN=False, ACK=False, FIN=False, data=b'ado se h')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Sending Message! : My SN 0  My RN 1
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : b']5.\xe0\x00\x01\x08ado se h'
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Decoder : Decoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Message(originPort=23861, destinyPort=12000, SN=0, RN=1, headerSize=8, SYN=False, ACK=False, FIN=False, data=b'ado se h')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : The mesage is for me!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Fisrt you get the data, then you get the power, then you get the women
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Receiving! : Correct package
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('127.0.0.1', 23861)
+Receiver: ('', 12000)
+Action: RECV: valid Data package received 
+Message: Message(originPort=23861, destinyPort=12000, SN=0, RN=1, headerSize=8, SYN=False, ACK=False, FIN=False, data=b'ado se h')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Encoder : Encoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('127.0.0.1', 23861)
+Receiver: ('', 12000)
+Action: RECV: ACK of a recived message 
+Message: Message(originPort=12000, destinyPort=23861, SN=1, RN=1, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : b'.\xe0]5\x01\x01\x08\x02'
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Decoder : Decoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Message(originPort=12000, destinyPort=23861, SN=1, RN=1, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : The mesage is for me!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Fisrt you get the data, then you get the power, then you get the women
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('', 23861)
+Action: Send: ACK of package sended
+Message: Message(originPort=12000, destinyPort=23861, SN=1, RN=1, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Sending Message Full delivery! : A valid ACK message just what I wanted, thanks Satan!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Encoder : Encoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 23861)
+Receiver: ('', 12000)
+Action: Send: send a package of message
+Message: Message(originPort=23861, destinyPort=12000, SN=1, RN=1, headerSize=8, SYN=False, ACK=False, FIN=False, data=b'ace con ')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Sending Message! : My SN 1  My RN 1
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : b']5.\xe0\x01\x01\x08ace con '
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Decoder : Decoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Message(originPort=23861, destinyPort=12000, SN=1, RN=1, headerSize=8, SYN=False, ACK=False, FIN=False, data=b'ace con ')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : The mesage is for me!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Fisrt you get the data, then you get the power, then you get the women
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Receiving! : Correct package
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('127.0.0.1', 23861)
+Receiver: ('', 12000)
+Action: RECV: valid Data package received 
+Message: Message(originPort=23861, destinyPort=12000, SN=1, RN=1, headerSize=8, SYN=False, ACK=False, FIN=False, data=b'ace con ')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Encoder : Encoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('127.0.0.1', 23861)
+Receiver: ('', 12000)
+Action: RECV: ACK of a recived message 
+Message: Message(originPort=12000, destinyPort=23861, SN=1, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : b'.\xe0]5\x01\x00\x08\x02'
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Decoder : Decoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Message(originPort=12000, destinyPort=23861, SN=1, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : The mesage is for me!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Fisrt you get the data, then you get the power, then you get the women
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('', 23861)
+Action: Send: ACK of package sended
+Message: Message(originPort=12000, destinyPort=23861, SN=1, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Sending Message Full delivery! : A valid ACK message just what I wanted, thanks Satan!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Encoder : Encoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 23861)
+Receiver: ('', 12000)
+Action: Send: send a package of message
+Message: Message(originPort=23861, destinyPort=12000, SN=0, RN=1, headerSize=8, SYN=False, ACK=False, FIN=False, data=b'bastante')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Sending Message! : My SN 0  My RN 1
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : b']5.\xe0\x00\x01\x08bastante'
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Decoder : Decoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Message(originPort=23861, destinyPort=12000, SN=0, RN=1, headerSize=8, SYN=False, ACK=False, FIN=False, data=b'bastante')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : The mesage is for me!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Fisrt you get the data, then you get the power, then you get the women
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Receiving! : Correct package
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('127.0.0.1', 23861)
+Receiver: ('', 12000)
+Action: RECV: valid Data package received 
+Message: Message(originPort=23861, destinyPort=12000, SN=0, RN=1, headerSize=8, SYN=False, ACK=False, FIN=False, data=b'bastante')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Encoder : Encoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('127.0.0.1', 23861)
+Receiver: ('', 12000)
+Action: RECV: ACK of a recived message 
+Message: Message(originPort=12000, destinyPort=23861, SN=1, RN=1, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : b'.\xe0]5\x01\x01\x08\x02'
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Decoder : Decoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Message(originPort=12000, destinyPort=23861, SN=1, RN=1, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : The mesage is for me!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Fisrt you get the data, then you get the power, then you get the women
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('', 23861)
+Action: Send: ACK of package sended
+Message: Message(originPort=12000, destinyPort=23861, SN=1, RN=1, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Sending Message Full delivery! : A valid ACK message just what I wanted, thanks Satan!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Encoder : Encoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 23861)
+Receiver: ('', 12000)
+Action: Send: send a package of message
+Message: Message(originPort=23861, destinyPort=12000, SN=1, RN=1, headerSize=8, SYN=False, ACK=False, FIN=False, data=b' amor')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Sending Message! : My SN 1  My RN 1
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : b']5.\xe0\x01\x01\x08 amor'
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Decoder : Decoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Message(originPort=23861, destinyPort=12000, SN=1, RN=1, headerSize=8, SYN=False, ACK=False, FIN=False, data=b' amor')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : The mesage is for me!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Fisrt you get the data, then you get the power, then you get the women
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Receiving! : Correct package
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('127.0.0.1', 23861)
+Receiver: ('', 12000)
+Action: RECV: valid Data package received 
+Message: Message(originPort=23861, destinyPort=12000, SN=1, RN=1, headerSize=8, SYN=False, ACK=False, FIN=False, data=b' amor')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Encoder : Encoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('127.0.0.1', 23861)
+Receiver: ('', 12000)
+Action: RECV: ACK of a recived message 
+Message: Message(originPort=12000, destinyPort=23861, SN=1, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : b'.\xe0]5\x01\x00\x08\x02'
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Decoder : Decoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Message(originPort=12000, destinyPort=23861, SN=1, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : The mesage is for me!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Fisrt you get the data, then you get the power, then you get the women
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('', 23861)
+Action: Send: ACK of package sended
+Message: Message(originPort=12000, destinyPort=23861, SN=1, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Sending Message Full delivery! : A valid ACK message just what I wanted, thanks Satan!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: SocketPseudoTCP : Receiving!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Receiving! : My SN 0  My RN 1
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Receiving! : Time Out
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Encoder : Encoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('127.0.0.1', 23861)
+Action: RECV: ACK of a recived message 
+Message: Message(originPort=12000, destinyPort=23861, SN=1, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : b'.\xe0]5\x01\x00\x08\x02'
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Decoder : Decoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Message(originPort=12000, destinyPort=23861, SN=1, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : The mesage is for me!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Fisrt you get the data, then you get the power, then you get the women
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Receiving! : Time Out
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Encoder : Encoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('127.0.0.1', 23861)
+Action: RECV: ACK of a recived message 
+Message: Message(originPort=12000, destinyPort=23861, SN=1, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : b'.\xe0]5\x01\x00\x08\x02'
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Decoder : Decoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Message(originPort=12000, destinyPort=23861, SN=1, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : The mesage is for me!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Fisrt you get the data, then you get the power, then you get the women
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Receiving! : Time Out
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Encoder : Encoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('127.0.0.1', 23861)
+Action: RECV: ACK of a recived message 
+Message: Message(originPort=12000, destinyPort=23861, SN=1, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : b'.\xe0]5\x01\x00\x08\x02'
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Decoder : Decoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Message(originPort=12000, destinyPort=23861, SN=1, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : The mesage is for me!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Fisrt you get the data, then you get the power, then you get the women
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Receiving! : Time Out
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Encoder : Encoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('127.0.0.1', 23861)
+Action: RECV: ACK of a recived message 
+Message: Message(originPort=12000, destinyPort=23861, SN=1, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : b'.\xe0]5\x01\x00\x08\x02'
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Decoder : Decoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Message(originPort=12000, destinyPort=23861, SN=1, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : The mesage is for me!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Fisrt you get the data, then you get the power, then you get the women
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Receiving! : Time Out
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Encoder : Encoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('127.0.0.1', 23861)
+Action: RECV: ACK of a recived message 
+Message: Message(originPort=12000, destinyPort=23861, SN=1, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : b'.\xe0]5\x01\x00\x08\x02'
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Decoder : Decoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Message(originPort=12000, destinyPort=23861, SN=1, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : The mesage is for me!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Fisrt you get the data, then you get the power, then you get the women
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Receiving! : Time Out
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Encoder : Encoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('127.0.0.1', 23861)
+Action: RECV: ACK of a recived message 
+Message: Message(originPort=12000, destinyPort=23861, SN=1, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'')
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: 
+Receiver: 
+Action: 
+Message: Receiving! : EL MESAJE FINAL ES: bytearray(b'mae vio que bonita queda la bitacora cunado se hace con bastante amor')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : b'.\xe0]5\x01\x00\x08\x02'
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Decoder : Decoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: SocketPseudoTCP : Sending!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Message(originPort=12000, destinyPort=23861, SN=1, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Encoder : Encoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : The mesage is for me!
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('127.0.0.1', 23861)
+Action: Send: send a package of message
+Message: Message(originPort=12000, destinyPort=23861, SN=1, RN=0, headerSize=8, SYN=False, ACK=False, FIN=False, data=bytearray(b'MAE VIO '))
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Fisrt you get the data, then you get the power, then you get the women
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Sending Message! : My SN 1  My RN 0
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : b'.\xe0]5\x01\x00\x08MAE VIO '
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Decoder : Decoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Message(originPort=12000, destinyPort=23861, SN=1, RN=0, headerSize=8, SYN=False, ACK=False, FIN=False, data=b'MAE VIO ')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : The mesage is for me!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Fisrt you get the data, then you get the power, then you get the women
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Receiving! : Correct package
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('', 23861)
+Action: RECV: valid Data package received 
+Message: Message(originPort=12000, destinyPort=23861, SN=1, RN=0, headerSize=8, SYN=False, ACK=False, FIN=False, data=b'MAE VIO ')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Encoder : Encoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('', 23861)
+Action: RECV: ACK of a recived message 
+Message: Message(originPort=23861, destinyPort=12000, SN=0, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : b']5.\xe0\x00\x00\x08\x02'
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Decoder : Decoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Message(originPort=23861, destinyPort=12000, SN=0, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : The mesage is for me!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Fisrt you get the data, then you get the power, then you get the women
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('127.0.0.1', 23861)
+Receiver: ('', 12000)
+Action: Send: ACK of package sended
+Message: Message(originPort=23861, destinyPort=12000, SN=0, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Sending Message Full delivery! : A valid ACK message just what I wanted, thanks Satan!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Encoder : Encoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('127.0.0.1', 23861)
+Action: Send: send a package of message
+Message: Message(originPort=12000, destinyPort=23861, SN=0, RN=0, headerSize=8, SYN=False, ACK=False, FIN=False, data=bytearray(b'QUE BONI'))
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Sending Message! : My SN 0  My RN 0
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : b'.\xe0]5\x00\x00\x08QUE BONI'
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Decoder : Decoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Message(originPort=12000, destinyPort=23861, SN=0, RN=0, headerSize=8, SYN=False, ACK=False, FIN=False, data=b'QUE BONI')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : The mesage is for me!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Fisrt you get the data, then you get the power, then you get the women
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Receiving! : Correct package
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('', 23861)
+Action: RECV: valid Data package received 
+Message: Message(originPort=12000, destinyPort=23861, SN=0, RN=0, headerSize=8, SYN=False, ACK=False, FIN=False, data=b'QUE BONI')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Encoder : Encoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('', 23861)
+Action: RECV: ACK of a recived message 
+Message: Message(originPort=23861, destinyPort=12000, SN=0, RN=1, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : b']5.\xe0\x00\x01\x08\x02'
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Decoder : Decoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Message(originPort=23861, destinyPort=12000, SN=0, RN=1, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : The mesage is for me!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Fisrt you get the data, then you get the power, then you get the women
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('127.0.0.1', 23861)
+Receiver: ('', 12000)
+Action: Send: ACK of package sended
+Message: Message(originPort=23861, destinyPort=12000, SN=0, RN=1, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Sending Message Full delivery! : A valid ACK message just what I wanted, thanks Satan!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Encoder : Encoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('127.0.0.1', 23861)
+Action: Send: send a package of message
+Message: Message(originPort=12000, destinyPort=23861, SN=1, RN=0, headerSize=8, SYN=False, ACK=False, FIN=False, data=bytearray(b'TA QUEDA'))
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Sending Message! : My SN 1  My RN 0
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : b'.\xe0]5\x01\x00\x08TA QUEDA'
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Decoder : Decoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Message(originPort=12000, destinyPort=23861, SN=1, RN=0, headerSize=8, SYN=False, ACK=False, FIN=False, data=b'TA QUEDA')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : The mesage is for me!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Fisrt you get the data, then you get the power, then you get the women
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Receiving! : Correct package
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('', 23861)
+Action: RECV: valid Data package received 
+Message: Message(originPort=12000, destinyPort=23861, SN=1, RN=0, headerSize=8, SYN=False, ACK=False, FIN=False, data=b'TA QUEDA')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Encoder : Encoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('', 23861)
+Action: RECV: ACK of a recived message 
+Message: Message(originPort=23861, destinyPort=12000, SN=0, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : b']5.\xe0\x00\x00\x08\x02'
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Decoder : Decoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Message(originPort=23861, destinyPort=12000, SN=0, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : The mesage is for me!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Fisrt you get the data, then you get the power, then you get the women
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('127.0.0.1', 23861)
+Receiver: ('', 12000)
+Action: Send: ACK of package sended
+Message: Message(originPort=23861, destinyPort=12000, SN=0, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Sending Message Full delivery! : A valid ACK message just what I wanted, thanks Satan!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Encoder : Encoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('127.0.0.1', 23861)
+Action: Send: send a package of message
+Message: Message(originPort=12000, destinyPort=23861, SN=0, RN=0, headerSize=8, SYN=False, ACK=False, FIN=False, data=bytearray(b' LA BITA'))
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Sending Message! : My SN 0  My RN 0
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : b'.\xe0]5\x00\x00\x08 LA BITA'
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Decoder : Decoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Message(originPort=12000, destinyPort=23861, SN=0, RN=0, headerSize=8, SYN=False, ACK=False, FIN=False, data=b' LA BITA')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : The mesage is for me!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Fisrt you get the data, then you get the power, then you get the women
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Receiving! : Correct package
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('', 23861)
+Action: RECV: valid Data package received 
+Message: Message(originPort=12000, destinyPort=23861, SN=0, RN=0, headerSize=8, SYN=False, ACK=False, FIN=False, data=b' LA BITA')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Encoder : Encoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('', 23861)
+Action: RECV: ACK of a recived message 
+Message: Message(originPort=23861, destinyPort=12000, SN=0, RN=1, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : b']5.\xe0\x00\x01\x08\x02'
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Decoder : Decoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Message(originPort=23861, destinyPort=12000, SN=0, RN=1, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : The mesage is for me!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Fisrt you get the data, then you get the power, then you get the women
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('127.0.0.1', 23861)
+Receiver: ('', 12000)
+Action: Send: ACK of package sended
+Message: Message(originPort=23861, destinyPort=12000, SN=0, RN=1, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Sending Message Full delivery! : A valid ACK message just what I wanted, thanks Satan!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Encoder : Encoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('127.0.0.1', 23861)
+Action: Send: send a package of message
+Message: Message(originPort=12000, destinyPort=23861, SN=1, RN=0, headerSize=8, SYN=False, ACK=False, FIN=False, data=bytearray(b'CORA CUN'))
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Sending Message! : My SN 1  My RN 0
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : b'.\xe0]5\x01\x00\x08CORA CUN'
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Decoder : Decoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Message(originPort=12000, destinyPort=23861, SN=1, RN=0, headerSize=8, SYN=False, ACK=False, FIN=False, data=b'CORA CUN')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : The mesage is for me!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Fisrt you get the data, then you get the power, then you get the women
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Receiving! : Correct package
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('', 23861)
+Action: RECV: valid Data package received 
+Message: Message(originPort=12000, destinyPort=23861, SN=1, RN=0, headerSize=8, SYN=False, ACK=False, FIN=False, data=b'CORA CUN')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Encoder : Encoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('', 23861)
+Action: RECV: ACK of a recived message 
+Message: Message(originPort=23861, destinyPort=12000, SN=0, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : b']5.\xe0\x00\x00\x08\x02'
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Decoder : Decoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Message(originPort=23861, destinyPort=12000, SN=0, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : The mesage is for me!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Fisrt you get the data, then you get the power, then you get the women
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('127.0.0.1', 23861)
+Receiver: ('', 12000)
+Action: Send: ACK of package sended
+Message: Message(originPort=23861, destinyPort=12000, SN=0, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Sending Message Full delivery! : A valid ACK message just what I wanted, thanks Satan!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Encoder : Encoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('127.0.0.1', 23861)
+Action: Send: send a package of message
+Message: Message(originPort=12000, destinyPort=23861, SN=0, RN=0, headerSize=8, SYN=False, ACK=False, FIN=False, data=bytearray(b'ADO SE H'))
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Sending Message! : My SN 0  My RN 0
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : b'.\xe0]5\x00\x00\x08ADO SE H'
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Decoder : Decoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Message(originPort=12000, destinyPort=23861, SN=0, RN=0, headerSize=8, SYN=False, ACK=False, FIN=False, data=b'ADO SE H')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : The mesage is for me!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Fisrt you get the data, then you get the power, then you get the women
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Receiving! : Correct package
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('', 23861)
+Action: RECV: valid Data package received 
+Message: Message(originPort=12000, destinyPort=23861, SN=0, RN=0, headerSize=8, SYN=False, ACK=False, FIN=False, data=b'ADO SE H')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Encoder : Encoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('', 23861)
+Action: RECV: ACK of a recived message 
+Message: Message(originPort=23861, destinyPort=12000, SN=0, RN=1, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : b']5.\xe0\x00\x01\x08\x02'
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Decoder : Decoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Message(originPort=23861, destinyPort=12000, SN=0, RN=1, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : The mesage is for me!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Fisrt you get the data, then you get the power, then you get the women
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('127.0.0.1', 23861)
+Receiver: ('', 12000)
+Action: Send: ACK of package sended
+Message: Message(originPort=23861, destinyPort=12000, SN=0, RN=1, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Sending Message Full delivery! : A valid ACK message just what I wanted, thanks Satan!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Encoder : Encoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('127.0.0.1', 23861)
+Action: Send: send a package of message
+Message: Message(originPort=12000, destinyPort=23861, SN=1, RN=0, headerSize=8, SYN=False, ACK=False, FIN=False, data=bytearray(b'ACE CON '))
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Sending Message! : My SN 1  My RN 0
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : b'.\xe0]5\x01\x00\x08ACE CON '
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Decoder : Decoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Message(originPort=12000, destinyPort=23861, SN=1, RN=0, headerSize=8, SYN=False, ACK=False, FIN=False, data=b'ACE CON ')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : The mesage is for me!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Fisrt you get the data, then you get the power, then you get the women
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Receiving! : Correct package
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('', 23861)
+Action: RECV: valid Data package received 
+Message: Message(originPort=12000, destinyPort=23861, SN=1, RN=0, headerSize=8, SYN=False, ACK=False, FIN=False, data=b'ACE CON ')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Encoder : Encoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('', 23861)
+Action: RECV: ACK of a recived message 
+Message: Message(originPort=23861, destinyPort=12000, SN=0, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : b']5.\xe0\x00\x00\x08\x02'
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Decoder : Decoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Message(originPort=23861, destinyPort=12000, SN=0, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : The mesage is for me!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Fisrt you get the data, then you get the power, then you get the women
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('127.0.0.1', 23861)
+Receiver: ('', 12000)
+Action: Send: ACK of package sended
+Message: Message(originPort=23861, destinyPort=12000, SN=0, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Sending Message Full delivery! : A valid ACK message just what I wanted, thanks Satan!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Encoder : Encoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('127.0.0.1', 23861)
+Action: Send: send a package of message
+Message: Message(originPort=12000, destinyPort=23861, SN=0, RN=0, headerSize=8, SYN=False, ACK=False, FIN=False, data=bytearray(b'BASTANTE'))
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Sending Message! : My SN 0  My RN 0
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : b'.\xe0]5\x00\x00\x08BASTANTE'
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Decoder : Decoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Message(originPort=12000, destinyPort=23861, SN=0, RN=0, headerSize=8, SYN=False, ACK=False, FIN=False, data=b'BASTANTE')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : The mesage is for me!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Fisrt you get the data, then you get the power, then you get the women
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Receiving! : Correct package
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('', 23861)
+Action: RECV: valid Data package received 
+Message: Message(originPort=12000, destinyPort=23861, SN=0, RN=0, headerSize=8, SYN=False, ACK=False, FIN=False, data=b'BASTANTE')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Encoder : Encoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('', 23861)
+Action: RECV: ACK of a recived message 
+Message: Message(originPort=23861, destinyPort=12000, SN=0, RN=1, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : b']5.\xe0\x00\x01\x08\x02'
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Decoder : Decoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Message(originPort=23861, destinyPort=12000, SN=0, RN=1, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : The mesage is for me!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Fisrt you get the data, then you get the power, then you get the women
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('127.0.0.1', 23861)
+Receiver: ('', 12000)
+Action: Send: ACK of package sended
+Message: Message(originPort=23861, destinyPort=12000, SN=0, RN=1, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Sending Message Full delivery! : A valid ACK message just what I wanted, thanks Satan!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Encoder : Encoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('127.0.0.1', 23861)
+Action: Send: send a package of message
+Message: Message(originPort=12000, destinyPort=23861, SN=1, RN=0, headerSize=8, SYN=False, ACK=False, FIN=False, data=bytearray(b' AMOR'))
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Sending Message! : My SN 1  My RN 0
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : b'.\xe0]5\x01\x00\x08 AMOR'
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Decoder : Decoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Message(originPort=12000, destinyPort=23861, SN=1, RN=0, headerSize=8, SYN=False, ACK=False, FIN=False, data=b' AMOR')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : The mesage is for me!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Fisrt you get the data, then you get the power, then you get the women
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Receiving! : Correct package
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('', 23861)
+Action: RECV: valid Data package received 
+Message: Message(originPort=12000, destinyPort=23861, SN=1, RN=0, headerSize=8, SYN=False, ACK=False, FIN=False, data=b' AMOR')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Encoder : Encoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 12000)
+Receiver: ('', 23861)
+Action: RECV: ACK of a recived message 
+Message: Message(originPort=23861, destinyPort=12000, SN=0, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : b']5.\xe0\x00\x00\x08\x02'
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Decoder : Decoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Message(originPort=23861, destinyPort=12000, SN=0, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : The mesage is for me!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Fisrt you get the data, then you get the power, then you get the women
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('127.0.0.1', 23861)
+Receiver: ('', 12000)
+Action: Send: ACK of package sended
+Message: Message(originPort=23861, destinyPort=12000, SN=0, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Sending Message Full delivery! : A valid ACK message just what I wanted, thanks Satan!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: SocketPseudoTCP : Accepting!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Receiving! : Time Out
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Encoder : Encoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 23861)
+Receiver: ('', 12000)
+Action: RECV: ACK of a recived message 
+Message: Message(originPort=23861, destinyPort=12000, SN=0, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : b']5.\xe0\x00\x00\x08\x02'
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Decoder : Decoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Message(originPort=23861, destinyPort=12000, SN=0, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : The mesage is for me!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Fisrt you get the data, then you get the power, then you get the women
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Receiving! : Time Out
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Encoder : Encoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 23861)
+Receiver: ('', 12000)
+Action: RECV: ACK of a recived message 
+Message: Message(originPort=23861, destinyPort=12000, SN=0, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : b']5.\xe0\x00\x00\x08\x02'
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Decoder : Decoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Message(originPort=23861, destinyPort=12000, SN=0, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : The mesage is for me!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Fisrt you get the data, then you get the power, then you get the women
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Receiving! : Time Out
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Encoder : Encoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 23861)
+Receiver: ('', 12000)
+Action: RECV: ACK of a recived message 
+Message: Message(originPort=23861, destinyPort=12000, SN=0, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : b']5.\xe0\x00\x00\x08\x02'
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Decoder : Decoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Message(originPort=23861, destinyPort=12000, SN=0, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : The mesage is for me!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Fisrt you get the data, then you get the power, then you get the women
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Receiving! : Time Out
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Encoder : Encoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 23861)
+Receiver: ('', 12000)
+Action: RECV: ACK of a recived message 
+Message: Message(originPort=23861, destinyPort=12000, SN=0, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : b']5.\xe0\x00\x00\x08\x02'
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Decoder : Decoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Message(originPort=23861, destinyPort=12000, SN=0, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : The mesage is for me!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Fisrt you get the data, then you get the power, then you get the women
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Receiving! : Time Out
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Encoder : Encoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 23861)
+Receiver: ('', 12000)
+Action: RECV: ACK of a recived message 
+Message: Message(originPort=23861, destinyPort=12000, SN=0, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : b']5.\xe0\x00\x00\x08\x02'
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Decoder : Decoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Message(originPort=23861, destinyPort=12000, SN=0, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : The mesage is for me!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Fisrt you get the data, then you get the power, then you get the women
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Receiving! : Time Out
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Encoder : Encoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: ('', 23861)
+Receiver: ('', 12000)
+Action: RECV: ACK of a recived message 
+Message: Message(originPort=23861, destinyPort=12000, SN=0, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'')
+----------------------------------------------------------------------------------------------------------------------------------
+Transmitter: 
+Receiver: 
+Action: 
+Message: Receiving! : EL MESAJE FINAL ES: bytearray(b'MAE VIO QUE BONITA QUEDA LA BITACORA CUNADO SE HACE CON BASTANTE AMOR')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : b']5.\xe0\x00\x00\x08\x02'
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Decoder : Decoding message!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Message(originPort=23861, destinyPort=12000, SN=0, RN=0, headerSize=8, SYN=False, ACK=True, FIN=False, data=b'\x02')
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : The mesage is for me!
+----------------------------------------------------------------------------------------------------------------------------------
+Control Message: Despatching! : Fisrt you get the data, then you get the power, then you get the women
+----------------------------------------------------------------------------------------------------------------------------------
