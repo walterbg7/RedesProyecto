@@ -7,31 +7,26 @@ from serverNodeUDP import *
 from serverNodeTCP import *
 
 class Node():
-    
+
     # Constructor
     def __init__(self, isPseudoBGP, ip, port):
         self.isPseudoBGP = isPseudoBGP
         self.ip = ip
         self.port = port
         self.alcanzabilityTable = {}
+        self.strH = "Server, ip: "+str(self.ip)+", port: "+str(self.port)
         print("Node (The real mvp!) : Constructor ")
-    
+
     def printAlcanzabilityTable(self):
         aTLock.acquire()
-        fileLock.acquire()
-        fileBi = open("bitacora.txt", 'r+')
-        fileBi.read()
-        fileBi.write("Server, ip: "+str(self.ip)+", port: "+str(self.port)+"\n")
-        fileBi.write("Alcanzability Table: \n")
+        strB = "Alcanzability Table: \n"
         print ("Alcanzability Table: ")
-        fileBi.write("[Network Address, Mask, Cost, Origin]\n")
+        strB += "[Network Address, Mask, Cost, Origin]\n"
         print (["Network Address","Mask","Cost","Origin"])
         for i in self.alcanzabilityTable:
-            fileBi.write(str(i+self.alcanzabilityTable[i])+"\n")
+            strB += str(i+self.alcanzabilityTable[i])+"\n"
             print(i+self.alcanzabilityTable[i])
-        fileBi.write("\n\n")
-        fileBi.close()
-        fileLock.release()
+        writeOnBita(strB, self.strH)
         aTLock.release()
 
     # This is the method that execute everything the program need to work
@@ -58,14 +53,8 @@ class Node():
             if(option == 0):
                 self.clientNode.stop()
                 beingDeleted = True
-                fileLock.acquire()
-                fileBi = open("bitacora.txt", 'r+')
-                fileBi.read()
-                fileBi.write("Server, ip: "+str(self.ip)+", port: "+str(self.port)+"\n")
-                fileBi.write("Server is Closed\n")
-                fileBi.write("\n\n")
-                fileBi.close()
-                fileLock.release()
+                strB = "Server is Closed"
+                writeOnBita(strB, self.strH)
             elif(option == 1):
                 self.clientNode.run()
             elif(option == 2):

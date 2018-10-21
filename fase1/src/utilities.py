@@ -84,40 +84,58 @@ def is_valid_ipv4_address(address):
     return True
 
 def validateRow(row):
-	rowList = row.split("/")
-	ipR = rowList[0]
-	if(not is_valid_ipv4_address(ipR)):
-		print("Error: The IP is invalid")
-		return False
-	try:
-		maskR = int(rowList[1])
-	except ValueError:
-		print("Error: The mask must be int")
-		return False
-	if(maskR<8 or maskR>30):
-		print("Error: The mask is invalid")
-		return False
-	try:
-		costR = int(rowList[2])
-	except ValueError:
-		print("Error: The cost must be int")
-		return False
-	ipRList = ipR.split(".")
-	ipRBin = ""
-	for i in ipRList:
-		bits = str(bin(int(i)))
-		bits = bits[2:]
-		if(len(bits)<8):
-			numBitsMissing = 8-len(bits)
-			bitsMissing = ""
-			for j in range(0, numBitsMissing):
-				bitsMissing += "0"
-			bits = bitsMissing + bits
-		ipRBin += bits
-	#print(ipRBin)
-	for it in range(maskR, 32):
-		if(ipRBin[it]!="0"):
-			print("Error: It is not a valid network address")
-			return False
-	#print("Nice One!")
-	return True
+    rowList = row.split("/")
+    if(len(rowList) < 3):
+        print("Error: Incorrect message struture")
+        return False
+    else:
+    	ipR = rowList[0]
+    	if(not is_valid_ipv4_address(ipR)):
+    		print("Error: The IP is invalid")
+    		return False
+    	try:
+    		maskR = int(rowList[1])
+    	except ValueError:
+    		print("Error: The mask must be int")
+    		return False
+    	if(maskR<8 or maskR>30):
+    		print("Error: The mask is invalid")
+    		return False
+    	try:
+    		costR = int(rowList[2])
+    	except ValueError:
+    		print("Error: The cost must be int")
+    		return False
+    	ipRList = ipR.split(".")
+    	ipRBin = ""
+    	for i in ipRList:
+    		bits = str(bin(int(i)))
+    		bits = bits[2:]
+    		if(len(bits)<8):
+    			numBitsMissing = 8-len(bits)
+    			bitsMissing = ""
+    			for j in range(0, numBitsMissing):
+    				bitsMissing += "0"
+    			bits = bitsMissing + bits
+    		ipRBin += bits
+    	#print(ipRBin)
+    	for it in range(maskR, 32):
+    		if(ipRBin[it]!="0"):
+    			print("Error: It is not a valid network address")
+    			return False
+    	#print("Nice One!")
+    	return True
+
+def writeOnBita(strToWrite, strHeader = None):
+    fileLock.acquire()
+    try:
+        fileBi = open("bitacora.txt", 'r+')
+        fileBi.read()
+    except:
+        fileBi = open("bitacora.txt", 'w')
+    if(strHeader is not None):
+        fileBi.write(strHeader+"\n")
+    fileBi.write(strToWrite+"\n")
+    fileBi.write("\n-----------------------------------------------------------------------\n\n")
+    fileBi.close()
+    fileLock.release()
