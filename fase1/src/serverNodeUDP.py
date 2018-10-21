@@ -2,31 +2,19 @@ from socket import *
 from serverNode import *
 
 class ServerNodeUDP(ServerNode):
-    
+
     # Constructor
     def __init__(self, port, table, ip):
         ServerNode.__init__(self, port, table, ip)
         # Missing alcanzability table field
-        fileLock.acquire()
-        fileBi = open("bitacora.txt", 'r+')
-        fileBi.read()
-        fileBi.write("Server, ip: "+str(self.ip)+", port: "+str(self.port)+"\n")
-        fileBi.write("Server is UDP\n")
-        fileBi.write("\n\n")
-        fileBi.close()
-        fileLock.release()
+        strB = "Server is UDP"
+        writeOnBita(strB, self.strH)
         print("ServerNodeUDP : Constructor :)")
 
     # Overwite the father class relevant methods!
     def run(self):
-        fileLock.acquire()
-        fileBi = open("bitacora.txt", 'r+')
-        fileBi.read()
-        fileBi.write("Server, ip: "+str(self.ip)+", port: "+str(self.port)+"\n")
-        fileBi.write("The server is ready to receive\n")
-        fileBi.write("\n\n")
-        fileBi.close()
-        fileLock.release()
+        strB = "The server is ready to receive"
+        writeOnBita(strB, self.strH)
         print("ServerNode : Receiving shit and stuff!")
         serverSocket = socket(AF_INET, SOCK_DGRAM)
         serverSocket.bind(("", self.port))
@@ -37,15 +25,8 @@ class ServerNodeUDP(ServerNode):
             # We need to unpack the recieved message
             #message = self.unpackMessage(packedMessage.decode('utf-8'))
             message = self.unpackMessage(packedMessage)
-            fileLock.acquire()
-            fileBi = open("bitacora.txt", 'r+')
-            fileBi.read()
-            fileBi.write("Server, ip: "+str(self.ip)+", port: "+str(self.port)+"\n")
-            fileBi.write("New Message\n")
-            fileBi.write("Client ip: " + str(clientAddress) + "\nClient message: " + message+"\n")
-            fileBi.write("\n\n")
-            fileBi.close()
-            fileLock.release()
+            strB = "Client ip: " + str(clientAddress) + "\nClient message: " + message
+            writeOnBita(strB, self.strH)
             #print("Client ip: " + str(clientAddress) + "\nClient message: " + message)
             # We need to create a thread to proccess the recived message
             conectionThread = Thread(target=self.proccessMessage, args=(clientAddress, message))

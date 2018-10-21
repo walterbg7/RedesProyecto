@@ -9,28 +9,14 @@ class ServerNode(Thread):
         self.port = port
         self.alcanzabilityTable = table
         self.ip = ip
-        fileLock.acquire()
-        try:
-            fileBi = open("bitacora.txt", 'r+')
-            fileBi.read()
-        except:
-            fileBi = open("bitacora.txt", 'w')
-        fileBi.write("New server, ip: "+str(self.ip)+", port: "+str(self.port)+"\n")
-        fileBi.write("\n\n")
-        fileBi.close()
-        fileLock.release()
+        self.strH = "Server, ip: "+str(self.ip)+", port: "+str(self.port)
+        strB = "New server, ip: "+str(self.ip)+", port: "+str(self.port)
+        writeOnBita(strB)
         print("ServerNode : Constructor :)")
-    
+
     def run(self):
-        fileLock.acquire()
-        fileBi = open("bitacora.txt", 'r+')
-        fileBi.read()
-        fileBi.write("Server, ip: "+str(self.ip)+", port: "+str(self.port)+"\n")
-        fileBi.write("ServerNode : Receiving messages and stuff!\n")
-        fileBi.write("ServerNode : I'm dying!\n")
-        fileBi.write("\n\n")
-        fileBi.close()
-        fileLock.release()
+        strB = "ServerNode : Receiving messages and stuff!\nServerNode : I'm dying!"
+        writeOnBita(strB, self.strH)
         print("ServerNode : Receiving messages and stuff!")
         print("ServerNode : I'm dying!")
 
@@ -67,7 +53,7 @@ class ServerNode(Thread):
         return(message)
 
     # Update the alcanzavility table structure with the data of the recieved message
-    # This method should be another thread by it self, one thread for conection    
+    # This method should be another thread by it self, one thread for conection
     def proccessMessage(self, clientAddr, msj):
         aTLock.acquire()
         print("ServerNode : this thread is proccesing the message!")
