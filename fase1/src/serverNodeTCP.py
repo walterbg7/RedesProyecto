@@ -7,26 +7,14 @@ class ServerNodeTCP(ServerNode):
     def __init__(self, port, table, ip):
         ServerNode.__init__(self, port, table, ip)
         # Missing alcanzability table field
-        fileLock.acquire()
-        fileBi = open("bitacora.txt", 'r+')
-        fileBi.read()
-        fileBi.write("Server, ip: "+str(self.ip)+", port: "+str(self.port)+"\n")
-        fileBi.write("Server is TCP\n")
-        fileBi.write("\n\n")
-        fileBi.close()
-        fileLock.release()
+        strB = "Server is TCP"
+        writeOnBita(strB, self.strH)
         print("ServerNodeTCP : Constructor :)")
-    
+
     # Overwite the father class relevant methods!
     def run(self):
-        fileLock.acquire()
-        fileBi = open("bitacora.txt", 'r+')
-        fileBi.read()
-        fileBi.write("Server, ip: "+str(self.ip)+", port: "+str(self.port)+"\n")
-        fileBi.write("The server is ready to receive\n")
-        fileBi.write("\n\n")
-        fileBi.close()
-        fileLock.release()
+        strB = "The server is ready to receive"
+        writeOnBita(strB, self.strH)
         serverSocket = socket(AF_INET, SOCK_STREAM)
         serverSocket.bind(("", self.port))
         serverSocket.listen(1)
@@ -42,17 +30,10 @@ class ServerNodeTCP(ServerNode):
             # We need to recieve the packed message from the client
             try:
                 packedMessage, clientAddress = clientSocket.recvfrom(2048)
-                # We need to unpack the recieved message             
+                # We need to unpack the recieved message
                 message = self.unpackMessage(packedMessage)
-                fileLock.acquire()
-                fileBi = open("bitacora.txt", 'r+')
-                fileBi.read()
-                fileBi.write("Server, ip: "+str(self.ip)+", port: "+str(self.port)+"\n")
-                fileBi.write("New Message\n")
-                fileBi.write("Client ip: " + str(addrs) + "\nClient message: " + message+"\n")
-                fileBi.write("\n\n")
-                fileBi.close()
-                fileLock.release()
+                strB = "New Message\nClient ip: " + str(addrs) + "\nClient message: " + message
+                writeOnBita(strB, self.strH)
                 print("Client ip: " + str(addrs) + "\nClient message: " + message)
                 # We need to create a thread to proccess the recived message
                 conectionThread = Thread(target=self.proccessMessage, args=(addrs, message))
@@ -62,5 +43,5 @@ class ServerNodeTCP(ServerNode):
                     connectionSocket.close()
                     break
             except Exception as e:
-                print("The conection with",addrs,"has expired") 
+                print("The conection with",addrs,"has expired")
                 break
