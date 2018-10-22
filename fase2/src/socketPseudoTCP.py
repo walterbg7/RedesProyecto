@@ -10,9 +10,13 @@ import math
 SYNACK = 6
 SYN = 4
 ACK = 2
+ACKSTART = 18
+ACKEND = 10
 FIN = 1
+START =16
+END = 8
 
-Message = namedtuple("Message", ["originPort", "destinyPort", "SN", "RN", "headerSize", "SYN", "ACK", "FIN", "data"])
+Message = namedtuple("Message", ["originPort", "destinyPort", "SN", "RN", "headerSize", "SYN", "ACK", "FIN", "START", "END", "data"])
 
 class SocketPseudoTCP:
 
@@ -59,7 +63,7 @@ class SocketPseudoTCP:
             successfulBind = True
         self.SN = self.selfAddr[1]%2
         # I need to send the SYN message to start the handshake process with the wanted serverSocket
-        SYNMessage = Message._make([self.selfAddr[1], self.connectionAddr[1], self.SN, self.RN, 8, True, False, False, "".encode('utf-8')])
+        SYNMessage = Message._make([self.selfAddr[1], self.connectionAddr[1], self.SN, self.RN, 8, True, False, False, False, False, "".encode('utf-8')])
         encodedSYNMessage = self.encodeMessage(SYNMessage)
         writeOnLog("Log", self.selfAddr, self.connectionAddr, "Connect: SYN message", SYNMessage)
         self.socketUDP.sendto(encodedSYNMessage, self.connectionAddr)
@@ -89,7 +93,7 @@ class SocketPseudoTCP:
                 self.printQueue(self.messageQueue)
                 continue
         # Finally I need to sent an ACK message to close the handshake
-        specialACKMessage = Message._make([self.selfAddr[1], self.connectionAddr[1], self.SN, self.RN, 8, False, True, False, "".encode('utf-8')])
+        specialACKMessage = Message._make([self.selfAddr[1], self.connectionAddr[1], self.SN, self.RN, 8, False, True, False, False, False, "".encode('utf-8')])
         encodedSpecialACKMessage = self.encodeMessage(specialACKMessage)
         writeOnLog("Log", self.selfAddr, self.connectionAddr, "Connect: response of SYNACK message", specialACKMessage)
         self.socketUDP.sendto(encodedSpecialACKMessage, self.connectionAddr)
@@ -138,14 +142,14 @@ class SocketPseudoTCP:
             #We are going to send data of 8 bytes
             partOfMessage = message[currentPart:(currentPart + 8)]
             currentPart += 8
-            finalMessage = Message._make([self.selfAddr[1], self.connectionAddr[1], self.SN, self.RN, 8, False, False, False, partOfMessage])
+            finalMessage = Message._make([self.selfAddr[1], self.connectionAddr[1], self.SN, self.RN, 8, False, False, False, False, False, partOfMessage])
             packedMessage = self.encodeMessage(finalMessage)
             writeOnLog("Log", self.selfAddr, self.connectionAddr, "Send: send a package of message", finalMessage)
             self.sendMessage(packedMessage)
             partOfMessage = bytearray()
 
         partOfMessage = message[currentPart:]
-        finalMessage = Message._make([self.selfAddr[1], self.connectionAddr[1], self.SN, self.RN, 8, False, False, False, partOfMessage])
+        finalMessage = Message._make([self.selfAddr[1], self.connectionAddr[1], self.SN, self.RN, 8, False, False, False, False, False, partOfMessage])
         packedMessage = self.encodeMessage(finalMessage)
         writeOnLog("Log", self.selfAddr, self.connectionAddr, "Send: send a package of message", finalMessage)
         self.sendMessage(packedMessage)
@@ -192,7 +196,7 @@ class SocketPseudoTCP:
             except Empty:
                 if(not firstPacket):
                     writeOnLog("Log", "", "", "", "Receiving! : Time Out", 0)
-                    ACKMessage = Message._make([self.selfAddr[1], self.connectionAddr[1], self.SN, self.RN, 8, False, True, False, "".encode('utf-8')])
+                    ACKMessage = Message._make([self.selfAddr[1], self.connectionAddr[1], self.SN, self.RN, 8, False, True, False, False, False, "".encode('utf-8')])
                     encodedACKMessage = self.encodeMessage(ACKMessage)
                     writeOnLog("Log", self.selfAddr, self.connectionAddr, "RECV: ACK of a recived message ", ACKMessage)
                     self.socketUDP.sendto(encodedACKMessage, self.connectionAddr)
@@ -218,7 +222,7 @@ class SocketPseudoTCP:
                         writeOnLog("Log", self.connectionAddr, self.selfAddr, "RECV: valid Data package received ", dataMessage)
                         self.SN = dataMessage.RN
                         self.RN = (self.RN + 1)%2
-                        ACKMessage = Message._make([self.selfAddr[1], self.connectionAddr[1], self.SN, self.RN, 8, False, True, False, "".encode('utf-8')])
+                        ACKMessage = Message._make([self.selfAddr[1], self.connectionAddr[1], self.SN, self.RN, 8, False, True, False, False, False, "".encode('utf-8')])
                         encodedACKMessage = self.encodeMessage(ACKMessage)
                         writeOnLog("Log", self.connectionAddr, self.selfAddr, "RECV: ACK of a recived message ", ACKMessage)
                         self.socketUDP.sendto(encodedACKMessage, self.connectionAddr)
@@ -239,7 +243,7 @@ class SocketPseudoTCP:
     def close(self):
         print("SocketPseudoTCP : Closing!")
         # I need to send a FIN message
-        FINMMessage = Message._make([self.selfAddr[1], self.connectionAddr[1], self.SN, self.RN, 8, False, False, True, "".encode('utf-8')])
+        FINMMessage = Message._make([self.selfAddr[1], self.connectionAddr[1], self.SN, self.RN, 8, False, False, True, False, False, "".encode('utf-8')])
         encodedFINMessage = self.encodeMessage(FINMMessage)
         self.socketUDP.sendto(encodedFINMessage, self.connectionAddr)
         # I need to wait for a ACK message of my FIN message or another FIN message and answer it
@@ -290,7 +294,7 @@ class SocketPseudoTCP:
                     connectionSocket.selfAddr = self.selfAddr
                     self.connectionSockets[(queueMessage[1], SYNMessage.originPort)] = connectionSocket
                     # I need to send a SYNACK message in respond
-                    SYNACKMessage = Message._make([connectionSocket.selfAddr[1],  SYNMessage.originPort, connectionSocket.SN, connectionSocket.RN, 8, True, True, False, "".encode('utf-8')])
+                    SYNACKMessage = Message._make([connectionSocket.selfAddr[1],  SYNMessage.originPort, connectionSocket.SN, connectionSocket.RN, 8, True, True, False, False, False, "".encode('utf-8')])
                     encodedSYNACKMessage = self.encodeMessage(SYNACKMessage)
                     writeOnLog("Log", self.selfAddr, (queueMessage[1], SYNMessage.originPort), "Listen: SYN message response (SYNACK)", SYNACKMessage)
                     self.socketUDP.sendto(encodedSYNACKMessage, (queueMessage[1], SYNMessage.originPort))
@@ -329,7 +333,7 @@ class SocketPseudoTCP:
                     connectionSocket.connectionAddr = (queueMessage[1], specialACKMessage.originPort)
                     # I need to sent a regular ACK messages
                     writeOnLog("Log", connectionSocket.connectionAddr, self.selfAddr, "Accept: valid special specialACK message", specialACKMessage)
-                    ACKMessage = Message._make([connectionSocket.selfAddr[1],  connectionSocket.connectionAddr[1], connectionSocket.SN, connectionSocket.RN, 8, False, True, False, "".encode('utf-8')])
+                    ACKMessage = Message._make([connectionSocket.selfAddr[1],  connectionSocket.connectionAddr[1], connectionSocket.SN, connectionSocket.RN, 8, False, True, False, False, False, "".encode('utf-8')])
                     encodedACKMessage = self.encodeMessage(ACKMessage)
                     writeOnLog("Log", self.selfAddr, connectionSocket.connectionAddr, "Accept: response of specialACK message", ACKMessage)
                     self.socketUDP.sendto(encodedACKMessage, connectionSocket.connectionAddr)
@@ -371,7 +375,7 @@ class SocketPseudoTCP:
                 writeOnLog("Log", "", "", "", "Despatching! : The mesage is for me!", 0)
                 # Now I need to demultiplex the message
                 # If the recieved message is a SYN or FIN it is for my messageQueue
-                if(message.SYN or message.FIN):
+                if(message.SYN):
                     self.messageQueue.put((message, senderAddr[0]))
                     self.printQueue(self.messageQueue);
                 else:
@@ -406,29 +410,49 @@ class SocketPseudoTCP:
         # If message is a SYN message
         elif(message.SYN):
             encodedMessage += SYN.to_bytes(1, byteorder='big')
+        # If message is a "ACKSTART" message
+        elif(message.ACK and message.START):
+            encodedMessage += ACKSTART.to_bytes(1, byteorder='big')
+        # If message is a "ACKEND" message
+        elif(message.ACK and message.END):
+            encodedMessage += ACKEND.to_bytes(1, byteorder='big')
         # If message is a ACK message
         elif(message.ACK):
             encodedMessage += ACK.to_bytes(1, byteorder='big')
         # If message is a FIN message
         elif(message.FIN):
             encodedMessage += FIN.to_bytes(1, byteorder='big')
+        # If message is a START message
+        elif(message.START):
+            encodedMessage += START.to_bytes(1, byteorder='big')
+        # If message is a END message
+        elif(message.END):
+            encodedMessage += END.to_bytes(1, byteorder='big')
         encodedMessage += message.data
         return encodedMessage
 
     # decodeMessage
     def decodeMessage(self, message):
         writeOnLog("Log", "", "", "", "Decoder : Decoding message!", 0)
-        decodedMessageSYN = decodedMessageACK = decodedMessageFIN = False
+        decodedMessageSYN = decodedMessageACK = decodedMessageFIN = decodeMessageSTART = decodeMessageEND = False
         if(int(message[7]) == SYNACK):
             decodedMessageSYN = decodedMessageACK = True
         elif(int(message[7]) == SYN):
             decodedMessageSYN = True
+        elif(int(message[7]) == ACKSTART):
+            decodedMessageACK = decodeMessageSTART = True
+        elif(int(message[7]) == ACKEND):
+            decodedMessageACK = decodeMessageEND = True
         elif(int(message[7]) == ACK):
             decodedMessageACK = True
         elif(int(message[7]) == FIN):
             decodedMessageFIN = True
+        elif(int(message[7]) == START):
+            decodedMessageSTART = True
+        elif(int(message[7]) == END):
+            decodedMessageEND = True
         decodedMessage = Message._make([ int.from_bytes(message[0:2], byteorder='big'), int.from_bytes(message[2:4], byteorder='big'),
-        int(message[4]), int(message[5]), int(message[6]), decodedMessageSYN, decodedMessageACK, decodedMessageFIN, message[7:] ])
+        int(message[4]), int(message[5]), int(message[6]), decodedMessageSYN, decodedMessageACK, decodedMessageFIN, decodeMessageSTART, decodeMessageEND, message[7:] ])
         return decodedMessage
 
     #printQueue
