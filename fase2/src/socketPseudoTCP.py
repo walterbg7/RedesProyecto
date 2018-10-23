@@ -11,7 +11,7 @@ SYNACK = 6
 SYN = 4
 ACK = 2
 ACKSTART = 18
-ACKEND = 10
+ACKEND = 11
 FIN = 1
 START =16
 END = 8
@@ -138,29 +138,34 @@ class SocketPseudoTCP:
         lastPackages = numPackages -1
         currentPart = 0 #We need to know the current part of the message
         partOfMessage = bytearray()
+        firstMessage = True
         for number in range(0, lastPackages):
             #We are going to send data of 8 bytes
             partOfMessage = message[currentPart:(currentPart + 8)]
             currentPart += 8
-            finalMessage = Message._make([self.selfAddr[1], self.connectionAddr[1], self.SN, self.RN, 8, False, False, False, False, False, partOfMessage])
+            finalMessage = Message._make([self.selfAddr[1], self.connectionAddr[1], self.SN, self.RN, 8, False, False, False, firstMessage, False, partOfMessage])
+            firstMessage = False
             packedMessage = self.encodeMessage(finalMessage)
             writeOnLog("Log", self.selfAddr, self.connectionAddr, "Send: send a package of message", finalMessage)
             self.sendMessage(packedMessage)
             partOfMessage = bytearray()
 
         partOfMessage = message[currentPart:]
-        finalMessage = Message._make([self.selfAddr[1], self.connectionAddr[1], self.SN, self.RN, 8, False, False, False, False, False, partOfMessage])
+        finalMessage = Message._make([self.selfAddr[1], self.connectionAddr[1], self.SN, self.RN, 8, False, False, False, firstMessage, True, partOfMessage])
         packedMessage = self.encodeMessage(finalMessage)
         writeOnLog("Log", self.selfAddr, self.connectionAddr, "Send: send a package of message", finalMessage)
         self.sendMessage(packedMessage)
 
     def sendMessage(self, packedMessage):
         writeOnLog("Log", "", "", "", "Sending Message! : My SN " + str(self.SN) + "  My RN "+ str(self.RN), 0)
+        trySend = 1
         self.socketUDP.sendto(packedMessage, self.connectionAddr)
         while True:
             try:
-                queueMessage = self.messageQueue.get(True, 1)
+                queueMessage = self.messageQueue.get(True, 2)
             except Empty:
+                if trySend == 5:
+                    break
                 writeOnLog("Log", "", "", "", "Sending Message timeout! : Well the server left me hanging ...", 0)
                 writeOnLog("Log", self.selfAddr, self.connectionAddr, "Send: send a package of message, forwarded", packedMessage)
                 self.socketUDP.sendto(packedMessage, self.connectionAddr)
@@ -192,7 +197,7 @@ class SocketPseudoTCP:
         writeOnLog("Log", "", "", "", "Receiving! : My SN " + str(self.SN) + "  My RN " + str(self.RN) , 0)
         while True:
             try:
-                queueMessage = self.messageQueue.get(True, 1)
+                queueMessage = self.messageQueue.get(True, 2)
             except Empty:
                 if(not firstPacket):
                     writeOnLog("Log", "", "", "", "Receiving! : Time Out", 0)
