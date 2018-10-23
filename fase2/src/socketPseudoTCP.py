@@ -15,6 +15,7 @@ ACKEND = 11
 FIN = 1
 START =16
 END = 8
+DATA = 0
 
 Message = namedtuple("Message", ["originPort", "destinyPort", "SN", "RN", "headerSize", "SYN", "ACK", "FIN", "START", "END", "data"])
 
@@ -433,6 +434,8 @@ class SocketPseudoTCP:
         # If message is a END message
         elif(message.END):
             encodedMessage += END.to_bytes(1, byteorder='big')
+        else:
+            encodedMessage += DATA.to_bytes(1, byteorder='big')
         encodedMessage += message.data
         return encodedMessage
 
@@ -457,7 +460,7 @@ class SocketPseudoTCP:
         elif(int(message[7]) == END):
             decodedMessageEND = True
         decodedMessage = Message._make([ int.from_bytes(message[0:2], byteorder='big'), int.from_bytes(message[2:4], byteorder='big'),
-        int(message[4]), int(message[5]), int(message[6]), decodedMessageSYN, decodedMessageACK, decodedMessageFIN, decodeMessageSTART, decodeMessageEND, message[7:] ])
+        int(message[4]), int(message[5]), int(message[6]), decodedMessageSYN, decodedMessageACK, decodedMessageFIN, decodeMessageSTART, decodeMessageEND, message[8:] ])
         return decodedMessage
 
     #printQueue
