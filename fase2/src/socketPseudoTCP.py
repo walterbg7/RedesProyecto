@@ -6,18 +6,6 @@ from threading import Thread
 from collections import namedtuple
 import math
 
-# Constants
-SYNACK = 6
-SYN = 4
-ACK = 2
-ACKSTART = 18
-ACKEND = 10
-FIN = 1
-STARTEND = 24
-START =16
-END = 8
-DATA = 0
-
 Message = namedtuple("Message", ["originPort", "destinyPort", "SN", "RN", "headerSize", "SYN", "ACK", "FIN", "START", "END", "data"])
 
 class SocketPseudoTCP:
@@ -75,7 +63,7 @@ class SocketPseudoTCP:
         # I need to wait for the SYNACK message from the server
         while True:
             try:
-                queueMessage = self.messageQueue.get(True, 5)
+                queueMessage = self.messageQueue.get(True, TIMEOUT)
             except Empty:
                 self.writeOnLog("Connecting timeout! : Well the server left me hanging ...", "Client")
                 self.socketUDP.sendto(encodedSYNMessage, self.connectionAddr)
@@ -114,7 +102,7 @@ class SocketPseudoTCP:
         # I need to wait for the ACK message from the server
         while True:
             try:
-                queueMessage = self.messageQueue.get(True, 5)
+                queueMessage = self.messageQueue.get(True, TIMEOUT)
             except Empty:
                 self.writeOnLog("Connecting timeout! : Well the server left me hanging ...", "Client")
                 strH = "Transmitter: " + str(self.selfAddr) + "\nReceiver: " + str(self.connectionAddr)+ "\nConnect: response of SYNACK message, forwarded"
@@ -159,15 +147,15 @@ class SocketPseudoTCP:
     def send(self, message):
         self.writeOnLog("SocketPseudoTCP : Sending!", "Control Message:")
         lenMessage = len(message)
-        numPackages = math.ceil(lenMessage / 8)
+        numPackages = math.ceil(lenMessage / DATASIZE)
         lastPackages = numPackages -1
         currentPart = 0 #We need to know the current part of the message
         partOfMessage = bytearray()
         firstMessage = True
         for number in range(0, lastPackages):
             #We are going to send data of 8 bytes
-            partOfMessage = message[currentPart:(currentPart + 8)]
-            currentPart += 8
+            partOfMessage = message[currentPart:(currentPart + DATASIZE)]
+            currentPart += DATASIZE
             finalMessage = Message._make([self.selfAddr[1], self.connectionAddr[1], self.SN, self.RN, 8, False, False, False, firstMessage, False, partOfMessage])
             firstMessage = False
             packedMessage = self.encodeMessage(finalMessage)
@@ -193,7 +181,7 @@ class SocketPseudoTCP:
         self.socketUDP.sendto(packedMessage, self.connectionAddr)
         while True:
             try:
-                queueMessage = self.messageQueue.get(True, 2)
+                queueMessage = self.messageQueue.get(True, TIMEOUT)
             except Empty:
                 if trySend == 5:
                     break
@@ -237,7 +225,7 @@ class SocketPseudoTCP:
         self.writeOnLog("Receiving! : My SN " + str(self.SN) + "  My RN " + str(self.RN) , "Control Message")
         while True:
             try:
-                queueMessage = self.messageQueue.get(True, 2)
+                queueMessage = self.messageQueue.get(True, TIMEOUT)
             except Empty:
                 if(not firstPacket):
                     self.writeOnLog("Receiving! : Time Out", "Control Message")
