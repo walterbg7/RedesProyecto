@@ -11,8 +11,9 @@ SYNACK = 6
 SYN = 4
 ACK = 2
 ACKSTART = 18
-ACKEND = 11
+ACKEND = 10
 FIN = 1
+STARTEND = 24
 START =16
 END = 8
 DATA = 0
@@ -504,6 +505,9 @@ class SocketPseudoTCP:
         # If message is a FIN message
         elif(message.FIN):
             encodedMessage += FIN.to_bytes(1, byteorder='big')
+        # If message is a STARTEND message
+        elif(message.START and message.END):
+            encodeMessage += STARTEND.to_bytes(1, byteorder='big')
         # If message is a START message
         elif(message.START):
             encodedMessage += START.to_bytes(1, byteorder='big')
@@ -531,6 +535,8 @@ class SocketPseudoTCP:
             decodedMessageACK = True
         elif(int(message[7]) == FIN):
             decodedMessageFIN = True
+        elif(int(message[7]) == STARTEND):
+            decodedMessageSTART = decodeMessageEND = True
         elif(int(message[7]) == START):
             decodedMessageSTART = True
         elif(int(message[7]) == END):
