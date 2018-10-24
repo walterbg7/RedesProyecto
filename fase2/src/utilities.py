@@ -84,7 +84,21 @@ def is_valid_ipv4_address(address):
         return False
 
     return True
-
+'''
+def writeOnLog(strToWrite, strHeader = None):
+    fileLock.acquire()
+    try:
+        fileBi = open("log.txt", 'r+')
+        fileBi.read()
+    except:
+        fileBi = open("log.txt", 'w')
+    if(strHeader is not None):
+        fileBi.write(strHeader+"\n")
+    fileBi.write(strToWrite+"\n")
+    fileBi.write("\n-----------------------------------------------------------------------\n\n")
+    fileBi.close()
+    fileLock.release()
+''
 def writeOnLog(fileName, originAddr, destAddr, action, message, type = 1):
     fileLock.acquire()
     log = open(fileName, "a")
@@ -95,3 +109,8 @@ def writeOnLog(fileName, originAddr, destAddr, action, message, type = 1):
     log.write("\n" + separator * 130 + "\n")
     log.close()
     fileLock.release()
+
+    strH = "Transmitter: " + str((queueMessage[1], SYNMessage.originPort)) + "\nReceiver: " + str(self.selfAddr)+ "\nListen: New valid SYN Message "
+    strB = "Message: " + str(SYNMessage)
+    writeOnLog(strB, strH)
+'''
