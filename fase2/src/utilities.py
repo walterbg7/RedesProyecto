@@ -2,8 +2,21 @@ import threading
 from socket import *
 
 # Constants
-separator = "-"
+SYNACK = 6
+SYN = 4
+ACK = 2
+ACKSTART = 18
+ACKEND = 10
+FIN = 1
+STARTEND = 24
+START =16
+END = 8
+DATA = 0
+TIMEOUT = 0.1
+DATASIZE = 512
 
+# Global variables
+separator = "-"
 clientMenu = '''
 Select an option:
     0 : Delete node
@@ -11,7 +24,6 @@ Select an option:
     2 : Print alcanzabiliy table
 
 '''
-
 askClientMessage = '''
 Please enter the message:
 Hint: Remember the message struture is:
@@ -23,13 +35,11 @@ Hint: Remember the message struture is:
     .
 
 '''
-
-fileLock = threading.Lock()
-aTLock = threading.Lock()
-
 askIPAddressMessage = "Please, put the destination ip address: "
 askPortMessage = "Please, put the destination port number: "
 askNMessage = "Write the number of lines of the message (n): "
+fileLock = threading.Lock()
+aTLock = threading.Lock()
 
 # Funtions
 def print_error_invalid_ip():
@@ -70,7 +80,6 @@ def validate_ip_address(ip):
             return False
     return True
 '''
-
 def is_valid_ipv4_address(address):
     try:
         inet_pton(socket.AF_INET, address)
