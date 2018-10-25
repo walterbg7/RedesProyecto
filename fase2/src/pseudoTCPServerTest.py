@@ -14,5 +14,5 @@ while (1):
 		print("¡No se puedo crear el archivo!")
 	newFile.write(fileContent.decode('utf-8'))
 	newFile.close()
-	#connectionSocket.send("Yes".encode('utf-8'))
-	#connectionSocket.close()
+	connectionSocket.send("Yes".encode('utf-8'))
+	connectionSocket.close()
