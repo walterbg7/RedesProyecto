@@ -14,6 +14,7 @@ END = 8
 DATA = 0
 TIMEOUT = 0.1
 DATASIZE = 512
+MAX_NUMBER_OF_TRIES = 5
 
 # Global variables
 separator = "-"
