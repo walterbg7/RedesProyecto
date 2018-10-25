@@ -6,17 +6,6 @@ from threading import Thread
 from collections import namedtuple
 import math
 
-# Constants
-SYNACK = 6
-SYN = 4
-ACK = 2
-ACKSTART = 18
-ACKEND = 11
-FIN = 1
-START =16
-END = 8
-DATA = 0
-
 Message = namedtuple("Message", ["originPort", "destinyPort", "SN", "RN", "headerSize", "SYN", "ACK", "FIN", "START", "END", "data"])
 
 class SocketPseudoTCP:
@@ -74,7 +63,7 @@ class SocketPseudoTCP:
         # I need to wait for the SYNACK message from the server
         while True:
             try:
-                queueMessage = self.messageQueue.get(True, 5)
+                queueMessage = self.messageQueue.get(True, TIMEOUT)
             except Empty:
                 self.writeOnLog("Connecting timeout! : Well the server left me hanging ...", "Client")
                 self.socketUDP.sendto(encodedSYNMessage, self.connectionAddr)
@@ -113,7 +102,7 @@ class SocketPseudoTCP:
         # I need to wait for the ACK message from the server
         while True:
             try:
-                queueMessage = self.messageQueue.get(True, 5)
+                queueMessage = self.messageQueue.get(True, TIMEOUT)
             except Empty:
                 self.writeOnLog("Connecting timeout! : Well the server left me hanging ...", "Client")
                 strH = "Transmitter: " + str(self.selfAddr) + "\nReceiver: " + str(self.connectionAddr)+ "\nConnect: response of SYNACK message, forwarded"
@@ -158,15 +147,15 @@ class SocketPseudoTCP:
     def send(self, message):
         self.writeOnLog("SocketPseudoTCP : Sending!", "Control Message:")
         lenMessage = len(message)
-        numPackages = math.ceil(lenMessage / 8)
+        numPackages = math.ceil(lenMessage / DATASIZE)
         lastPackages = numPackages -1
         currentPart = 0 #We need to know the current part of the message
         partOfMessage = bytearray()
         firstMessage = True
         for number in range(0, lastPackages):
             #We are going to send data of 8 bytes
-            partOfMessage = message[currentPart:(currentPart + 8)]
-            currentPart += 8
+            partOfMessage = message[currentPart:(currentPart + DATASIZE)]
+            currentPart += DATASIZE
             finalMessage = Message._make([self.selfAddr[1], self.connectionAddr[1], self.SN, self.RN, 8, False, False, False, firstMessage, False, partOfMessage])
             firstMessage = False
             packedMessage = self.encodeMessage(finalMessage)
@@ -192,7 +181,7 @@ class SocketPseudoTCP:
         self.socketUDP.sendto(packedMessage, self.connectionAddr)
         while True:
             try:
-                queueMessage = self.messageQueue.get(True, 2)
+                queueMessage = self.messageQueue.get(True, TIMEOUT)
             except Empty:
                 if trySend == 5:
                     break
@@ -236,7 +225,7 @@ class SocketPseudoTCP:
         self.writeOnLog("Receiving! : My SN " + str(self.SN) + "  My RN " + str(self.RN) , "Control Message")
         while True:
             try:
-                queueMessage = self.messageQueue.get(True, 2)
+                queueMessage = self.messageQueue.get(True, TIMEOUT)
             except Empty:
                 if(not firstPacket):
                     self.writeOnLog("Receiving! : Time Out", "Control Message")
@@ -307,10 +296,46 @@ class SocketPseudoTCP:
         encodedFINMessage = self.encodeMessage(FINMMessage)
         self.socketUDP.sendto(encodedFINMessage, self.connectionAddr)
         # I need to wait for a ACK message of my FIN message or another FIN message and answer it
-        # First I wait for my connection FIN messages and answer it
-        # Then I wait for the ack message of my FIN message
+        tries = 0
+        while(tries < MAX_NUMBER_OF_TRIES):
+            try:
+                recivedMessage = self.messageQueue.get(True, TIMEOUT)
+            except Empty:
+                tries += 1
+                continue
+            # If I recived a message
+            recivedMessage = recivedMessage[0]
+            # I need to check if the recived message is the ACK I'm waiting for
+            # First I check if the recived message is indeed a ACK
+            if(recivedMessage.ACK and (not(recivedMessage.SYN or recivedMessage.FIN))):
+                # Then I need to check if the recived message if the ACK I'm waiting for
+                if(recivedMessage.RN != self.SN):
+                    # If it is the ACK I was waiting for
+                    self.writeOnLog("Closing! : A valid ACK message just what I wanted, thanks Satan!", "Control Message:")
+                    self.printQueue(self.messageQueue)
+                    break
+                else:
+                    # If it was a invalid ACK
+                    self.writeOnLog("Closing! : Invalid ACK!", "Control Message:")
+                    self.printQueue(self.messageQueue)
+                    pass
+            elif(recivedMessage.FIN):
+                # If the recived message is a FIN message I need to answer with a ACK message
+                self.writeOnLog("Closing! : A FIN message!", "Control Message:")
+                ACKMessage = Message._make([self.selfAddr[1], self.connectionAddr[1], recivedMessage.RN, ((recivedMessage.SN + 1) % 2), 8, False, True, False, False, False, "".encode('utf-8')])
+                encodedACKMessage = self.encodeMessage(ACKMessage)
+                self.socketUDP.sendto(encodedACKMessage, self.connectionAddr)
+                self.printQueue(self.messageQueue)
+            else:
+                # If the recived message is not a ACK or another FIN message
+                self.writeOnLog("Closing! : A invalid message!", "Control Message:")
+                self.printQueue(self.messageQueue)
+                pass
+            tries += 1
+
         # Finally I need to close the connection after some time
-        self.connectionAddr = ("", -1)
+        self.connectionAddr = ("", 0)
+        print("Closing! : Connection closed")
 
 
     # "Server" side
@@ -437,6 +462,7 @@ class SocketPseudoTCP:
                 self.messageQueue.put_nowait(queueMessage)
                 self.messageQueue.task_done()
                 self.printQueue(self.messageQueue)
+
     # Private methods
     # despatch, thread!, demultiplex all the messages send to the serverPort.
     def despatch(self):
@@ -478,7 +504,10 @@ class SocketPseudoTCP:
                             self.messageQueue.put((message, senderAddr[0]))
                             self.printQueue(self.messageQueue);
                         else:
-                            print(":(")
+                            self.writeOnLog(":(", "Control Message:")
+            else:
+                self.writeOnLog("Despatching! : The message is not for me!", "Control Message:")
+                pass
 
     # encodeMessage
     def encodeMessage(self, message):
@@ -504,6 +533,9 @@ class SocketPseudoTCP:
         # If message is a FIN message
         elif(message.FIN):
             encodedMessage += FIN.to_bytes(1, byteorder='big')
+        # If message is a STARTEND message
+        elif(message.START and message.END):
+            encodedMessage += STARTEND.to_bytes(1, byteorder='big')
         # If message is a START message
         elif(message.START):
             encodedMessage += START.to_bytes(1, byteorder='big')
@@ -531,6 +563,8 @@ class SocketPseudoTCP:
             decodedMessageACK = True
         elif(int(message[7]) == FIN):
             decodedMessageFIN = True
+        elif(int(message[7]) == STARTEND):
+            decodedMessageSTART = decodeMessageEND = True
         elif(int(message[7]) == START):
             decodedMessageSTART = True
         elif(int(message[7]) == END):
