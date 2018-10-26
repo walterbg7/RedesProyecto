@@ -274,6 +274,8 @@ class SocketPseudoTCP:
                         messageRecived.extend(dataMessage.data)
                         numTimeOuts = 0
                         firstPacket = False
+                        if(dataMessage.END):
+                            break
                     else:
                         self.writeOnLog("Receiving! : Wrong package", "Control Message:")
                         strH = "Transmitter: " + str(self.connectionAddr) + "\nReceiver: " + str(self.selfAddr)+ "\nRECV: Wrong package received "
