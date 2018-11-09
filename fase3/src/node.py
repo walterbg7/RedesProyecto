@@ -7,12 +7,13 @@ from serverNodeUDP import *
 class Node():
 
     # Constructor
-    def __init__(self, isPseudoBGP, ip, port):
+    def __init__(self, isPseudoBGP, ip, mask, port):
         self.isPseudoBGP = isPseudoBGP
         self.ip = ip
+        self.mask = mask
         self.port = port
         self.alcanzabilityTable = {}
-        self.strH = "Node (The real mvp!) : ip: "+str(self.ip)+", port: "+str(self.port)
+        self.strH = "Node (The real mvp!) : ip: "+self.ip+", mask: "+str(self.mask)+", port: "+str(self.port)
         print("Node (The real mvp!) : Constructor")
 
     def printAlcanzabilityTable(self):
@@ -20,7 +21,7 @@ class Node():
         print ("Alcanzability Table: ")
         print (["Network Address","Mask","Cost","Origin"])
         for i in self.alcanzabilityTable:
-            print(i+self.alcanzabilityTable[i])
+            print(str(i), self.alcanzabilityTable[i])
         aTLock.release()
 
     # This is the method that execute everything the program need to work
@@ -28,11 +29,11 @@ class Node():
         #print("Node : I basically do everything")
         # We need to create the corresponding client node and server node
         if(self.isPseudoBGP):
-            self.serverNode = ServerNodeTCP(self.port, self.alcanzabilityTable, self.ip)
-            self.clientNode = ClientNodeTCP(self.ip, self.port)
+            self.serverNode = ServerNodeTCP(self.ip, self.mask, self.port, self.alcanzabilityTable)
+            self.clientNode = ClientNodeTCP(self.ip, self.mask, self.port)
         else:
-            self.serverNode = ServerNodeUDP(self.port, self.alcanzabilityTable, self.ip)
-            self.clientNode = ClientNodeUDP(self.ip, self.port)
+            self.serverNode = ServerNodeUDP(self.ip, self.mask, self.port, self.alcanzabilityTable)
+            self.clientNode = ClientNodeUDP(self.ip, self.mask, self.port)
         # We need to put the server instance (thread) to run concurrently
         self.serverNode.daemon = True
         self.serverNode.start()
@@ -95,7 +96,7 @@ if __name__ == '__main__':
     print ("The provided port is valid! Hooray!")
 
     # If all the arguments pass by the user are valid, we continue creating the node and executing it
-    node = Node(args.pseudoBGP, args.ip, args.port)
+    node = Node(args.pseudoBGP, args.ip, args.mask, args.port)
     node.run()
 
     print('Main Terminating...')

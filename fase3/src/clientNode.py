@@ -3,8 +3,9 @@ from utilities import *
 class ClientNode():
 
     # Constructor
-    def __init__(self, ip, port):
+    def __init__(self, ip, mask, port):
         self.ip = ip
+        self.mask = mask
         self.port = port
         print("ClientNode : Constructor")
         pass

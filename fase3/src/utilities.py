@@ -50,7 +50,10 @@ def is_valid_ipv4_address(address):
     return True
 
 def is_valid_network_ipv4_address(address, mask):
-    pass
+    if(is_valid_ipv4_address(address)):
+        return True
+    else:
+        return False
 
 def writeOnLog(strToWrite, strHeader = None):
     fileLock.acquire()
