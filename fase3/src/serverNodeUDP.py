@@ -4,6 +4,6 @@ from serverNode import *
 class ServerNodeUDP(ServerNode):
 
     # Constructor
-    def __init__(self, port, table, ip):
-        ServerNode.__init__(self, port, table, ip)
+    def __init__(self, ip, mask, port, table):
+        ServerNode.__init__(self, ip, mask, port, table)
         print("ServerNodeUDP : Constructor")
