@@ -2,6 +2,8 @@ import csv
 import os
 import sys
 from utilities import *
+from socket import *
+from threading import Thread 
 
 dicNeighbors = {}
 
@@ -50,3 +52,31 @@ with open('neighbors.csv', 'rt',  encoding="utf8") as csvfile2:
         dicNeighbors[tupleK] = dicNeighbors.get(tupleK, strValue) + strValue
 
 print(dicNeighbors)
+
+#------------------------------------------------SERVER UP -----------------------------------------------
+
+"""
+selfPort = 60000
+
+serverSocket = socket(AF_INET, SOCK_DGRAM) #We create a UDP socket
+serverSocket.bind(("", selfPort)) 
+while (1):
+    packedMessage, clientAddress = serverSocket.recvfrom(2048) #Receive message
+    if clientAddress not in dicNeighbors: #IP is no in the Neighbors Dictionary
+        print("Recived message from a invalid IP")
+        continue
+
+    message = packedMessage.decode("utf-8").split #We need to decode the message 
+    if message == 'request': #Only request messages are answered 
+        newRequest = Thread(target=sendNeighborsList, args = (clientAddress))
+	    newRequest.start()
+        continue
+    print("Message is not for request")
+
+
+#--------------------------------------------------------------------------------------------------------
+
+def sendNeighborsList (clientAddress):
+    listOfNeighbors = IP and ... PORT?????
+    serverSocket.sendto(.encode('utf-8'), clientAddress)
+"""
