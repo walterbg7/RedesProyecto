@@ -80,11 +80,6 @@ with open('neighbors.csv', 'rt',  encoding="utf8") as csvfile2:
         #Add to the dicNeighbors
         tupleK = (ipS, portS)
         strValue = ""+str(ipD)+"/"+str(portD)+"/"+str(costD)+" "
-        exist = dicNeighbors.get(tupleK)
-        if(not exist):
-            dicNeighbors[tupleK] = strValue
-        else:
-            exist += strValue
-            dicNeighbors[tupleK] = exist
+        dicNeighbors[tupleK] = dicNeighbors.get(tupleK, strValue) + strValue
 
 print(dicNeighbors)
