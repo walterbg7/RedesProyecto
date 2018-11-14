@@ -13,6 +13,7 @@ class Node():
         self.mask = mask
         self.port = port
         self.alcanzabilityTable = {}
+        self.neighborsList = []
         self.strH = "Node (The real mvp!) : ip: "+self.ip+", mask: "+str(self.mask)+", port: "+str(self.port)
         print("Node (The real mvp!) : Constructor")
 
@@ -29,10 +30,10 @@ class Node():
         #print("Node : I basically do everything")
         # We need to create the corresponding client node and server node
         if(self.isPseudoBGP):
-            self.serverNode = ServerNodeTCP(self.ip, self.mask, self.port, self.alcanzabilityTable)
+            self.serverNode = ServerNodeTCP(self.ip, self.mask, self.port, self.alcanzabilityTable, self.neighborsList)
             self.clientNode = ClientNodeTCP(self.ip, self.mask, self.port)
         else:
-            self.serverNode = ServerNodeUDP(self.ip, self.mask, self.port, self.alcanzabilityTable)
+            self.serverNode = ServerNodeUDP(self.ip, self.mask, self.port, self.alcanzabilityTable, self.neighborsList)
             self.clientNode = ClientNodeUDP(self.ip, self.mask, self.port)
         # We need to put the server instance (thread) to run concurrently
         self.serverNode.daemon = True
@@ -49,7 +50,7 @@ class Node():
                 self.clientNode.stop()
                 beingDeleted = True
             elif(option == 1):
-                self.clientNode.run()
+                print("This option is temporarily disabled")
             elif(option == 2):
                 self.printAlcanzabilityTable()
             else:
