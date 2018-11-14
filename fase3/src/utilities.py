@@ -3,6 +3,16 @@ from socket import *
 from collections import namedtuple
 
 # Constants
+SERVERD_IP = "127.0.0.1"
+SERVERD_PORT = 60000
+# Flags
+REQUEST = 2 #Flag to request message
+REQUEST_ACK = 3
+DATA = 0
+MESSAGE_PARTS_DIVIDER = "/"
+MESSAGES_DIVIDER = "&"
+
+# Global variables
 clientMenu = '''
 Select an option:
     0 : Delete node
@@ -10,10 +20,7 @@ Select an option:
     2 : Print alcanzabiliy table
 
 '''
-
 Message = namedtuple("Message", ["originPort", "destPort", "flag", "data"]) #Structure of the message
-
-REQUEST = 1 #Flag to request message
 
 # Locks
 aTLock = threading.Lock()

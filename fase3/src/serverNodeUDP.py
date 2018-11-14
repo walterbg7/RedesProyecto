@@ -6,28 +6,42 @@ class ServerNodeUDP(ServerNode):
     # Constructor
     def __init__(self, ip, mask, port, table, listN):
         ServerNode.__init__(self, ip, mask, port, table, listN)
+        self.serverSocket = socket(AF_INET, SOCK_DGRAM) #We create a UDP socket
+        self.serverSocket.bind((self.ip, self.port))
         print("ServerNodeUDP : Constructor")
 
+    def getNeighborsFromServer(self):
+        # We create a neighbor request message
+        message = Message._make([self.port, 60000, REQUEST, "".encode('utf-8')])
+        encodedMessage = encodeMessage(message)
+        noNeighbors = True
+        while(noNeighbors):
+            # Send the message to the dealer
+            try:
+                self.serverSocket.sendto(encodedMessage, (SERVERD_IP, SERVERD_PORT))
+            except Exception as e:
+                print("ServerNodeUDP : Error asking for my neighbors", str(e))
+                continue
+        # Wait for the answer
+            try:
+                modifiedMessage, serverAddress = self.serverSocket.recvfrom(2048)
+            except:
+                print("ServerNodeUDP : Error receiving message from serverDispatcher", str(e))
+            recvMessage = decodeMessage(modifiedMessage)
+            print ("ServerNodeUDP : From Dealer: ", recvMessage)
+            if(recvMessage.flag == REQUEST_ACK):
+                noNeighbors = False
+                myNeighbors = recvMessage.data.decode('utf-8')
+                myNeighborsTokens = myNeighbors.split(MESSAGES_DIVIDER)
+                for ind in myNeighborsTokens:
+                    print(ind)
+            else:
+                print("ServerNodeUDP : Error no REQUEST_ACK message")
+                continue
+
     def run(self):
-        clientSocket = socket(AF_INET, SOCK_DGRAM) #We create a UDP socket
-        clientSocket.bind((self.ip, self.port))
-        #We create a neighbor request message
-        message = Message._make([self.port, 60000, 1, "".encode('utf-8')])
-        message1 = encodeMessage(message)
-        #Send the message to the dealer
-        clientSocket.sendto(message1, ("127.0.0.1", 60000))
-        #Wait for the answer
-        modifiedMessage, serverAddress = clientSocket.recvfrom(2048)
-        recvMessage = decodeMessage(modifiedMessage)
-        print ("From Dealer: ", recvMessage)
-        myNeighbors = recvMessage.data.decode('utf-8')
-        myNeighborsList = myNeighbors.split(" ")
-        #We Need to eliminate the last element in the list
-        myNeighborsList.pop(len(myNeighborsList)-1)
-        print ("My Neighbors: ", str(myNeighborsList))
-        for i in myNeighborsList:
-            neighborInfo = i.split("/")
-            tupleNeighbor = (neighborInfo[0], neighborInfo[1], neighborInfo[2], "Inactive")
-            self.neighborsList.append(tupleNeighbor)
-        print(self.neighborsList)
-        pass
+        getNeighborsFromServerThread = Thread(target=self.getNeighborsFromServer, args=())
+        getNeighborsFromServerThread.start()
+        print("ServerNodeUDP : Receiving stuff")
+        while(1):
+            continue

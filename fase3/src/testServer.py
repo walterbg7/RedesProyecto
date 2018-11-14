@@ -2,7 +2,7 @@ from utilities import *
 from socket import *
 
 
-message = Message._make([12000, 60000, 1, "nada".encode('utf-8')])
+message = Message._make([12000, 60000, REQUEST, "nada".encode('utf-8')])
 
 clientSocket = socket(AF_INET, SOCK_DGRAM) #We create a UDP socket
 clientSocket.bind(("127.0.0.1", 12000))
