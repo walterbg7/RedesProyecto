@@ -53,6 +53,15 @@ with open('neighbors.csv', 'rt',  encoding="utf8") as csvfile2:
 
 print(dicNeighbors)
 
+#--------------------------------------------------------------------------------------------------------
+
+def sendNeighborsList (clientAddress):
+    listOfNeighbors = dicNeighbors[clientAddress] #We need the list of neighbors 
+    message = Message._make([selfPort, int(clientAddress[1]), 2, listOfNeighbors.encode('utf-8')])
+    finalMessage = encodeMessage(message) #We need to decode the message
+    serverSocket.sendto(finalMessage, (clientAddress[0], int(clientAddress[1]))) #We send the decode message
+    print("Message sended")
+
 #------------------------------------------------SERVER UP -----------------------------------------------
 
 
@@ -60,28 +69,20 @@ selfPort = 60000
 
 serverSocket = socket(AF_INET, SOCK_DGRAM) #We create a UDP socket
 serverSocket.bind(("", selfPort)) 
-"""
+
 while (1):
-    packedMessage = serverSocket.recv(2048) #Receive message
-    message = packedMessage.decodeMessage(packedMessage) #We need to decode the message
-    clientAddress = message.originIp, message.originPort #We need to know the client addrs
+    packedMessage, client = serverSocket.recvfrom(2048) #Receive message
+    message = decodeMessage(packedMessage) #We need to decode the message
+    clientAddress = client[0], str(message.originPort) #We need to know the client addrs
 
     if clientAddress not in dicNeighbors: #IP is no in the Neighbors Dictionary
         print("Recived message from a invalid IP")
         continue
- 
-    if message.flag == 'request': #Only request messages are answered 
-        newRequest = Thread(target=sendNeighborsList, args = (clientAddress))
-	    newRequest.start()
+
+    print(message.flag)
+    if message.flag == REQUEST: #Only request messages are answered 
+        newRequest = Thread(target=sendNeighborsList, args = (clientAddress,))
+        newRequest.start()
         continue
     print("Message is not for request")
 
-
-#--------------------------------------------------------------------------------------------------------
-
-def sendNeighborsList (clientAddress):
-    listOfNeighbors = dicNeighbors[clientAddress] #We need the list of neighbors 
-    message = decode.(listOfNeighbors) #We need to decode the message
-    serverSocket.sendto(message, clientAddress) #We send the decode message
-    print("Message sended")
-"""
