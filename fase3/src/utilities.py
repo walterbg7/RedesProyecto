@@ -6,7 +6,7 @@ from collections import namedtuple
 clientMenu = '''
 Select an option:
     0 : Delete node
-    1 : Send message
+    1 : Change cost (disabled)
     2 : Print alcanzabiliy table
 
 '''
@@ -77,8 +77,8 @@ def writeOnLog(strToWrite, strHeader = None):
 def encodeMessage(message):
     # I need to encode the message parameter into a bytearray
     print(message)
-    encodedMessage = (message.originPort.to_bytes(2, byteorder='big') + 
-        message.destPort.to_bytes(2, byteorder='big') + 
+    encodedMessage = (message.originPort.to_bytes(2, byteorder='big') +
+        message.destPort.to_bytes(2, byteorder='big') +
         message.flag.to_bytes(1, byteorder = 'big'))
     encodedMessage += message.data
     print(encodedMessage)
@@ -87,7 +87,7 @@ def encodeMessage(message):
 def decodeMessage(packedMessage):
     print(packedMessage)
     #self.writeOnLog("Decoder : Decoding message!", "Control Message:")
-    decodedMessage = Message._make([ int.from_bytes(packedMessage[0:2], byteorder='big'), 
+    decodedMessage = Message._make([ int.from_bytes(packedMessage[0:2], byteorder='big'),
     int.from_bytes(packedMessage[2:4], byteorder='big'),
     int.from_bytes(packedMessage[4:5], byteorder='big'),
     packedMessage[5:]])
