@@ -7,6 +7,15 @@ from threading import Thread
 
 dicNeighbors = {}
 
+#--------------------------------------------------------------------------------------------------------
+def sendNeighborsList (clientAddress):
+    listOfNeighbors = dicNeighbors[clientAddress] #We need the list of neighbors
+    message = Message._make([selfPort, int(clientAddress[1]), REQUEST_ACK, listOfNeighbors.encode('utf-8')])
+    finalMessage = encodeMessage(message) #We need to decode the message
+    serverSocket.sendto(finalMessage, (clientAddress[0], int(clientAddress[1]))) #We send the decode message
+    print("Message sended")
+#------------------------------------------------SERVER UP -----------------------------------------------
+
 with open('neighbors.csv', 'rt',  encoding="utf8") as csvfile2:
     neighborsReader = csv.DictReader(csvfile2)
     for row in neighborsReader:
@@ -47,27 +56,25 @@ with open('neighbors.csv', 'rt',  encoding="utf8") as csvfile2:
             print_error_invalid_cost()
             sys.exit(-1)
         #Add to the dicNeighbors
-        tupleK = (ipS, portSInt)
-        strValue = ""+str(ipD)+"/"+str(portD)+"/"+str(costD)+" "
-        exist = dicNeighbors.get(tupleK)
-        if(exist is None):
-            dicNeighbors[tupleK] = strValue
+        tupleK1 = (ipS, portSInt)
+        tupleK2 = (ipD, portDInt)
+        strValue1 = ""+str(ipD)+MESSAGE_PARTS_DIVIDER+str(portD)+MESSAGE_PARTS_DIVIDER+str(costD)+MESSAGES_DIVIDER
+        strValue2 = ""+str(ipS)+MESSAGE_PARTS_DIVIDER+str(portS)+MESSAGE_PARTS_DIVIDER+str(costD)+MESSAGES_DIVIDER
+        existK1 = dicNeighbors.get(tupleK1)
+        existK2 = dicNeighbors.get(tupleK2)
+        if((existK1 is None) and (existK2 is None)):
+            dicNeighbors[tupleK1] = strValue1
+            dicNeighbors[tupleK2] = strValue2
+        elif((not existK1 is None) and (not existK2 is None)):
+            dicNeighbors[tupleK1] = existK1 + strValue1
+            dicNeighbors[tupleK2] = existK2 + strValue2
+        elif((not existK1 is None) and (existK2 is None)):
+            dicNeighbors[tupleK1] = existK1 + strValue1
+            dicNeighbors[tupleK2] = strValue2
         else:
-            dicNeighbors[tupleK] = exist + strValue
-
+            dicNeighbors[tupleK2] = existK2 + strValue2
+            dicNeighbors[tupleK1] = strValue1
 print(dicNeighbors)
-
-#--------------------------------------------------------------------------------------------------------
-
-def sendNeighborsList (clientAddress):
-    listOfNeighbors = dicNeighbors[clientAddress] #We need the list of neighbors
-    message = Message._make([selfPort, int(clientAddress[1]), 2, listOfNeighbors.encode('utf-8')])
-    finalMessage = encodeMessage(message) #We need to decode the message
-    serverSocket.sendto(finalMessage, (clientAddress[0], int(clientAddress[1]))) #We send the decode message
-    print("Message sended")
-
-#------------------------------------------------SERVER UP -----------------------------------------------
-
 
 selfPort = 60000
 

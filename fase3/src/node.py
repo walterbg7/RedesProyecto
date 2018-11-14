@@ -13,7 +13,7 @@ class Node():
         self.mask = mask
         self.port = port
         self.alcanzabilityTable = {}
-        self.neighborsList = []
+        self.neighborsList = {}
         self.strH = "Node (The real mvp!) : ip: "+self.ip+", mask: "+str(self.mask)+", port: "+str(self.port)
         print("Node (The real mvp!) : Constructor")
 

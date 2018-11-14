@@ -4,13 +4,13 @@ from utilities import *
 class ServerNode(Thread):
 
     # Constructor
-    def __init__(self, ip, mask, port, table, listN):
+    def __init__(self, ip, mask, port, table, nList):
         Thread.__init__(self)
         self.ip = ip
         self.mask = mask
         self.port = int(port)
         self.alcanzabilityTable = table
-        self.neighborsList = listN
+        self.neighborsList = nList
         self.strH = "ServerNode : ip: "+self.ip+", port: "+str(self.mask)+", port: "+str(self.port)
         print("ServerNode : Constructor")
 
