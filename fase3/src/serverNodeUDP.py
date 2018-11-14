@@ -1,5 +1,6 @@
 from socket import *
 from serverNode import *
+from queue import *
 
 class ServerNodeUDP(ServerNode):
 
@@ -8,6 +9,8 @@ class ServerNodeUDP(ServerNode):
         ServerNode.__init__(self, ip, mask, port, table, listN)
         self.serverSocket = socket(AF_INET, SOCK_DGRAM) #We create a UDP socket
         self.serverSocket.bind((self.ip, self.port))
+        self.strNeighbors = ""
+        self.ack_Queue = Queue()
         print("ServerNodeUDP : Constructor")
 
     def getNeighborsFromServer(self):
@@ -22,7 +25,7 @@ class ServerNodeUDP(ServerNode):
             except Exception as e:
                 print("ServerNodeUDP : Error asking for my neighbors", str(e))
                 continue
-        # Wait for the answer
+            # Wait for the answer
             try:
                 modifiedMessage, serverAddress = self.serverSocket.recvfrom(2048)
             except:
@@ -31,17 +34,79 @@ class ServerNodeUDP(ServerNode):
             print ("ServerNodeUDP : From Dealer: ", recvMessage)
             if(recvMessage.flag == REQUEST_ACK):
                 noNeighbors = False
-                myNeighbors = recvMessage.data.decode('utf-8')
-                myNeighborsTokens = myNeighbors.split(MESSAGES_DIVIDER)
+                self.strNeighbors = recvMessage.data.decode('utf-8')
+                myNeighborsTokens = self.strNeighbors.split(MESSAGES_DIVIDER)
+                myNeighborsTokens.pop(len(myNeighborsTokens)-1)
                 for ind in myNeighborsTokens:
-                    print(ind)
+                    myNeighborInfo =  ind.split(MESSAGE_PARTS_DIVIDER)
+                    tupleK = (myNeighborInfo[0], int(myNeighborInfo[1]))
+                    tupleV = (myNeighborInfo[2], False)
+                    self.neighborsList[tupleK] = tupleV
+                print(self.neighborsList)
             else:
                 print("ServerNodeUDP : Error no REQUEST_ACK message")
                 continue
 
+    def contactNeighbors(self):
+        for itr in self.neighborsList:
+            contactNeighborsThread = Thread(target=self.contactNeighbor, args=(itr))
+            contactNeighborsThread.start()
+
+    def contactNeighbor(self, neighborIP, neighborPort):
+        message = Message._make([self.port, neighborPort, DATA, self.strNeighbors.encode('utf-8')])
+        encodedMessage = encodeMessage(message)
+        noACK = True
+        numTimeOuts = 0
+        while(noACK and numTimeOuts < 4):
+            # Send the message to the neighbor
+            try:
+                self.serverSocket.sendto(encodedMessage, (neighborIP, neighborPort))
+            except Exception as e:
+                print("ServerNodeUDP : Error contacting the neighbor", str(e))
+                noACK = False
+                continue
+            # Wait for the answer
+            try:
+                recvMessage = self.ack_Queue.get(True, 5)
+            except Empty:
+                print("ServerNodeUDP : Error receiving message from neighbor")
+                numTimeOuts += 1
+                continue
+            print ("ServerNodeUDP : From Neighbor: ", recvMessage)
+            if(recvMessage.flag == NORMAL_ACK and recvMessage.originPort == neighborPort):
+                noACK = False
+                tupleK = (neighborIP, neighborPort)
+                oldTupleV = self.neighborsList.get(tupleK)
+                if(oldTupleV is None):
+                    print("Algo anda mal")
+                    #print(tupleK)
+                else:
+                    print("Algo anda bien")
+                    tupleV = (oldTupleV[0], True)
+                    self.neighborsList[tupleK] = tupleV
+            else:
+                self.ack_Queue.put(recvMessage)
+                print("ServerNodeUDP : Error no REQUEST_ACK message from the neighbor")
+
     def run(self):
-        getNeighborsFromServerThread = Thread(target=self.getNeighborsFromServer, args=())
-        getNeighborsFromServerThread.start()
+        self.getNeighborsFromServer()
+
+        contactNeighborsThread = Thread(target=self.contactNeighbors, args=())
+        contactNeighborsThread.start()
         print("ServerNodeUDP : Receiving stuff")
         while(1):
+            # We need to recieve the packed message from the client
+            packedMessage, clientAddress = self.serverSocket.recvfrom(2048)
+            # We need to decode the recieved message
+            message = decodeMessage(packedMessage)
+            if(message.flag == DATA):
+                clientAddress = (clientAddress[0], int(message.originPort))
+                print("From ODIN: "+str(message))
+                #Proccess the message
+                #Hacer Hilo y metodo para procesar el mensaje
+                message = Message._make([self.port, clientAddress[1], NORMAL_ACK, "✓✓".encode('utf-8')])
+                ackMessage = encodeMessage(message) #We need to decode the message
+                self.serverSocket.sendto(ackMessage, clientAddress)
+            else:
+                self.ack_Queue.put(message)
             continue

@@ -60,6 +60,9 @@ with open('neighbors.csv', 'rt',  encoding="utf8") as csvfile2:
         tupleK2 = (ipD, portDInt)
         strValue1 = ""+str(ipD)+MESSAGE_PARTS_DIVIDER+str(portD)+MESSAGE_PARTS_DIVIDER+str(costD)+MESSAGES_DIVIDER
         strValue2 = ""+str(ipS)+MESSAGE_PARTS_DIVIDER+str(portS)+MESSAGE_PARTS_DIVIDER+str(costD)+MESSAGES_DIVIDER
+        dicNeighbors[tupleK1] = dicNeighbors.get(tupleK1, "") + strValue1
+        dicNeighbors[tupleK2] = dicNeighbors.get(tupleK2, "") + strValue2
+        '''
         existK1 = dicNeighbors.get(tupleK1)
         existK2 = dicNeighbors.get(tupleK2)
         if((existK1 is None) and (existK2 is None)):
@@ -74,6 +77,7 @@ with open('neighbors.csv', 'rt',  encoding="utf8") as csvfile2:
         else:
             dicNeighbors[tupleK2] = existK2 + strValue2
             dicNeighbors[tupleK1] = strValue1
+        '''
 print(dicNeighbors)
 
 selfPort = 60000
