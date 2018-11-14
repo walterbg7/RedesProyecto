@@ -1,5 +1,6 @@
 import threading
 from socket import *
+from collections import namedtuple
 
 # Constants
 clientMenu = '''
@@ -10,11 +11,15 @@ Select an option:
 
 '''
 
+Message = namedtuple("Message", ["originPort", "destPort", "flag", "data"]) #Structure of the message
+
+REQUEST = 1 #Flag to request message
+
 # Locks
 aTLock = threading.Lock()
 fileLock = threading.Lock()
 
-# Funtions
+# Functions
 def print_error_invalid_ip():
     print("Error: invalid ip address")
 
@@ -68,3 +73,22 @@ def writeOnLog(strToWrite, strHeader = None):
     fileBi.write("\n-----------------------------------------------------------------------\n\n")
     fileBi.close()
     fileLock.release()
+
+def encodeMessage(message):
+    # I need to encode the message parameter into a bytearray
+    print(message)
+    encodedMessage = (message.originPort.to_bytes(2, byteorder='big') + 
+        message.destPort.to_bytes(2, byteorder='big') + 
+        message.flag.to_bytes(1, byteorder = 'big'))
+    encodedMessage += message.data
+    print(encodedMessage)
+    return encodedMessage
+
+def decodeMessage(packedMessage):
+    print(packedMessage)
+    #self.writeOnLog("Decoder : Decoding message!", "Control Message:")
+    decodedMessage = Message._make([ int.from_bytes(packedMessage[0:2], byteorder='big'), 
+    int.from_bytes(packedMessage[2:4], byteorder='big'),
+    int.from_bytes(packedMessage[4:5], byteorder='big'),
+    packedMessage[5:]])
+    return decodedMessage
