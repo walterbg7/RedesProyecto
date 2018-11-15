@@ -6,10 +6,13 @@ from collections import namedtuple
 SERVERD_IP = "127.0.0.1"
 SERVERD_PORT = 60000
 # Flags
-REQUEST = 2 #Flag to request message
+DEATH = 0
+REQUEST = 2
 REQUEST_ACK = 3
-DATA = 0
-NORMAL_ACK = 4
+KEEP_ALIVE = 4
+NORMAL_ACK = 5
+UPDATE = 6
+
 MESSAGE_PARTS_DIVIDER = "/"
 MESSAGES_DIVIDER = "&"
 

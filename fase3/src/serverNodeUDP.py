@@ -53,24 +53,29 @@ class ServerNodeUDP(ServerNode):
             contactNeighborsThread.start()
 
     def contactNeighbor(self, neighborIP, neighborPort):
-        message = Message._make([self.port, neighborPort, DATA, self.strNeighbors.encode('utf-8')])
+        message = Message._make([self.port, neighborPort, KEEP_ALIVE, "Esta vivo?".encode('utf-8')])
         encodedMessage = encodeMessage(message)
         noACK = True
         numTimeOuts = 0
-        while(noACK and numTimeOuts < 4):
-            # Send the message to the neighbor
-            try:
-                self.serverSocket.sendto(encodedMessage, (neighborIP, neighborPort))
-            except Exception as e:
-                print("ServerNodeUDP : Error contacting the neighbor", str(e))
-                noACK = False
-                continue
+        numIter = 0
+        # Send the message to the neighbor
+        try:
+            self.serverSocket.sendto(encodedMessage, (neighborIP, neighborPort))
+        except Exception as e:
+            print("ServerNodeUDP : Error contacting the neighbor", str(e))
+        while(noACK and numTimeOuts < 4 and numIter < 3):
             # Wait for the answer
             try:
                 recvMessage = self.ack_Queue.get(True, 5)
             except Empty:
                 print("ServerNodeUDP : Error receiving message from neighbor")
                 numTimeOuts += 1
+                # Send the message to the neighbor
+                try:
+                    self.serverSocket.sendto(encodedMessage, (neighborIP, neighborPort))
+                except Exception as e:
+                    print("ServerNodeUDP : Error contacting the neighbor", str(e))
+                    numIter += 1
                 continue
             print ("ServerNodeUDP : From Neighbor: ", recvMessage)
             if(recvMessage.flag == NORMAL_ACK and recvMessage.originPort == neighborPort):
@@ -81,16 +86,15 @@ class ServerNodeUDP(ServerNode):
                     print("Algo anda mal")
                     #print(tupleK)
                 else:
-                    print("Algo anda bien")
+                    print("******* Node: "+str(tupleK)+" is Alive *******")
                     tupleV = (oldTupleV[0], True)
                     self.neighborsList[tupleK] = tupleV
             else:
                 self.ack_Queue.put(recvMessage)
-                print("ServerNodeUDP : Error no REQUEST_ACK message from the neighbor")
+                print("ServerNodeUDP : Error no ACK message from the neighbor")
 
     def run(self):
         self.getNeighborsFromServer()
-
         contactNeighborsThread = Thread(target=self.contactNeighbors, args=())
         contactNeighborsThread.start()
         print("ServerNodeUDP : Receiving stuff")
@@ -99,14 +103,18 @@ class ServerNodeUDP(ServerNode):
             packedMessage, clientAddress = self.serverSocket.recvfrom(2048)
             # We need to decode the recieved message
             message = decodeMessage(packedMessage)
-            if(message.flag == DATA):
-                clientAddress = (clientAddress[0], int(message.originPort))
-                print("From ODIN: "+str(message))
-                #Proccess the message
-                #Hacer Hilo y metodo para procesar el mensaje
-                message = Message._make([self.port, clientAddress[1], NORMAL_ACK, "✓✓".encode('utf-8')])
-                ackMessage = encodeMessage(message) #We need to decode the message
-                self.serverSocket.sendto(ackMessage, clientAddress)
-            else:
-                self.ack_Queue.put(message)
+            redirectMessageThread = Thread(target=self.redirectMessage, args=(message, clientAddress[0]))
+            redirectMessageThread.start()
             continue
+
+    def redirectMessage(self, message, clientIP):
+        if(message.flag == KEEP_ALIVE):
+            clientAddress = (clientIP, int(message.originPort))
+            print("From ODIN: "+str(message))
+            #Proccess the message
+            messageACK = Message._make([self.port, clientAddress[1], NORMAL_ACK, "Si estoy vivo".encode('utf-8')])
+            ackMessage = encodeMessage(messageACK) #We need to decode the message
+            self.serverSocket.sendto(ackMessage, clientAddress)
+        else:
+            if(message.flag == NORMAL_ACK):
+                self.ack_Queue.put(message)
