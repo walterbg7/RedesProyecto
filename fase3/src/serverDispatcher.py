@@ -4,6 +4,7 @@ import sys
 from utilities import *
 from socket import *
 from threading import Thread
+from time import sleep
 
 dicNeighbors = {}
 
@@ -14,6 +15,16 @@ def sendNeighborsList (clientAddress):
     encodedMessage = encodeMessage(message) #We need to decode the message
     serverDispatcherSocket.sendto(encodedMessage, clientAddress) #We send the decode message
     print("Message sended")
+
+def sendKeepAliveMessages():
+    while(1):
+        sleep(5) #We need wait 30 seconds to send next message
+        #We need to define a lock
+        aliveMessage = Message._make([KEEP_ALIVE, None, None])
+        packedMessage = encodeMessage(aliveMessage)
+        for neighbor in dicNeighbors.keys(): #We need to iterate for all neighbors address
+            serverDispatcherSocket.sendto(packedMessage, neighbor)
+        print('Keep alive messages sended to all neighbors') 
 
 with open('neighbors.csv', 'rt',  encoding="utf8") as csvfile2:
     neighborsReader = csv.DictReader(csvfile2)
@@ -83,6 +94,9 @@ print(dicNeighbors)
 serverDispatcherSocket = socket(AF_INET, SOCK_DGRAM) #We create a UDP socket
 serverDispatcherSocket.bind((SERVER_DISPATCHER_IP, SERVER_DISPATCHER_PORT))
 
+keepAliveMessages = Thread(target=sendKeepAliveMessages, args= ()) #We ne too send keep alive messages
+keepAliveMessages.start()
+
 while (1):
     enodedMessage, client = serverDispatcherSocket.recvfrom(2048) #Receive message
     message = decodeMessage(enodedMessage) #We need to decode the message
@@ -96,4 +110,6 @@ while (1):
         newRequest = Thread(target=sendNeighborsList, args = (client, ))
         newRequest.start()
         continue
-    print("Message is not a REQUEST message")
+    if message.flag == KEEP_ALIVE_ACK:
+        print('Estoy vivo playo')
+    print("Message is not a REQUEST message") 
