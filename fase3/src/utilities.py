@@ -1,22 +1,21 @@
-import threading
 from socket import *
 from collections import namedtuple
 
 # Constants
 SERVER_DISPATCHER_IP = "127.0.0.1"
 SERVER_DISPATCHER_PORT = 60000
-MESSAGE_PARTS_DIVIDER = "/"
-MESSAGE_LINES_DIVIDER = "&"
+TIMEOUT = 5
 
 # Flags
-CATASTROPHE = 0 #The number of hops are counted
-KEEP_ALIVE = 1
-KEEP_ALIVE_ACK = 2
-DATA = 4
+ACTUALIZATION = 1
+IS_ALIVE = 2
+IS_ALIVE_ACK = 3
+BROADCAST = 4
+DATA = 5
+COST_CHANGE = 6
+DEAD = 7
 REQUEST = 8
-REQUEST_ACK = 16
-CHANGE_COST = 32
-CHANGE_KILL = 64
+REQUEST_ACK = 9
 
 # Global variables
 clientMenu = '''
@@ -27,11 +26,11 @@ Select an option:
 
 '''
 
-Message = namedtuple("Message", ["flag", "n", "data"])
-
-# Locks
-aTLock = threading.Lock()
-logFileLock = threading.Lock()
+TypeMessage = namedtuple("TypeMessage", ["type"])
+ActualizationMessage = namedtuple("ActualizationMessage", ["type", "n", "data"])
+BroadcastMessage = namedtuple("BroadcastMessage", ["type", "n"])
+CostChangeMessage = namedtuple("BroadcastMessage", ["type", "cost"])
+DataMessage = namedtuple("DataMessage", ["type", "IPS", "PortS", "IPD", "PortD", "n", "Data"])
 
 # Functions
 def print_error_invalid_ip():
@@ -74,44 +73,37 @@ def is_valid_network_ipv4_address(address, mask):
     else:
         return False
 
-def writeOnLog(strToWrite, strHeader = None):
-    logFileLock.acquire()
-    try:
-        logFile = open("log.txt", 'r+')
-        logFile.read()
-    except:
-        logFile = open("log.txt", 'w')
-    if(strHeader is not None):
-        logFile.write(strHeader+"\n")
-    logFile.write(strToWrite+"\n")
-    logFile.write("\n-----------------------------------------------------------------------\n\n")
-    logFile.close()
-    logFileLock.release()
-
 def encodeMessage(message):
     encodedMessage = None
-    if(message.flag == REQUEST):
-        encodedMessage = REQUEST.to_bytes(1, byteorder='big')
-    elif(message.flag == REQUEST_ACK):
-        encodedMessage = REQUEST_ACK.to_bytes(1, byteorder='big') + message.data
-    elif(message.flag == KEEP_ALIVE):
-        encodedMessage = KEEP_ALIVE.to_bytes(1, byteorder='big')
-    elif(message.flag == KEEP_ALIVE_ACK):
-        encodedMessage = KEEP_ALIVE_ACK.to_bytes(1, byteorder='big')
+    if(isinstance(message, TypeMessage)):
+        print("encodeMessage : TypeMessage")
+        encodedMessage = message.type.to_bytes(1, byteorder='big')
+    elif(isinstance(message, ActualizationMessage)):
+        print("encodeMessage : ActualizationMessage")
+    elif(isinstance(message, BroadcastMessage)):
+        print("encodeMessage : BroadcastMessage")
+    elif(isinstance(message, CostChangeMessage)):
+        print("encodeMessage : CostChangeMessage")
+    elif(isinstance(message, DataMessage)):
+        print("encodeMessage : DataMessage")
     else:
-        print("encodeMessage : Invalid flag")
+        print("encodeMessage Error: Invalid message")
     return encodedMessage
 
 def decodeMessage(encodedMessage):
     message = None
-    if(encodedMessage[0] == REQUEST):
-        message = Message._make([REQUEST, None, None])
-    elif(encodedMessage[0] == REQUEST_ACK):
-        message = Message._make([REQUEST_ACK, None, encodedMessage[1:]])
-    elif(encodedMessage[0] == KEEP_ALIVE):
-        message = Message._make([KEEP_ALIVE, None, None])
-    elif(encodedMessage[0] == KEEP_ALIVE_ACK):
-        message = Message._make([KEEP_ALIVE_ACK, None, None])
+    messageType = encodedMessage[0]
+    if(messageType == IS_ALIVE or messageType == IS_ALIVE_ACK or messageType == DEAD or messageType == REQUEST):
+        print("decodeMessage : TypeMessage")
+        message = TypeMessage._make([messageType])
+    elif(messageType == ACTUALIZATION or messageType == REQUEST_ACK):
+        print("decodeMessage : ActualizationMessage")
+    elif(messageType == BROADCAST):
+        print("decodeMessage : BroadcastMessage")
+    elif(messageType == COST_CHANGE):
+        print("decodeMessage : CostChangeMessage")
+    elif(messageType == DATA):
+        print("decodeMessage : DataMessage")
     else:
-        print("encodeMessage : Invalid flag")
+        print("decodeMessage Error: Invalid type of message")
     return message

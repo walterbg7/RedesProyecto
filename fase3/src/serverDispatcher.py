@@ -1,30 +1,20 @@
 import csv
 import os
-import sys
 from utilities import *
-from socket import *
-from threading import Thread
-from time import sleep
+from threading import *
 
+serverDispatcherSocket = socket(AF_INET, SOCK_DGRAM)
+serverDispatcherSocket.bind((SERVER_DISPATCHER_IP, SERVER_DISPATCHER_PORT))
 dicNeighbors = {}
 
 def sendNeighborsList (clientAddress):
+    print("ServerDispatcher : sendNeighborsList")
     listOfNeighbors = dicNeighbors[clientAddress] #We need the list of neighbors
+    print("ServerDispatcher : <"+str(clientAddress)+"> neighbors :")
     print(listOfNeighbors)
-    message = Message._make([REQUEST_ACK, None, listOfNeighbors.encode('utf8')])
-    encodedMessage = encodeMessage(message) #We need to decode the message
-    serverDispatcherSocket.sendto(encodedMessage, clientAddress) #We send the decode message
-    print("Message sended")
-
-def sendKeepAliveMessages():
-    while(1):
-        sleep(5) #We need wait 30 seconds to send next message
-        #We need to define a lock
-        aliveMessage = Message._make([KEEP_ALIVE, None, None])
-        packedMessage = encodeMessage(aliveMessage)
-        for neighbor in dicNeighbors.keys(): #We need to iterate for all neighbors address
-            serverDispatcherSocket.sendto(packedMessage, neighbor)
-        print('Keep alive messages sended to all neighbors') 
+    requetedMessage = ActualizationMessage._make([REQUEST_ACK, len(listOfNeighbors), listOfNeighbors])
+    encodedRequestedMessage = encodeMessage(requetedMessage) #We need to decode the message
+    serverDispatcherSocket.sendto(encodedRequestedMessage, clientAddress) #We send the decode message
 
 with open('neighbors.csv', 'rt',  encoding="utf8") as csvfile2:
     neighborsReader = csv.DictReader(csvfile2)
@@ -73,43 +63,39 @@ with open('neighbors.csv', 'rt',  encoding="utf8") as csvfile2:
         #Add to the dicNeighbors
         key1 = (ipS, portSInt)
         key2 = (ipD, portDInt)
-        strValue1 = ""+ipD+MESSAGE_PARTS_DIVIDER+maskD+MESSAGE_PARTS_DIVIDER+portD+MESSAGE_PARTS_DIVIDER+cost+MESSAGE_LINES_DIVIDER
-        strValue2 = ""+ipS+MESSAGE_PARTS_DIVIDER+maskS+MESSAGE_PARTS_DIVIDER+portS+MESSAGE_PARTS_DIVIDER+cost+MESSAGE_LINES_DIVIDER
-        existK1 = dicNeighbors.get(key1)
-        existK2 = dicNeighbors.get(key2)
-        if((existK1 is None) and (existK2 is None)):
-            dicNeighbors[key1] = strValue1
-            dicNeighbors[key2] = strValue2
-        elif((not existK1 is None) and (not existK2 is None)):
-            dicNeighbors[key1] = existK1 + strValue1
-            dicNeighbors[key2] = existK2 + strValue2
-        elif((not existK1 is None) and (existK2 is None)):
-            dicNeighbors[key1] = existK1 + strValue1
-            dicNeighbors[key2] = strValue2
+        value1 = (ipD, maskDInt, portDInt, costInt)
+        value2 = (ipS, maskSInt, portSInt, costInt)
+        existKey1 = dicNeighbors.get(key1)
+        existKey2 = dicNeighbors.get(key2)
+        if((existKey1 is None) and (existKey2 is None)):
+            dicNeighbors[key1] = []
+            dicNeighbors[key1].append(value1)
+            dicNeighbors[key2] = []
+            dicNeighbors[key2].append(value2)
+        elif((not existKey1 is None) and (not existKey2 is None)):
+            dicNeighbors[key1].append(value1)
+            dicNeighbors[key2].append(value2)
+        elif((not existKey1 is None) and (existKey2 is None)):
+            dicNeighbors[key1].append(value1)
+            dicNeighbors[key2] = []
+            dicNeighbors[key2].append(value2)
         else:
-            dicNeighbors[key2] = existK2 + strValue2
-            dicNeighbors[key1] = strValue1
+            dicNeighbors[key2].append(value2)
+            dicNeighbors[key1] = []
+            dicNeighbors[key1].append(value1)
 print(dicNeighbors)
-
-serverDispatcherSocket = socket(AF_INET, SOCK_DGRAM) #We create a UDP socket
-serverDispatcherSocket.bind((SERVER_DISPATCHER_IP, SERVER_DISPATCHER_PORT))
-
-keepAliveMessages = Thread(target=sendKeepAliveMessages, args= ()) #We ne too send keep alive messages
-keepAliveMessages.start()
 
 while (1):
     enodedMessage, client = serverDispatcherSocket.recvfrom(2048) #Receive message
     message = decodeMessage(enodedMessage) #We need to decode the message
-    print(client)
     if client not in dicNeighbors: #IP is no in the Neighbors Dictionary
-        print("Recived message from a invalid IP")
+        print("ServerDispatcher Error : Recived message is from a invalid Node")
         continue
 
-    print(message.flag)
-    if message.flag == REQUEST: #Only request messages are answered
+    if message.type == REQUEST: #Only request messages are answered
         newRequest = Thread(target=sendNeighborsList, args = (client, ))
+        newRequest.daemon = True
         newRequest.start()
         continue
-    if message.flag == KEEP_ALIVE_ACK:
-        print('Estoy vivo playo')
-    print("Message is not a REQUEST message") 
+    else:
+        print("ServerDispatcher Error : Recieved message is not a REQUEST message")

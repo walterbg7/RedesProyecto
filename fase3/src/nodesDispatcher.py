@@ -34,4 +34,4 @@ with open('nodes.csv', 'rt',  encoding="utf8") as csvfile:
             print_error_invalid_port()
             sys.exit(-1)
         # I need to create a new terminal and run the 'node.py' program with the row parameters on that terminal
-        os.system("gnome-terminal -x python3 node.py"+' '+ip+' '+mask+' '+port)
+        os.system("gnome-terminal -x python3 main.py"+' '+ip+' '+mask+' '+port)
