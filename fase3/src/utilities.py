@@ -9,8 +9,14 @@ MESSAGE_PARTS_DIVIDER = "/"
 MESSAGE_LINES_DIVIDER = "&"
 
 # Flags
+CATASTROPHE = 0 #The number of hops are counted
+KEEP_ALIVE = 1
+KEEP_ALIVE_ACK = 2
+DATA = 4
 REQUEST = 8
-REQUEST_ACK = 9
+REQUEST_ACK = 16
+CHANGE_COST = 32
+CHANGE_KILL = 64
 
 # Global variables
 clientMenu = '''
@@ -88,6 +94,10 @@ def encodeMessage(message):
         encodedMessage = REQUEST.to_bytes(1, byteorder='big')
     elif(message.flag == REQUEST_ACK):
         encodedMessage = REQUEST_ACK.to_bytes(1, byteorder='big') + message.data
+    elif(message.flag == KEEP_ALIVE):
+        encodedMessage = KEEP_ALIVE.to_bytes(1, byteorder='big')
+    elif(message.flag == KEEP_ALIVE_ACK):
+        encodedMessage = KEEP_ALIVE_ACK.to_bytes(1, byteorder='big')
     else:
         print("encodeMessage : Invalid flag")
     return encodedMessage
@@ -98,6 +108,10 @@ def decodeMessage(encodedMessage):
         message = Message._make([REQUEST, None, None])
     elif(encodedMessage[0] == REQUEST_ACK):
         message = Message._make([REQUEST_ACK, None, encodedMessage[1:]])
+    elif(encodedMessage[0] == KEEP_ALIVE):
+        message = Message._make([KEEP_ALIVE, None, None])
+    elif(encodedMessage[0] == KEEP_ALIVE_ACK):
+        message = Message._make([KEEP_ALIVE_ACK, None, None])
     else:
         print("encodeMessage : Invalid flag")
     return message
