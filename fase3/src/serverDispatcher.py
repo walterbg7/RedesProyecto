@@ -13,7 +13,7 @@ def sendNeighborsList (clientAddress):
     print("ServerDispatcher : <"+str(clientAddress)+"> neighbors :")
     print(listOfNeighbors)
     requetedMessage = ActualizationMessage._make([REQUEST_ACK, len(listOfNeighbors), listOfNeighbors])
-    encodedRequestedMessage = encodeMessage(requetedMessage) #We need to decode the message
+    encodedRequestedMessage = encode_message(requetedMessage) #We need to decode the message
     serverDispatcherSocket.sendto(encodedRequestedMessage, clientAddress) #We send the decode message
 
 with open('neighbors.csv', 'rt',  encoding="utf8") as csvfile2:
@@ -87,15 +87,15 @@ print(dicNeighbors)
 
 while (1):
     enodedMessage, client = serverDispatcherSocket.recvfrom(2048) #Receive message
-    message = decodeMessage(enodedMessage) #We need to decode the message
     if client not in dicNeighbors: #IP is no in the Neighbors Dictionary
         print("ServerDispatcher Error : Recived message is from a invalid Node")
         continue
-
-    if message.type == REQUEST: #Only request messages are answered
-        newRequest = Thread(target=sendNeighborsList, args = (client, ))
-        newRequest.daemon = True
-        newRequest.start()
-        continue
-    else:
-        print("ServerDispatcher Error : Recieved message is not a REQUEST message")
+    message = decode_message(enodedMessage) #We need to decode the message
+    if(message != None):
+        if message.type == REQUEST: #Only request messages are answered
+            newRequest = Thread(target=sendNeighborsList, args = (client, ))
+            newRequest.daemon = True
+            newRequest.start()
+            continue
+        else:
+            print("ServerDispatcher Error : Recieved message is not a REQUEST message")

@@ -24,7 +24,7 @@ class Node():
         print("Node (The real mvp!) : askForNeighbors")
         # We need to send a request message to the server dispatcher
         requestMessage = TypeMessage._make([REQUEST])
-        encodedRequestMessage = encodeMessage(requestMessage)
+        encodedRequestMessage = encode_message(requestMessage)
         noNeighbors = True
         while(noNeighbors):
             self.UDPSocket.sendto(encodedRequestMessage, (SERVER_DISPATCHER_IP, SERVER_DISPATCHER_PORT))
@@ -36,24 +36,25 @@ class Node():
             requestACKMessage = queueMessage[0]
             if(requestACKMessage.type == REQUEST_ACK):
                 noNeighbors = False
-                print(requestACKMessage.data)
+                for it in  requestACKMessage.data:
+                    self.neighborsList[(it[0], it[2])] = [it[1], it[3], False, 0]
                 break
             else:
                 print("Node (The real mvp!) Error: The recieved message was not a REQUEST_ACK message")
                 continue
         # Once I know my neighbors, I can: start checking if they are alive, start sending actualizations
 
-
     def serverThread(self):
         print("Node (The real mvp!) : serverThread")
         while True:
-            enodedMessage, senderAddr = self.UDPSocket.recvfrom(2048)
-            message = decodeMessage(encodeMessage)
-            if(message.type != BROADCAST):
-                self.messageQueue.put((message, senderAddr))
-            else:
-                # If the message type is BROADCAST we need to process it immediately
-                continue
+            encodedMessage, senderAddr = self.UDPSocket.recvfrom(2048)
+            message = decode_message(encodedMessage)
+            if(message != None):
+                if(message.type != BROADCAST):
+                    self.messageQueue.put((message, senderAddr))
+                else:
+                    # If the message type is BROADCAST we need to process it immediately
+                    continue
 
     def printAlcanzabilityTable(self):
         self.alcanzabilityTableLock.acquire()
