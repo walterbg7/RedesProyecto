@@ -58,6 +58,7 @@ class Node():
         print("Node (The real mvp!) : askNeighborsIfTheyAreAlive")
         while True:
             # For each neighbor in the neighbors list, I need to send it a keep alive message
+            self.neighborsListLock.acquire()
             for k in self.neighborsList:
                 if(self.neighborsList[k][3] == MAX_NUMBER_OF_TRIES):
                     if(self.neighborsList[k][2] == True):
@@ -73,11 +74,12 @@ class Node():
                     keepAliveMessage = TypeMessage._make([KEEP_ALIVE])
                     encodedKeepAliveMessage = encode_message(keepAliveMessage)
                     self.UDPSocket.sendto(encodedKeepAliveMessage, k)
+            self.neighborsListLock.release()
             time.sleep(KEEP_ALIVE_RATE)
 
 
     def sendActualizations(self):
-        pass
+        print("Node (The real mvp!) : sendActualizations")
 
     def processRecvMessages(self):
         print("Node (The real mvp!) : processRecvMessages")
@@ -86,22 +88,29 @@ class Node():
             message = queueMessage[0]
             senderAddr = queueMessage[1]
             if(message.type == KEEP_ALIVE):
+                self.neighborsListLock.acquire()
                 neighborData = self.neighborsList.get(senderAddr)
                 if(neighborData != None):
                     keepAliveACKMessage = TypeMessage._make([KEEP_ALIVE_ACK])
                     encodedKeepAliveACKMessage = encode_message(keepAliveACKMessage)
                     self.UDPSocket.sendto(encodedKeepAliveACKMessage, senderAddr)
-                    if(neighborData[2]==False):
+                    if(neighborData[2] == False):
                         neighborData[2] = True
                         neighborData[3] = 0
                 else:
                     print("Node (The real mvp!) Error : Keep alive message from invalid neighbor!")
+                self.neighborsListLock.release()
             elif(message.type == KEEP_ALIVE_ACK):
+                self.neighborsListLock.acquire()
                 neighborData = self.neighborsList.get(senderAddr)
                 if(neighborData != None):
+                    if(neighborData[2] == False):
+                        neighborData[2] = True
+                        # I need to add this neighbor to the alcanzabilityTable (is it aplies)
                     neighborData[3] = 0
                 else:
                     print("Node (The real mvp!) Error : Keep alive ack message from invalid neighbor!")
+                self.neighborsListLock.release()
             else:
                 self.messageQueue.put(queueMessage)
 
