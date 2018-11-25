@@ -5,6 +5,7 @@ from collections import namedtuple
 SERVER_DISPATCHER_IP = "127.0.0.1"
 SERVER_DISPATCHER_PORT = 60000
 TIMEOUT = 5
+MAX_NUMBER_OF_TRIES = 5
 
 TYPE = 0
 N = 1
@@ -14,11 +15,12 @@ IP = 0
 MASK = 4
 PORT = 5
 COST = 7
+KEEP_ALIVE_RATE = 20
 
 # Flags
 ACTUALIZATION = 1
-IS_ALIVE = 2
-IS_ALIVE_ACK = 3
+KEEP_ALIVE = 2
+KEEP_ALIVE_ACK = 3
 BROADCAST = 4
 PURE_DATA = 5
 COST_CHANGE = 6
@@ -34,6 +36,8 @@ Select an option:
     2 : Print alcanzabiliy table
 
 '''
+
+ignoring = False
 
 TypeMessage = namedtuple("TypeMessage", ["type"])
 ActualizationMessage = namedtuple("ActualizationMessage", ["type", "n", "data"])
@@ -126,7 +130,7 @@ def decode_message(encodedMessage):
         print("decodeMessage Error: invalid encodedMessage")
         return None
     message = None
-    if(messageType == IS_ALIVE or messageType == IS_ALIVE_ACK or messageType == DEAD or messageType == REQUEST):
+    if(messageType == KEEP_ALIVE or messageType == KEEP_ALIVE_ACK or messageType == DEAD or messageType == REQUEST):
         print("decodeMessage : TypeMessage")
         message = TypeMessage._make([messageType])
     elif(messageType == ACTUALIZATION or messageType == REQUEST_ACK):
@@ -150,7 +154,7 @@ def decode_message(encodedMessage):
         print("decodeMessage : BroadcastMessage")
     elif(messageType == COST_CHANGE):
         print("decodeMessage : CostChangeMessage")
-    elif(messageType == DATA):
+    elif(messageType == PURE_DATA):
         print("decodeMessage : DataMessage")
     else:
         print("decodeMessage Error: Invalid type of message")
