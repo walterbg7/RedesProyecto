@@ -1,5 +1,6 @@
 import sys
 import argparse
+import time
 from utilities import *
 from queue import *
 from threading import *
@@ -54,25 +55,79 @@ class Node():
         processRecvMessagesThread.start()
 
     def askNeighborsIfTheyAreAlive(self):
-        pass
+        print("Node (The real mvp!) : askNeighborsIfTheyAreAlive")
+        while True:
+            # For each neighbor in the neighbors list, I need to send it a keep alive message
+            for k in self.neighborsList:
+                if(self.neighborsList[k][3] == MAX_NUMBER_OF_TRIES):
+                    if(self.neighborsList[k][2] == True):
+                        # If the neighbor has died, we need to start a broadcast
+                        self.neighborsList[k][2] = False
+                        self.neighborsList[k][3] = 0
+                    else:
+                        # If the neighbors did not wake up, I stop bothering it
+                        print("Node (The real mvp!) : <"+str(k)+"> has not wake up, lazy f#ck!")
+                else:
+                    print(str(k))
+                    self.neighborsList[k][3] += 1
+                    keepAliveMessage = TypeMessage._make([KEEP_ALIVE])
+                    encodedKeepAliveMessage = encode_message(keepAliveMessage)
+                    self.UDPSocket.sendto(encodedKeepAliveMessage, k)
+            time.sleep(KEEP_ALIVE_RATE)
+
 
     def sendActualizations(self):
         pass
 
     def processRecvMessages(self):
-        pass
+        print("Node (The real mvp!) : processRecvMessages")
+        while True:
+            queueMessage = self.messageQueue.get()
+            message = queueMessage[0]
+            senderAddr = queueMessage[1]
+            if(message.type == KEEP_ALIVE):
+                neighborData = self.neighborsList.get(senderAddr)
+                if(neighborData != None):
+                    keepAliveACKMessage = TypeMessage._make([KEEP_ALIVE_ACK])
+                    encodedKeepAliveACKMessage = encode_message(keepAliveACKMessage)
+                    self.UDPSocket.sendto(encodedKeepAliveACKMessage, senderAddr)
+                    if(neighborData[2]==False):
+                        neighborData[2] = True
+                        neighborData[3] = 0
+                else:
+                    print("Node (The real mvp!) Error : Keep alive message from invalid neighbor!")
+            elif(message.type == KEEP_ALIVE_ACK):
+                neighborData = self.neighborsList.get(senderAddr)
+                if(neighborData != None):
+                    neighborData[3] = 0
+                else:
+                    print("Node (The real mvp!) Error : Keep alive ack message from invalid neighbor!")
+            else:
+                self.messageQueue.put(queueMessage)
+
+    def serverThreadHelper(self, encodedMessage, senderAddr):
+        print("Node (The real mvp!) : serverThreadHelper")
+        message = decode_message(encodedMessage)
+        if(message != None):
+            if(message.type != BROADCAST):
+                if(ignoring):
+                    if(message.type != ACTUALIZATION and message.type != PURE_DATA):
+                        self.messageQueue.put((message, senderAddr))
+                    else:
+                        print("Node (The real mvp!) : Ignoring this message <"+str(message)+">")
+                else:
+                    self.messageQueue.put((message, senderAddr))
+            else:
+                # If the message type is BROADCAST we need to process it immediately
+                pass
 
     def serverThread(self):
         print("Node (The real mvp!) : serverThread")
         while True:
             encodedMessage, senderAddr = self.UDPSocket.recvfrom(2048)
-            message = decode_message(encodedMessage)
-            if(message != None):
-                if(message.type != BROADCAST):
-                    self.messageQueue.put((message, senderAddr))
-                else:
-                    # If the message type is BROADCAST we need to process it immediately
-                    continue
+            serverThreadHelperT = Thread(target=self.serverThreadHelper, args=(encodedMessage, senderAddr))
+            serverThreadHelperT.daemon = True
+            serverThreadHelperT.start()
 
     def printAlcanzabilityTable(self):
         self.alcanzabilityTableLock.acquire()
