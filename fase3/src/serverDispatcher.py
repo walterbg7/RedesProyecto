@@ -11,7 +11,8 @@ def sendNeighborsList (clientAddress):
     print("ServerDispatcher : sendNeighborsList")
     listOfNeighbors = dicNeighbors[clientAddress] #We need the list of neighbors
     print("ServerDispatcher : <"+str(clientAddress)+"> neighbors :")
-    print(listOfNeighbors)
+    for ind in listOfNeighbors:
+        print(str(ind))
     requetedMessage = ActualizationMessage._make([REQUEST_ACK, len(listOfNeighbors), listOfNeighbors])
     encodedRequestedMessage = encode_message(requetedMessage) #We need to decode the message
     serverDispatcherSocket.sendto(encodedRequestedMessage, clientAddress) #We send the decode message
@@ -83,7 +84,8 @@ with open('neighbors.csv', 'rt',  encoding="utf8") as csvfile2:
             dicNeighbors[key2].append(value2)
             dicNeighbors[key1] = []
             dicNeighbors[key1].append(value1)
-print(dicNeighbors)
+for k in dicNeighbors:
+    print(str(k)+" : "+str(dicNeighbors[k]))
 
 while (1):
     enodedMessage, client = serverDispatcherSocket.recvfrom(2048) #Receive message

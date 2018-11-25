@@ -43,6 +43,24 @@ class Node():
                 print("Node (The real mvp!) Error: The recieved message was not a REQUEST_ACK message")
                 continue
         # Once I know my neighbors, I can: start checking if they are alive, start sending actualizations
+        aNITAAThread = Thread(target=self.askNeighborsIfTheyAreAlive, args=())
+        aNITAAThread.daemon = True
+        aNITAAThread.start()
+        sendActualizationsThread = Thread(target=self.sendActualizations, args=())
+        sendActualizationsThread.daemon = True
+        sendActualizationsThread.start()
+        processRecvMessagesThread = Thread(target=self.processRecvMessages, args=())
+        processRecvMessagesThread.daemon = True
+        processRecvMessagesThread.start()
+
+    def askNeighborsIfTheyAreAlive(self):
+        pass
+
+    def sendActualizations(self):
+        pass
+
+    def processRecvMessages(self):
+        pass
 
     def serverThread(self):
         print("Node (The real mvp!) : serverThread")
@@ -64,12 +82,14 @@ class Node():
     def printNeighborsList(self):
         self.neighborsListLock.acquire()
         print ("Neighbors list : ")
-        print(str(self.neighborsList))
+        for k in self.neighborsList:
+            print(str(k)+" : "+str(self.neighborsList[k]))
         self.neighborsListLock.release()
 
     def printMessageQueue(self):
         print ("Message queue : ")
-        print(list(self.messageQueue.queue))
+        for ind in list(self.messageQueue.queue):
+            print(ind)
 
     def run(self):
         # We need to create the thread that will receive all the messages from the UDP socket
