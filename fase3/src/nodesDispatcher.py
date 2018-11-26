@@ -16,7 +16,7 @@ with open('nodes.csv', 'rt',  encoding="utf8") as csvfile:
         # I need to check if the parameter in the csv file are valid
         if(not is_valid_ipv4_address(ip)):
             print("Error: Invalid ip address")
-            sys.exit(-1);
+            sys.exit(-1)
         try:
             maskInt = int(mask)
         except ValueError:

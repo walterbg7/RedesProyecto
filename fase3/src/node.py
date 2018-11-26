@@ -182,8 +182,56 @@ class Node():
                     self.alcanzabilityTableLock.release()
                 else:
                     print("Node (The real mvp!) Error : Actualization message from invalid neighbor!")
+            elif(message.type == COST_CHANGE):
+                self.neighborsListLock.acquire()
+                neighborData = self.neighborsList.get(senderAddr)
+                if(neighborData != None): #This is a option for error control
+                    oldCost = neighborData[1]
+                    neighborData[1] = message.cost #we register a new cost
+                    if(message.cost > oldCost):
+                        self.startBroadcast(BROADCAST_JUMPS)
+                else:
+                    print("Node (The real mvp!) Error : Invalid Cost Change Message!")
+                self.neighborsListLock.release()
             else:
                 self.messageQueue.put(queueMessage)
+
+    def costChange(self):
+        print("Write the address to cost change")
+        goodData = False
+        ip = input("IP: ") #We need the neighbor ip
+        if(not is_valid_ipv4_address(ip)):
+            print("Error: Invalid ip address")
+        else:
+            port = input("Port: ") #We need the neighbor port
+            try:
+                portInt = int(port)
+            except ValueError:
+                print_error_invalid_port()
+            else:
+                if(portInt < 0 or portInt > 65535):
+                    print_error_invalid_port()
+                else:
+                    goodData = True
+        if(goodData):     #If the data is good, we continue
+            cost = input ("New Cost: ")
+            try: 
+                intCost = int(cost) #We need the new cost
+            except ValueError:
+                 print_error_invalid_cost()
+            else:
+                if(intCost < 20 or intCost > 100): #Validate the cost
+                    print_error_invalid_cost()
+                else:
+                    link = (ip, int(port))  #We need the link 
+                    if(self.neighborsList.get(link) == None): #Is not a neighbor?
+                        print("Invalid Neighbor")
+                    else: #Yes, it is
+                        costChangeMessage = CostChangeMessage._make([COST_CHANGE, intCost])
+                        encodedCostChangeMessage = encode_message(costChangeMessage)
+                        self.UDPSocket.sendto(encodedCostChangeMessage, link)
+                        self.neighborsList[link][1] = intCost
+                        print("Nice Job, take a cookie")
 
     def talkToTheHand(self):
         print("Node (The real mvp!) : talkToTheHand")
@@ -273,6 +321,7 @@ class Node():
             if(option == 0):
                 beingDeleted = True
             elif(option == 1):
+                self.costChange()
                 print("This option is temporarily disabled")
             elif(option == 2):
                 self.printAlcanzabilityTable()
