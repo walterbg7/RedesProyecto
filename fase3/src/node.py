@@ -54,6 +54,15 @@ class Node():
         processRecvMessagesThread.daemon = True
         processRecvMessagesThread.start()
 
+    def startBroadcast(self, numberOfJumpsLeft):
+        print("Node (The real mvp!) : startBroadcast")
+        if(numberOfJumpsLeft > 0):
+            for k in self.neighborsList:
+                broadcastMessage = BroadcastMessage._make([BROADCAST, numberOfJumpsLeft])
+                encodedBroadcastMessage = encode_message(broadcastMessage)
+                self.UDPSocket.sendto(encodedBroadcastMessage, k)
+
+
     def askNeighborsIfTheyAreAlive(self):
         print("Node (The real mvp!) : askNeighborsIfTheyAreAlive")
         while True:
@@ -65,6 +74,7 @@ class Node():
                         # If the neighbor has died, we need to start a broadcast
                         self.neighborsList[k][2] = False
                         self.neighborsList[k][3] = 0
+                        self.startBroadcast(BROADCAST_JUMPS)
                     else:
                         # If the neighbors did not wake up, I stop bothering it
                         print("Node (The real mvp!) : <"+str(k)+"> has not wake up, lazy f#ck!")
@@ -80,6 +90,49 @@ class Node():
 
     def sendActualizations(self):
         print("Node (The real mvp!) : sendActualizations")
+        while True:
+            self.neighborsListLock.acquire()
+            self.alcanzabilityTableLock.acquire()
+            for neighbor in self.neighborsList:
+                neighborData = self.neighborsList[neighbor]
+                if(neighborData[2] == True):
+                    # If the neighbor is alive, I can try to send it a actualization message
+                    n = 0
+                    data = []
+                    for aTEntry in self.alcanzabilityTable:
+                        aTEntryData = self.alcanzabilityTable[aTEntry]
+                        if(aTEntry != neighbor):
+                            # If the alcanzavility table entry is not the neighbor
+                            if(aTEntryData[1] != None):
+                                # If the alcanzabiliy table entry "through" is not direct
+                                if((aTEntryData[1][0], aTEntryData[1][2]) != neighbor):
+                                    # If the alcanzabiliy table entry "through" is not my neighbor, it is a valid entry!
+                                    n += 1
+                                    data.append((aTEntry[0], aTEntryData[0], aTEntry[1], (aTEntryData[2] + neighborData[1])))
+                            else:
+                                # If I know that alcanzabiliy table entry directly and it is not my neighbor, it is a valid entry!
+                                n += 1
+                                data.append((aTEntry[0], aTEntryData[0], aTEntry[1], (aTEntryData[2] + neighborData[1])))
+                    if(n > 0):
+                        # If I could create a actualization message I need to send it
+                        actualizationMessage = ActualizationMessage._make([ACTUALIZATION, n, data])
+                        encodedActualizationMessage = encode_message(actualizationMessage)
+                        self.UDPSocket.sendto(encodedActualizationMessage, neighbor)
+            self.neighborsListLock.release()
+            self.alcanzabilityTableLock.release()
+            time.sleep(ACTUALIZATION_RATE)
+
+    def addNeigborToAlcanzabilityTable(self, neighbor):
+        print("Node (The real mvp!) : addNeigborToAlcanzabilityTable")
+        self.alcanzabilityTableLock.acquire()
+        neighborData = self.neighborsList[neighbor]
+        if(not(neighbor in self.alcanzabilityTable)):
+            self.alcanzabilityTable[neighbor] = (neighborData[0], None, neighborData[1])
+        else:
+            actualNeighborData = self.alcanzabilityTable[neighbor]
+            if(actualNeighborData[2] > neighborData[1]):
+                self.alcanzabilityTable[neighbor] = (neighborData[0], None, neighborData[1])
+        self.alcanzabilityTableLock.release()
 
     def processRecvMessages(self):
         print("Node (The real mvp!) : processRecvMessages")
@@ -97,6 +150,7 @@ class Node():
                     if(neighborData[2] == False):
                         neighborData[2] = True
                         neighborData[3] = 0
+                        self.addNeigborToAlcanzabilityTable(senderAddr)
                 else:
                     print("Node (The real mvp!) Error : Keep alive message from invalid neighbor!")
                 self.neighborsListLock.release()
@@ -107,28 +161,67 @@ class Node():
                     if(neighborData[2] == False):
                         neighborData[2] = True
                         # I need to add this neighbor to the alcanzabilityTable (is it aplies)
+                        self.addNeigborToAlcanzabilityTable(senderAddr)
                     neighborData[3] = 0
                 else:
                     print("Node (The real mvp!) Error : Keep alive ack message from invalid neighbor!")
                 self.neighborsListLock.release()
+            elif(message.type == ACTUALIZATION):
+                neighborData = self.neighborsList.get(senderAddr)
+                if(neighborData != None):
+                    self.alcanzabilityTableLock.acquire()
+                    for ind in message.data:
+                        if((ind[0], ind[2]) in self.alcanzabilityTable):
+                            # If I already know this node, I need to check if it's cost is less than my actual cost, If it is I need to replace it
+                            actualATEntryData = self.alcanzabilityTable[(ind[0], ind[2])]
+                            if(ind[3] < actualATEntryData[2]):
+                                self.alcanzabilityTable[(ind[0], ind[2])] = (ind[1], (senderAddr[0], neighborData[0], senderAddr[1]), ind[3])
+                        else:
+                            # If I did not know this node I simply add it to the alcanzabiliy table
+                            self.alcanzabilityTable[(ind[0], ind[2])] = (ind[1], (senderAddr[0], neighborData[0], senderAddr[1]), ind[3])
+                    self.alcanzabilityTableLock.release()
+                else:
+                    print("Node (The real mvp!) Error : Actualization message from invalid neighbor!")
             else:
                 self.messageQueue.put(queueMessage)
+
+    def talkToTheHand(self):
+        print("Node (The real mvp!) : talkToTheHand")
+        global ignoring
+        if(not ignoring):
+            ignoring = True
+            time.sleep(IGNORING_TIME)
+            ignoring = False
 
     def serverThreadHelper(self, encodedMessage, senderAddr):
         print("Node (The real mvp!) : serverThreadHelper")
         message = decode_message(encodedMessage)
         if(message != None):
             if(message.type != BROADCAST):
+                global ignoring
                 if(ignoring):
                     if(message.type != ACTUALIZATION and message.type != PURE_DATA):
                         self.messageQueue.put((message, senderAddr))
                     else:
-                        print("Node (The real mvp!) : Ignoring this message <"+str(message)+">")
+                        print("\n\n\nNode (The real mvp!) : Ignoring this message <"+str(message)+">\n\n\n")
                 else:
                     self.messageQueue.put((message, senderAddr))
             else:
+                print("\n\n\nBroadcast!"+str(message.n)+"\n\n\n")
                 # If the message type is BROADCAST we need to process it immediately
-                pass
+                # I need to start the "talk to the hand" thread
+                talkToTheHandThread = Thread(target=self.talkToTheHand, args=())
+                talkToTheHandThread.daemon = True
+                talkToTheHandThread.start()
+                # I need to empty the message queue and the alcanzability table (only if they are not already empty)
+                with self.messageQueue.mutex:
+                    self.messageQueue.queue.clear()
+                self.alcanzabilityTableLock.acquire()
+                if(bool(self.alcanzabilityTable)):
+                    self.alcanzabilityTable.clear()
+                self.alcanzabilityTableLock.release()
+                # I need to propagate the broadcast message
+                self.startBroadcast(message.n - 1)
 
     def serverThread(self):
         print("Node (The real mvp!) : serverThread")
@@ -140,7 +233,9 @@ class Node():
 
     def printAlcanzabilityTable(self):
         self.alcanzabilityTableLock.acquire()
-        print ("Alcanzability table : ")
+        print ("Alcanzability table : ['Who' : 'Through' : 'Cost']")
+        for k in self.alcanzabilityTable:
+            print("("+str(k[0])+", "+str(self.alcanzabilityTable[k][0])+", "+str(k[1])+")"+" : "+str(self.alcanzabilityTable[k][1])+" : "+str(self.alcanzabilityTable[k][2]))
         self.alcanzabilityTableLock.release()
 
     def printNeighborsList(self):
