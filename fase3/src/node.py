@@ -54,6 +54,15 @@ class Node():
         processRecvMessagesThread.daemon = True
         processRecvMessagesThread.start()
 
+    def startBroadcast(self, numberOfJumpsLeft):
+        print("Node (The real mvp!) : startBroadcast")
+        if(numberOfJumpsLeft > 0):
+            for k in self.neighborsList:
+                broadcastMessage = BroadcastMessage._make([BROADCAST, numberOfJumpsLeft])
+                encodedBroadcastMessage = encode_message(broadcastMessage)
+                self.UDPSocket.sendto(encodedBroadcastMessage, k)
+
+
     def askNeighborsIfTheyAreAlive(self):
         print("Node (The real mvp!) : askNeighborsIfTheyAreAlive")
         while True:
@@ -65,6 +74,7 @@ class Node():
                         # If the neighbor has died, we need to start a broadcast
                         self.neighborsList[k][2] = False
                         self.neighborsList[k][3] = 0
+                        self.startBroadcast(BROADCAST_JUMPS)
                     else:
                         # If the neighbors did not wake up, I stop bothering it
                         print("Node (The real mvp!) : <"+str(k)+"> has not wake up, lazy f#ck!")
@@ -175,21 +185,43 @@ class Node():
             else:
                 self.messageQueue.put(queueMessage)
 
+    def talkToTheHand(self):
+        print("Node (The real mvp!) : talkToTheHand")
+        global ignoring
+        if(not ignoring):
+            ignoring = True
+            time.sleep(IGNORING_TIME)
+            ignoring = False
+
     def serverThreadHelper(self, encodedMessage, senderAddr):
         print("Node (The real mvp!) : serverThreadHelper")
         message = decode_message(encodedMessage)
         if(message != None):
             if(message.type != BROADCAST):
+                global ignoring
                 if(ignoring):
                     if(message.type != ACTUALIZATION and message.type != PURE_DATA):
                         self.messageQueue.put((message, senderAddr))
                     else:
-                        print("Node (The real mvp!) : Ignoring this message <"+str(message)+">")
+                        print("\n\n\nNode (The real mvp!) : Ignoring this message <"+str(message)+">\n\n\n")
                 else:
                     self.messageQueue.put((message, senderAddr))
             else:
+                print("\n\n\nBroadcast!"+str(message.n)+"\n\n\n")
                 # If the message type is BROADCAST we need to process it immediately
-                pass
+                # I need to start the "talk to the hand" thread
+                talkToTheHandThread = Thread(target=self.talkToTheHand, args=())
+                talkToTheHandThread.daemon = True
+                talkToTheHandThread.start()
+                # I need to empty the message queue and the alcanzability table (only if they are not already empty)
+                with self.messageQueue.mutex:
+                    self.messageQueue.queue.clear()
+                self.alcanzabilityTableLock.acquire()
+                if(bool(self.alcanzabilityTable)):
+                    self.alcanzabilityTable.clear()
+                self.alcanzabilityTableLock.release()
+                # I need to propagate the broadcast message
+                self.startBroadcast(message.n - 1)
 
     def serverThread(self):
         print("Node (The real mvp!) : serverThread")

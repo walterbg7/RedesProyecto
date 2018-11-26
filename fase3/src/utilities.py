@@ -15,8 +15,10 @@ IP = 0
 MASK = 4
 PORT = 5
 COST = 7
-KEEP_ALIVE_RATE = 60
+KEEP_ALIVE_RATE = 10
 ACTUALIZATION_RATE = 30
+BROADCAST_JUMPS = 5
+IGNORING_TIME = 20#3 * ACTUALIZATION_RATE
 
 # Flags
 ACTUALIZATION = 1
@@ -96,27 +98,39 @@ def encode_ip_adrr(ip):
     return encodedIP
 
 def encode_message(message):
-    print("encodeMessage : "+str(message))
+    print("encode_message : "+str(message))
     encodedMessage = None
     if(isinstance(message, TypeMessage)):
-        print("encodeMessage : TypeMessage")
+        print("encode_message : TypeMessage")
         encodedMessage = message.type.to_bytes(1, byteorder='big')
     elif(isinstance(message, ActualizationMessage)):
-        print("encodeMessage : ActualizationMessage")
+        print("encode_message : ActualizationMessage")
         if(is_valid_actualization_message(message)):
             encodedMessage = message.type.to_bytes(1, byteorder='big') + message.n.to_bytes(2, byteorder='big')
             for it in message.data:
                 encodedMessage += encode_ip_adrr(it[0]) + it[1].to_bytes(1, byteorder='big') + it[2].to_bytes(2, byteorder='big') + it[3].to_bytes(3, byteorder='big')
         else:
-            print("encodeMessage Error: Invalid actualization message")
+            print("encode_message Error: Invalid actualization message")
     elif(isinstance(message, BroadcastMessage)):
-        print("encodeMessage : BroadcastMessage")
+        print("encode_message : BroadcastMessage")
+        try:
+            messageType = message.type.to_bytes(1, byteorder='big')
+        except Exception as e:
+            print("encode_message Error: Invalid broadcast message type")
+            messageType = None
+        try:
+            messageN = message.n.to_bytes(2, byteorder='big')
+        except Exception as e:
+            print("encode_message Error: Invalid broadcast message type")
+            messageN = None
+        if(messageType != None and messageN != None):
+            encodedMessage = messageType + messageN
     elif(isinstance(message, CostChangeMessage)):
-        print("encodeMessage : CostChangeMessage")
+        print("encode_message : CostChangeMessage")
     elif(isinstance(message, DataMessage)):
-        print("encodeMessage : DataMessage")
+        print("encode_message : DataMessage")
     else:
-        print("encodeMessage Error: Invalid message")
+        print("encode_message Error: Invalid message")
     return encodedMessage
 
 def decode_ip_addr(ip):
@@ -124,18 +138,18 @@ def decode_ip_addr(ip):
     return decodedIP
 
 def decode_message(encodedMessage):
-    print("decodeMessage :"+str(encodedMessage))
+    print("decode_message :"+str(encodedMessage))
     try:
         messageType = encodedMessage[TYPE]
     except Exception as e:
-        print("decodeMessage Error: invalid encodedMessage")
+        print("decode_message Error: invalid encodedMessage")
         return None
     message = None
     if(messageType == KEEP_ALIVE or messageType == KEEP_ALIVE_ACK or messageType == DEAD or messageType == REQUEST):
-        print("decodeMessage : TypeMessage")
+        print("decode_message : TypeMessage")
         message = TypeMessage._make([messageType])
     elif(messageType == ACTUALIZATION or messageType == REQUEST_ACK):
-        print("decodeMessage : ActualizationMessage")
+        print("decode_message : ActualizationMessage")
         if(is_valid_actualization_message(encodedMessage)):
             n = int.from_bytes(encodedMessage[N:DATA], byteorder='big')
             data = []
@@ -151,12 +165,19 @@ def decode_message(encodedMessage):
                 lineStart = lineEnd
                 lineEnd = lineStart + LINE_SIZE
             message = ActualizationMessage._make([messageType, n, data])
+        else:
+            print("decode_message Error: Invalid actualization message")
     elif(messageType == BROADCAST):
-        print("decodeMessage : BroadcastMessage")
+        print("decode_message : BroadcastMessage")
+        if(len(encodedMessage)==3):
+            n = int.from_bytes(encodedMessage[N:], byteorder='big')
+            message = BroadcastMessage._make([messageType, n])
+        else:
+            print("decode_message Error: Invalid broadcast message")
     elif(messageType == COST_CHANGE):
-        print("decodeMessage : CostChangeMessage")
+        print("decode_message : CostChangeMessage")
     elif(messageType == PURE_DATA):
-        print("decodeMessage : DataMessage")
+        print("decode_message : DataMessage")
     else:
-        print("decodeMessage Error: Invalid type of message")
+        print("decode_message Error: Invalid type of message")
     return message
