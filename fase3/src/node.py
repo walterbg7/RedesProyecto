@@ -192,6 +192,9 @@ class Node():
             ignoring = True
             time.sleep(IGNORING_TIME)
             ignoring = False
+            for neighbor in self.neighborsList:
+                if(self.neighborsList[neighbor][2] == True):
+                    self.addNeigborToAlcanzabilityTable(neighbor)
 
     def serverThreadHelper(self, encodedMessage, senderAddr):
         print("Node (The real mvp!) : serverThreadHelper")
