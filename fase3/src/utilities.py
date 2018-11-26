@@ -15,8 +15,8 @@ IP = 0
 MASK = 4
 PORT = 5
 COST = 7
-KEEP_ALIVE_RATE = 10
-ACTUALIZATION_RATE = 30
+KEEP_ALIVE_RATE = 60
+ACTUALIZATION_RATE = 10
 BROADCAST_JUMPS = 5
 IGNORING_TIME = 20#3 * ACTUALIZATION_RATE
 
@@ -180,9 +180,12 @@ def decode_message(encodedMessage):
         else:
             print("decode_message Error: Invalid broadcast message")
     elif(messageType == COST_CHANGE):
-        cost = int.from_bytes(encodedMessage[1:], byteorder = 'big')
-        message = CostChangeMessage._make([messageType, cost]) 
-        #print("decode_message : CostChangeMessage")
+        if(len(encodedMessage)==4):
+            cost = int.from_bytes(encodedMessage[1:], byteorder = 'big')
+            message = CostChangeMessage._make([messageType, cost]) 
+            #print("decode_message : CostChangeMessage")
+        else: 
+            print("Decode message error (Cost Change)")
     elif(messageType == PURE_DATA):
         pass
        #print("decode_message : DataMessage")

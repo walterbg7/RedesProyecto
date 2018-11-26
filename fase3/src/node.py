@@ -102,17 +102,8 @@ class Node():
                     for aTEntry in self.alcanzabilityTable:
                         aTEntryData = self.alcanzabilityTable[aTEntry]
                         if(aTEntry != neighbor):
-                            # If the alcanzavility table entry is not the neighbor
-                            if(aTEntryData[1] != None):
-                                # If the alcanzabiliy table entry "through" is not direct
-                                if((aTEntryData[1][0], aTEntryData[1][2]) != neighbor):
-                                    # If the alcanzabiliy table entry "through" is not my neighbor, it is a valid entry!
-                                    n += 1
-                                    data.append((aTEntry[0], aTEntryData[0], aTEntry[1], (aTEntryData[2] + neighborData[1])))
-                            else:
-                                # If I know that alcanzabiliy table entry directly and it is not my neighbor, it is a valid entry!
-                                n += 1
-                                data.append((aTEntry[0], aTEntryData[0], aTEntry[1], (aTEntryData[2] + neighborData[1])))
+                            n += 1
+                            data.append((aTEntry[0], aTEntryData[0], aTEntry[1], (aTEntryData[2] + neighborData[1])))
                     if(n > 0):
                         # If I could create a actualization message I need to send it
                         actualizationMessage = ActualizationMessage._make([ACTUALIZATION, n, data])
@@ -188,6 +179,7 @@ class Node():
                 if(neighborData != None): #This is a option for error control
                     oldCost = neighborData[1]
                     neighborData[1] = message.cost #we register a new cost
+                    self.addNeigborToAlcanzabilityTable(senderAddr)
                     if(message.cost > oldCost):
                         self.startBroadcast(BROADCAST_JUMPS)
                 else:
@@ -224,14 +216,14 @@ class Node():
                     print_error_invalid_cost()
                 else:
                     link = (ip, int(port))  #We need the link 
-                    if(self.neighborsList.get(link) == None): #Is not a neighbor?
-                        print("Invalid Neighbor")
-                    else: #Yes, it is
-                        costChangeMessage = CostChangeMessage._make([COST_CHANGE, intCost])
-                        encodedCostChangeMessage = encode_message(costChangeMessage)
-                        self.UDPSocket.sendto(encodedCostChangeMessage, link)
-                        self.neighborsList[link][1] = intCost
-                        print("Nice Job, take a cookie")
+                    costChangeMessage = CostChangeMessage._make([COST_CHANGE, intCost])
+                    encodedCostChangeMessage = encode_message(costChangeMessage)
+                    self.UDPSocket.sendto(encodedCostChangeMessage, link)
+                    self.neighborsList[link][1] = intCost
+                    neighborMask = self.neighborsList[link][0]
+                    print(self.alcanzabilityTable[link])
+                    self.addNeigborToAlcanzabilityTable(link) #We need the key of the neihgbor
+                    print("Nice Job, take a cookie")
 
     def talkToTheHand(self):
         print("Node (The real mvp!) : talkToTheHand")
