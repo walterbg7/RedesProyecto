@@ -100,6 +100,13 @@ def encode_ip_adrr(ip):
     encodedIP = int(ipTokens[0]).to_bytes(1, byteorder='big')+int(ipTokens[1]).to_bytes(1, byteorder='big')+int(ipTokens[2]).to_bytes(1, byteorder='big')+int(ipTokens[3]).to_bytes(1, byteorder='big')
     return encodedIP
 
+def decode_ip_addr(ip):
+    ipF = ''
+    for itr in range (3):
+        ipF += str(int.from_bytes(ip[itr])) + '.'
+    ipF += str(int.from_bytes(ip[3]))
+    print(ipF)
+
 def encode_message(message):
     #print("encode_message : "+str(message))
     encodedMessage = None
@@ -129,11 +136,25 @@ def encode_message(message):
         if(messageType != None and messageN != None):
             encodedMessage = messageType + messageN
     elif(isinstance(message, CostChangeMessage)):
-        encodedMessage = message.type.to_bytes(1, byteorder='big') + message.cost.to_bytes(3, byteorder='big')
-        print("encode_message : CostChangeMessage")
+        try:
+            encodedMessage = message.type.to_bytes(1, byteorder='big') + message.cost.to_bytes(3, byteorder='big')
+            print("encode_message : CostChangeMessage")
+        except:
+            print("encode_message Error: Invalid CostChange message type")
+            messageN = None
     elif(isinstance(message, DataMessage)):
-        pass
-       #print("encode_message : DataMessage")
+        try:
+            encodedMessage = message.type.to_bytes(1, byteorder='big') 
+            encodedMessage += encode_ip_adrr(message.IPS) 
+            encodedMessage += message.PortS.to_bytes(2, byteorder='big')
+            encodedMessage += encode_ip_adrr(message.IPD) 
+            encodedMessage += message.PortD.to_bytes(2, byteorder='big')
+            encodedMessage += message.n.to_bytes(2, byteorder='big')
+            encodedMessage += message.Data.encode('utf-8')
+            print("encode_message : DataMessage")
+        except:
+            print("encode_message Error: Data message type")
+            messageN = None
     else:
         print("encode_message Error: Invalid message")
     return encodedMessage
@@ -187,9 +208,18 @@ def decode_message(encodedMessage):
         else: 
             print("Decode message error (Cost Change)")
     elif(messageType == PURE_DATA):
-        pass
-       #print("decode_message : DataMessage")
+        if(len(encodedMessage) > 14):
+            #("DataMessage", ["type", "IPS", "PortS", "IPD", "PortD", "n", "Data"])
+            IPs = decode_ip_addr(encodedMessage[1:5])
+            PortS = int.from_bytes(encodedMessage[5:7], byteorder='big')
+            IPd = decode_ip_addr(encodedMessage[7:11])
+            Portd = int.from_bytes(encodedMessage[11:13], byteorder='big')
+            print(IPs, PortS, IPd, Portd)
+            n = int.from_bytes(encodedMessage[13:15], byteorder='big')
+            data = encodedMessage[15:].decode('utf-8')
+        else:
+            print('Decode message error (Data)')
+        print("decode_message : DataMessage")
     else:
-        pass
-       # print("decode_message Error: Invalid type of message")
+        print("decode_message Error: Invalid type of message")
     return message
