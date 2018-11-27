@@ -151,7 +151,7 @@ def encode_message(message):
             encodedMessage += message.PortD.to_bytes(2, byteorder='big')
             encodedMessage += message.n.to_bytes(2, byteorder='big')
             encodedMessage += message.Data.encode('utf-8')
-            print("encode_message : DataMessage")
+         #   print("encode_message : DataMessage")
         except:
             print("encode_message Error: Data message type")
             messageN = None
@@ -214,12 +214,12 @@ def decode_message(encodedMessage):
             PortS = int.from_bytes(encodedMessage[5:7], byteorder='big')
             IPd = decode_ip_addr(encodedMessage[7:11])
             Portd = int.from_bytes(encodedMessage[11:13], byteorder='big')
-            print(IPs, PortS, IPd, Portd)
             n = int.from_bytes(encodedMessage[13:15], byteorder='big')
             data = encodedMessage[15:].decode('utf-8')
+            message = DataMessage._make([messageType, IPs, PortS, IPd, Portd, n, data])
         else:
             print('Decode message error (Data)')
-        print("decode_message : DataMessage")
+        #print("decode_message : DataMessage")
     else:
         print("decode_message Error: Invalid type of message")
     return message

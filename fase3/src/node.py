@@ -111,9 +111,16 @@ class Node():
                 data = input('Mensaje: ')
                 message = DataMessage._make([PURE_DATA, self.ip, self.port, ip, portInt, int(n), data])
                 toSend = encode_message(message)
-                self.UDPSocket.sendto(toSend, link)
+                self.routing(toSend, link)
             else:
                 print('Send message error NODE IS NOT LOCALIZABLE')
+
+    def routing(self, package, destiny):
+        next = self.alcanzabilityTable[destiny]
+        if(next[1] == None):
+            self.UDPSocket.sendto(package, destiny)
+        else:
+            self.UDPSocket.sendto(package, (next[1][0], next[1][2]))
 
     def sendActualizations(self):
         print("Node (The real mvp!) : sendActualizations")
@@ -141,7 +148,7 @@ class Node():
             time.sleep(ACTUALIZATION_RATE)
 
     def addNeigborToAlcanzabilityTable(self, neighbor):
-        print("Node (The real mvp!) : addNeigborToAlcanzabilityTable")
+        #print("Node (The real mvp!) : addNeigborToAlcanzabilityTable")
         self.alcanzabilityTableLock.acquire()
         neighborData = self.neighborsList[neighbor]
         if(not(neighbor in self.alcanzabilityTable)):
@@ -212,6 +219,16 @@ class Node():
                 else:
                     print("Node (The real mvp!) Error : Invalid Cost Change Message!")
                 self.neighborsListLock.release()
+            elif(message.type == PURE_DATA):
+                if(message.IPD == self.ip and message.PortD == self.port):
+                     print('Message',message)
+                     print('This message is for me')
+                else:
+                    toSend = encode_message(message)
+                    destiny = (message.IPD, message.PortD)
+                    print('Message',message)
+                    print('This message is for', destiny)
+                    self.routing(toSend, destiny)
             else:
                 self.messageQueue.put(queueMessage)
 
