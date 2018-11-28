@@ -182,9 +182,9 @@ def decode_message(encodedMessage):
     elif(messageType == COST_CHANGE):
         if(len(encodedMessage)==4):
             cost = int.from_bytes(encodedMessage[1:], byteorder = 'big')
-            message = CostChangeMessage._make([messageType, cost]) 
+            message = CostChangeMessage._make([messageType, cost])
             #print("decode_message : CostChangeMessage")
-        else: 
+        else:
             print("Decode message error (Cost Change)")
     elif(messageType == PURE_DATA):
         pass

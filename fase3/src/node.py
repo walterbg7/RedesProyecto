@@ -125,6 +125,15 @@ class Node():
                 self.alcanzabilityTable[neighbor] = (neighborData[0], None, neighborData[1])
         self.alcanzabilityTableLock.release()
 
+    def deleteNodeToAlcanzabilityTable(self, nodeToDelete):
+        print("Node (The real mvp!) : deleteNodeToAlcanzabilityTable")
+        self.alcanzabilityTableLock.acquire()
+        existNeighbor = self.alcanzabilityTable.get(nodeToDelete)
+        if(existNeighbor):
+            del self.alcanzabilityTable[nodeToDelete]
+        self.alcanzabilityTableLock.release()
+
+
     def processRecvMessages(self):
         print("Node (The real mvp!) : processRecvMessages")
         while True:
@@ -185,6 +194,18 @@ class Node():
                 else:
                     print("Node (The real mvp!) Error : Invalid Cost Change Message!")
                 self.neighborsListLock.release()
+            elif(message.type == DEAD):
+                print("*******DEAD MESSAGE*******")
+                self.neighborsListLock.acquire()
+                neighborDead = self.neighborsList.get(senderAddr)
+                if(neighborDead != None): #This is a option for error control
+                    neighborDead[2] = False #We put our neighbor as dead
+                    neighborDead[3] = 0
+                    self.startBroadcast(BROADCAST_JUMPS)
+                else:
+                    print("Node (The real mvp!) Error : Invalid Neighbor To Delete!")
+                self.deleteNodeToAlcanzabilityTable(senderAddr)
+                self.neighborsListLock.release()
             else:
                 self.messageQueue.put(queueMessage)
 
@@ -207,7 +228,7 @@ class Node():
                     goodData = True
         if(goodData):     #If the data is good, we continue
             cost = input ("New Cost: ")
-            try: 
+            try:
                 intCost = int(cost) #We need the new cost
             except ValueError:
                  print_error_invalid_cost()
@@ -215,7 +236,7 @@ class Node():
                 if(intCost < 20 or intCost > 100): #Validate the cost
                     print_error_invalid_cost()
                 else:
-                    link = (ip, int(port))  #We need the link 
+                    link = (ip, int(port))  #We need the link
                     costChangeMessage = CostChangeMessage._make([COST_CHANGE, intCost])
                     encodedCostChangeMessage = encode_message(costChangeMessage)
                     self.UDPSocket.sendto(encodedCostChangeMessage, link)
@@ -293,6 +314,18 @@ class Node():
         for ind in list(self.messageQueue.queue):
             print(ind)
 
+    def myDeath(self):
+        print("RIP Node (The real mvp!): great node, better neighbor")
+        self.neighborsListLock.acquire()
+        for neighborK in self.neighborsList:
+            neighborData = self.neighborsList.get(neighborK)
+            if(neighborData[2] == True):
+                #neighbor is alive
+                deadMessage = TypeMessage._make([DEAD])
+                encodedDeadMessage = encode_message(deadMessage)
+                self.UDPSocket.sendto(encodedDeadMessage, neighborK)
+        self.neighborsListLock.release()
+
     def run(self):
         # We need to create the thread that will receive all the messages from the UDP socket
         serverThreadT = Thread(target=self.serverThread, args=())
@@ -312,6 +345,7 @@ class Node():
                 print_error_option()
             if(option == 0):
                 beingDeleted = True
+                self.myDeath()
             elif(option == 1):
                 self.costChange()
                 print("This option is temporarily disabled")
