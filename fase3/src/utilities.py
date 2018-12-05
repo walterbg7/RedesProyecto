@@ -37,6 +37,7 @@ Select an option:
     0 : Delete node
     1 : Change cost
     2 : Print alcanzabiliy table
+    3 : Send message
 
 '''
 
@@ -144,10 +145,10 @@ def encode_message(message):
             messageN = None
     elif(isinstance(message, DataMessage)):
         try:
-            encodedMessage = message.type.to_bytes(1, byteorder='big') 
-            encodedMessage += encode_ip_adrr(message.IPS) 
+            encodedMessage = message.type.to_bytes(1, byteorder='big')
+            encodedMessage += encode_ip_adrr(message.IPS)
             encodedMessage += message.PortS.to_bytes(2, byteorder='big')
-            encodedMessage += encode_ip_adrr(message.IPD) 
+            encodedMessage += encode_ip_adrr(message.IPD)
             encodedMessage += message.PortD.to_bytes(2, byteorder='big')
             encodedMessage += message.n.to_bytes(2, byteorder='big')
             encodedMessage += message.Data.encode('utf-8')

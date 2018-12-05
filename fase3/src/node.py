@@ -16,13 +16,15 @@ class Node():
         self.neighborsList = {}
         self.alcanzabilityTableLock = Lock()
         self.neighborsListLock = Lock()
+        self.logFileLock = Lock()
         self.messageQueue = Queue()
         self.UDPSocket = socket(AF_INET, SOCK_DGRAM)
         self.UDPSocket.bind((self.ip, self.port))
-        print("Node (The real mvp!) : Constructor")
+        self.logFileName = str(self.port)+".log"
+        self.writeInLog("Node (The real mvp!) : Constructor")
 
     def askForNeighbors(self):
-        print("Node (The real mvp!) : askForNeighbors")
+        self.writeInLog("Node (The real mvp!) : askForNeighbors")
         # We need to send a request message to the server dispatcher
         requestMessage = TypeMessage._make([REQUEST])
         encodedRequestMessage = encode_message(requestMessage)
@@ -32,7 +34,7 @@ class Node():
             try:
                 queueMessage = self.messageQueue.get(True, TIMEOUT)
             except Empty:
-                print("Node (The real mvp!) Error: No answer from server dispatcher, how rude!")
+                self.writeInLog("Node (The real mvp!) Error: No answer from server dispatcher, how rude!")
                 continue
             requestACKMessage = queueMessage[0]
             if(requestACKMessage.type == REQUEST_ACK):
@@ -41,7 +43,7 @@ class Node():
                     self.neighborsList[(it[0], it[2])] = [it[1], it[3], False, 0]
                 break
             else:
-                print("Node (The real mvp!) Error: The recieved message was not a REQUEST_ACK message")
+                self.writeInLog("Node (The real mvp!) Error: The recieved message was not a REQUEST_ACK message")
                 continue
         # Once I know my neighbors, I can: start checking if they are alive, start sending actualizations
         aNITAAThread = Thread(target=self.askNeighborsIfTheyAreAlive, args=())
@@ -55,7 +57,7 @@ class Node():
         processRecvMessagesThread.start()
 
     def startBroadcast(self, numberOfJumpsLeft):
-        print("Node (The real mvp!) : startBroadcast")
+        self.writeInLog("Node (The real mvp!) : startBroadcast")
         if(numberOfJumpsLeft > 0):
             for k in self.neighborsList:
                 broadcastMessage = BroadcastMessage._make([BROADCAST, numberOfJumpsLeft])
@@ -64,7 +66,7 @@ class Node():
 
 
     def askNeighborsIfTheyAreAlive(self):
-        print("Node (The real mvp!) : askNeighborsIfTheyAreAlive")
+        self.writeInLog("Node (The real mvp!) : askNeighborsIfTheyAreAlive")
         while True:
             # For each neighbor in the neighbors list, I need to send it a keep alive message
             self.neighborsListLock.acquire()
@@ -77,9 +79,8 @@ class Node():
                         self.startBroadcast(BROADCAST_JUMPS)
                     else:
                         # If the neighbors did not wake up, I stop bothering it
-                        print("Node (The real mvp!) : <"+str(k)+"> has not wake up, lazy f#ck!")
+                        self.writeInLog("Node (The real mvp!) : <"+str(k)+"> has not wake up, lazy f#ck!")
                 else:
-                    print(str(k))
                     self.neighborsList[k][3] += 1
                     keepAliveMessage = TypeMessage._make([KEEP_ALIVE])
                     encodedKeepAliveMessage = encode_message(keepAliveMessage)
@@ -113,7 +114,7 @@ class Node():
                 toSend = encode_message(message)
                 self.routing(toSend, link)
             else:
-                print('Send message error NODE IS NOT LOCALIZABLE')
+                print('Error : NODE IS NOT LOCALIZABLE')
 
     def routing(self, package, destiny):
         next = self.alcanzabilityTable[destiny]
@@ -123,7 +124,7 @@ class Node():
             self.UDPSocket.sendto(package, (next[1][0], next[1][2]))
 
     def sendActualizations(self):
-        print("Node (The real mvp!) : sendActualizations")
+        self.writeInLog("Node (The real mvp!) : sendActualizations")
         while True:
             self.neighborsListLock.acquire()
             self.alcanzabilityTableLock.acquire()
@@ -148,7 +149,7 @@ class Node():
             time.sleep(ACTUALIZATION_RATE)
 
     def addNeigborToAlcanzabilityTable(self, neighbor):
-        #print("Node (The real mvp!) : addNeigborToAlcanzabilityTable")
+        self.writeInLog("Node (The real mvp!) : addNeigborToAlcanzabilityTable")
         self.alcanzabilityTableLock.acquire()
         neighborData = self.neighborsList[neighbor]
         if(not(neighbor in self.alcanzabilityTable)):
@@ -160,7 +161,7 @@ class Node():
         self.alcanzabilityTableLock.release()
 
     def deleteNodeToAlcanzabilityTable(self, nodeToDelete):
-        print("Node (The real mvp!) : deleteNodeToAlcanzabilityTable")
+        self.writeInLog("Node (The real mvp!) : deleteNodeToAlcanzabilityTable")
         self.alcanzabilityTableLock.acquire()
         existNeighbor = self.alcanzabilityTable.get(nodeToDelete)
         if(existNeighbor):
@@ -169,7 +170,7 @@ class Node():
 
 
     def processRecvMessages(self):
-        print("Node (The real mvp!) : processRecvMessages")
+        self.writeInLog("Node (The real mvp!) : processRecvMessages")
         while True:
             queueMessage = self.messageQueue.get()
             message = queueMessage[0]
@@ -186,7 +187,7 @@ class Node():
                         neighborData[3] = 0
                         self.addNeigborToAlcanzabilityTable(senderAddr)
                 else:
-                    print("Node (The real mvp!) Error : Keep alive message from invalid neighbor!")
+                    self.writeInLog("Node (The real mvp!) Error : Keep alive message from invalid neighbor!")
                 self.neighborsListLock.release()
             elif(message.type == KEEP_ALIVE_ACK):
                 self.neighborsListLock.acquire()
@@ -198,7 +199,7 @@ class Node():
                         self.addNeigborToAlcanzabilityTable(senderAddr)
                     neighborData[3] = 0
                 else:
-                    print("Node (The real mvp!) Error : Keep alive ack message from invalid neighbor!")
+                    self.writeInLog("Node (The real mvp!) Error : Keep alive ack message from invalid neighbor!")
                 self.neighborsListLock.release()
             elif(message.type == ACTUALIZATION):
                 neighborData = self.neighborsList.get(senderAddr)
@@ -215,7 +216,7 @@ class Node():
                             self.alcanzabilityTable[(ind[0], ind[2])] = (ind[1], (senderAddr[0], neighborData[0], senderAddr[1]), ind[3])
                     self.alcanzabilityTableLock.release()
                 else:
-                    print("Node (The real mvp!) Error : Actualization message from invalid neighbor!")
+                    self.writeInLog("Node (The real mvp!) Error : Actualization message from invalid neighbor!")
             elif(message.type == COST_CHANGE):
                 self.neighborsListLock.acquire()
                 neighborData = self.neighborsList.get(senderAddr)
@@ -226,7 +227,7 @@ class Node():
                     if(message.cost > oldCost):
                         self.startBroadcast(BROADCAST_JUMPS)
                 else:
-                    print("Node (The real mvp!) Error : Invalid Cost Change Message!")
+                    self.writeInLog("Node (The real mvp!) Error : Invalid Cost Change Message!")
                 self.neighborsListLock.release()
             elif(message.type == PURE_DATA):
                 if(message.IPD == self.ip and message.PortD == self.port):
@@ -239,7 +240,7 @@ class Node():
                     print('This message is for', destiny)
                     self.routing(toSend, destiny)
             elif(message.type == DEAD):
-                print("*******DEAD MESSAGE*******")
+                self.writeInLog("¡¡¡¡¡¡¡¡¡DEAD MESSAGE!!!!!!!!!")
                 self.neighborsListLock.acquire()
                 neighborDead = self.neighborsList.get(senderAddr)
                 if(neighborDead != None): #This is a option for error control
@@ -247,7 +248,7 @@ class Node():
                     neighborDead[3] = 0
                     self.startBroadcast(BROADCAST_JUMPS)
                 else:
-                    print("Node (The real mvp!) Error : Invalid Neighbor To Delete!")
+                    self.writeInLog("Node (The real mvp!) Error : Invalid Neighbor To Delete!")
                 self.deleteNodeToAlcanzabilityTable(senderAddr)
                 self.neighborsListLock.release()
             else:
@@ -280,7 +281,7 @@ class Node():
                 if(intCost < 20 or intCost > 100): #Validate the cost
                     print_error_invalid_cost()
                 else:
-                    link = (ip, int(port))  #We need the link 
+                    link = (ip, int(port))  #We need the link
                     if(self.neighborsList.get(link) != None):
                         costChangeMessage = CostChangeMessage._make([COST_CHANGE, intCost])
                         encodedCostChangeMessage = encode_message(costChangeMessage)
@@ -292,8 +293,9 @@ class Node():
                         print("Nice Job, take a cookie")
                     else:
                         print('Error cost message INVALID NEIGHBOR')
+
     def talkToTheHand(self):
-        print("Node (The real mvp!) : talkToTheHand")
+        self.writeInLog("Node (The real mvp!) : talkToTheHand")
         global ignoring
         if(not ignoring):
             ignoring = True
@@ -313,11 +315,11 @@ class Node():
                     if(message.type != ACTUALIZATION and message.type != PURE_DATA):
                         self.messageQueue.put((message, senderAddr))
                     else:
-                        print("\n\n\nNode (The real mvp!) : Ignoring this message <"+str(message)+">\n\n\n")
+                        self.writeInLog("\n\n\nNode (The real mvp!) : Ignoring this message <"+str(message)+">\n\n\n")
                 else:
                     self.messageQueue.put((message, senderAddr))
             else:
-                print("\n\n\nBroadcast!"+str(message.n)+"\n\n\n")
+                self.writeInLog("\n\n\nBroadcast!"+str(message.n)+"\n\n\n")
                 # If the message type is BROADCAST we need to process it immediately
                 # I need to start the "talk to the hand" thread
                 talkToTheHandThread = Thread(target=self.talkToTheHand, args=())
@@ -334,7 +336,7 @@ class Node():
                 self.startBroadcast(message.n - 1)
 
     def serverThread(self):
-        print("Node (The real mvp!) : serverThread")
+        self.writeInLog("Node (The real mvp!) : serverThread")
         while True:
             encodedMessage, senderAddr = self.UDPSocket.recvfrom(2048)
             serverThreadHelperT = Thread(target=self.serverThreadHelper, args=(encodedMessage, senderAddr))
@@ -361,7 +363,7 @@ class Node():
             print(ind)
 
     def myDeath(self):
-        print("RIP Node (The real mvp!): great node, better neighbor")
+        self.writeInLog("RIP Node (The real mvp!): great node, better neighbor")
         self.neighborsListLock.acquire()
         for neighborK in self.neighborsList:
             neighborData = self.neighborsList.get(neighborK)
@@ -371,6 +373,19 @@ class Node():
                 encodedDeadMessage = encode_message(deadMessage)
                 self.UDPSocket.sendto(encodedDeadMessage, neighborK)
         self.neighborsListLock.release()
+
+    def writeInLog(self, strToWrite):
+        self.logFileLock.acquire()
+        try:
+            logFile = open(self.logFileName, 'r+')
+            logFile.read()
+        except:
+            logFile = open(self.logFileName, 'w')
+        logFile.write(strToWrite+"\n")
+        logFile.write("\n-----------------------------------------------------------------------\n\n")
+        logFile.close()
+        self.logFileLock.release()
+
 
     def run(self):
         # We need to create the thread that will receive all the messages from the UDP socket
@@ -394,7 +409,6 @@ class Node():
                 self.myDeath()
             elif(option == 1):
                 self.costChange()
-                print("This option is temporarily disabled")
             elif(option == 2):
                 self.printAlcanzabilityTable()
             elif(option == 3):
