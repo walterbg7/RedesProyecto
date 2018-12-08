@@ -2,7 +2,7 @@ from socket import *
 from collections import namedtuple
 
 # Constants
-SERVER_DISPATCHER_IP = "127.0.0.1"
+SERVER_DISPATCHER_IP = "10.1.137.40"
 SERVER_DISPATCHER_PORT = 60000
 TIMEOUT = 5
 MAX_NUMBER_OF_TRIES = 5

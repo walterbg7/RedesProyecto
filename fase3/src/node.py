@@ -356,6 +356,7 @@ class Node():
         print ("Alcanzability table : ['Who' : 'Through' : 'Cost']")
         for k in self.alcanzabilityTable:
             print("("+str(k[0])+", "+str(self.alcanzabilityTable[k][0])+", "+str(k[1])+")"+" : "+str(self.alcanzabilityTable[k][1])+" : "+str(self.alcanzabilityTable[k][2]))
+        print('Nodes: ' + str(len(self.alcanzabilityTable))
         self.alcanzabilityTableLock.release()
 
     def printNeighborsList(self):
