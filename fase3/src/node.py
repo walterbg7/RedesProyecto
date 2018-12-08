@@ -108,11 +108,19 @@ class Node():
         if(goodData):
             link = (ip, portInt)
             if(self.alcanzabilityTable.get(link) != None):
-                n = input('n: ')
-                data = input('Mensaje: ')
-                message = DataMessage._make([PURE_DATA, self.ip, self.port, ip, portInt, int(n), data])
-                toSend = encode_message(message)
-                self.routing(toSend, link)
+                try:
+                    n = int(input('n: '))
+                except:
+                    print("Invalid n")
+                else:    
+                    data = input('Mensaje: ')
+
+                    if(len(data) != n):
+                        print("The length of message is not equal n")
+                    else:
+                        message = DataMessage._make([PURE_DATA, self.ip, self.port, ip, portInt, int(n), data])
+                        toSend = encode_message(message)
+                        self.routing(toSend, link)
             else:
                 print('Error : NODE IS NOT LOCALIZABLE')
 
