@@ -58,6 +58,10 @@ class Node():
 
     def startBroadcast(self, numberOfJumpsLeft):
         self.writeInLog("Node (The real mvp!) : startBroadcast")
+
+        #Testing
+        print(numberOfJumpsLeft)
+
         if(numberOfJumpsLeft > 0):
             for k in self.neighborsList:
                 broadcastMessage = BroadcastMessage._make([BROADCAST, numberOfJumpsLeft])
@@ -149,6 +153,8 @@ class Node():
                             data.append((aTEntry[0], aTEntryData[0], aTEntry[1], aTEntryData[2]))
                     if(n > 0):
                         # If I could create a actualization message I need to send it
+                        print(str(n))
+                        print(str(len(data)))
                         actualizationMessage = ActualizationMessage._make([ACTUALIZATION, n, data])
                         encodedActualizationMessage = encode_message(actualizationMessage)
                         self.UDPSocket.sendto(encodedActualizationMessage, neighbor)
@@ -315,6 +321,10 @@ class Node():
     def serverThreadHelper(self, encodedMessage, senderAddr):
       #  print("Node (The real mvp!) : serverThreadHelper")
         message = decode_message(encodedMessage)
+        # Testing
+        print(senderAddr)
+        print(message.type)
+
         global ignoring
         if(message != None):
             if(message.type != BROADCAST):
@@ -385,16 +395,17 @@ class Node():
         self.neighborsListLock.release()
 
     def writeInLog(self, strToWrite):
-        self.logFileLock.acquire()
-        try:
-            logFile = open(self.logFileName, 'r+')
-            logFile.read()
-        except:
-            logFile = open(self.logFileName, 'w')
-        logFile.write(strToWrite+"\n")
-        logFile.write("\n-----------------------------------------------------------------------\n\n")
-        logFile.close()
-        self.logFileLock.release()
+        pass
+        #self.logFileLock.acquire()
+        #try:
+        #    logFile = open(self.logFileName, 'r+')
+        #    logFile.read()
+        #except:
+        #    logFile = open(self.logFileName, 'w')
+        #logFile.write(strToWrite+"\n")
+        #logFile.write("\n-----------------------------------------------------------------------\n\n")
+        #logFile.close()
+        #self.logFileLock.release()
 
 
     def run(self):

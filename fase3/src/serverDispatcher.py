@@ -18,7 +18,7 @@ def sendNeighborsList (clientAddress):
     encodedRequestedMessage = encode_message(requetedMessage) #We need to decode the message
     serverDispatcherSocket.sendto(encodedRequestedMessage, clientAddress) #We send the decode message
 
-with open('neighborsTest.csv', 'rt',  encoding="utf8") as csvfile2:
+with open('Config.csv', 'rt',  encoding="utf8") as csvfile2:
     neighborsReader = csv.DictReader(csvfile2)
     for row in neighborsReader:
         try:
