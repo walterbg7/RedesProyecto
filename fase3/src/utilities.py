@@ -2,7 +2,7 @@ from socket import *
 from collections import namedtuple
 
 # Constants
-SERVER_DISPATCHER_IP = "10.1.137.40
+SERVER_DISPATCHER_IP = "127.0.0.1"
 SERVER_DISPATCHER_PORT = 60000
 TIMEOUT = 5
 MAX_NUMBER_OF_TRIES = 5
@@ -130,7 +130,7 @@ def encode_message(message):
             print("encode_message Error: Invalid broadcast message type")
             messageType = None
         try:
-            messageN = message.n.to_bytes(2, byteorder='big')
+            messageN = message.n.to_bytes(1, byteorder='big')
         except Exception as e:
             print("encode_message Error: Invalid broadcast message type")
             messageN = None
@@ -196,7 +196,7 @@ def decode_message(encodedMessage):
             print("decode_message Error: Invalid actualization message")
     elif(messageType == BROADCAST):
         #print("decode_message : BroadcastMessage")
-        if(len(encodedMessage)==3):
+        if(len(encodedMessage)==2):
             n = int.from_bytes(encodedMessage[N:], byteorder='big')
             message = BroadcastMessage._make([messageType, n])
         else:

@@ -1,5 +1,6 @@
 import csv
 import os
+import sys
 from utilities import *
 from threading import *
 
@@ -58,9 +59,9 @@ with open('neighbors.csv', 'rt',  encoding="utf8") as csvfile2:
         except ValueError:
             print_error_invalid_cost()
             sys.exit(-1)
-        if(costInt < 20 or costInt > 100):
-            print_error_invalid_cost()
-            sys.exit(-1)
+        #if(costInt < 20 or costInt > 100):
+        #    print_error_invalid_cost()
+        #    sys.exit(-1)
         #Add to the dicNeighbors
         key1 = (ipS, portSInt)
         key2 = (ipD, portDInt)
