@@ -3,7 +3,7 @@ import os
 import sys
 from utilities import *
 
-with open('nodes.csv', 'rt',  encoding="utf8") as csvfile:
+with open('nodesTest.csv', 'rt',  encoding="utf8") as csvfile:
     nodesReader = csv.DictReader(csvfile)
     for row in nodesReader:
         try:

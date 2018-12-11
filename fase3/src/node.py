@@ -146,7 +146,7 @@ class Node():
                         aTEntryData = self.alcanzabilityTable[aTEntry]
                         if(aTEntry != neighbor):
                             n += 1
-                            data.append((aTEntry[0], aTEntryData[0], aTEntry[1], (aTEntryData[2] + neighborData[1])))
+                            data.append((aTEntry[0], aTEntryData[0], aTEntry[1], aTEntryData[2]))
                     if(n > 0):
                         # If I could create a actualization message I need to send it
                         actualizationMessage = ActualizationMessage._make([ACTUALIZATION, n, data])
@@ -217,11 +217,11 @@ class Node():
                         if((ind[0], ind[2]) in self.alcanzabilityTable):
                             # If I already know this node, I need to check if it's cost is less than my actual cost, If it is I need to replace it
                             actualATEntryData = self.alcanzabilityTable[(ind[0], ind[2])]
-                            if(ind[3] < actualATEntryData[2]):
-                                self.alcanzabilityTable[(ind[0], ind[2])] = (ind[1], (senderAddr[0], neighborData[0], senderAddr[1]), ind[3])
+                            if((ind[3]+neighborData[1]) < actualATEntryData[2]):
+                                self.alcanzabilityTable[(ind[0], ind[2])] = (ind[1], (senderAddr[0], neighborData[0], senderAddr[1]), (ind[3]+neighborData[1]))
                         else:
                             # If I did not know this node I simply add it to the alcanzabiliy table
-                            self.alcanzabilityTable[(ind[0], ind[2])] = (ind[1], (senderAddr[0], neighborData[0], senderAddr[1]), ind[3])
+                            self.alcanzabilityTable[(ind[0], ind[2])] = (ind[1], (senderAddr[0], neighborData[0], senderAddr[1]), (ind[3]+neighborData[1]))
                     self.alcanzabilityTableLock.release()
                 else:
                     self.writeInLog("Node (The real mvp!) Error : Actualization message from invalid neighbor!")
