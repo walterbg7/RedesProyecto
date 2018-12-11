@@ -112,7 +112,7 @@ class Node():
                     n = int(input('n: '))
                 except:
                     print("Invalid n")
-                else:    
+                else:
                     data = input('Mensaje: ')
 
                     if(len(data) != n):
@@ -305,20 +305,19 @@ class Node():
     def talkToTheHand(self):
         self.writeInLog("Node (The real mvp!) : talkToTheHand")
         global ignoring
-        if(not ignoring):
-            ignoring = True
-            time.sleep(IGNORING_TIME)
-            ignoring = False
-            for neighbor in self.neighborsList:
-                if(self.neighborsList[neighbor][2] == True):
-                    self.addNeigborToAlcanzabilityTable(neighbor)
+        ignoring = True
+        time.sleep(IGNORING_TIME)
+        ignoring = False
+        for neighbor in self.neighborsList:
+            if(self.neighborsList[neighbor][2] == True):
+                self.addNeigborToAlcanzabilityTable(neighbor)
 
     def serverThreadHelper(self, encodedMessage, senderAddr):
       #  print("Node (The real mvp!) : serverThreadHelper")
         message = decode_message(encodedMessage)
+        global ignoring
         if(message != None):
             if(message.type != BROADCAST):
-                global ignoring
                 if(ignoring):
                     if(message.type != ACTUALIZATION and message.type != PURE_DATA):
                         self.messageQueue.put((message, senderAddr))
@@ -330,9 +329,10 @@ class Node():
                 self.writeInLog("\n\n\nBroadcast!"+str(message.n)+"\n\n\n")
                 # If the message type is BROADCAST we need to process it immediately
                 # I need to start the "talk to the hand" thread
-                talkToTheHandThread = Thread(target=self.talkToTheHand, args=())
-                talkToTheHandThread.daemon = True
-                talkToTheHandThread.start()
+                if(not ignoring):
+                    talkToTheHandThread = Thread(target=self.talkToTheHand, args=())
+                    talkToTheHandThread.daemon = True
+                    talkToTheHandThread.start()
                 # I need to empty the message queue and the alcanzability table (only if they are not already empty)
                 with self.messageQueue.mutex:
                     self.messageQueue.queue.clear()
@@ -347,16 +347,17 @@ class Node():
         self.writeInLog("Node (The real mvp!) : serverThread")
         while True:
             encodedMessage, senderAddr = self.UDPSocket.recvfrom(2048)
-            serverThreadHelperT = Thread(target=self.serverThreadHelper, args=(encodedMessage, senderAddr))
-            serverThreadHelperT.daemon = True
-            serverThreadHelperT.start()
+            #serverThreadHelperT = Thread(target=self.serverThreadHelper, args=(encodedMessage, senderAddr))
+            #serverThreadHelperT.daemon = True
+            #serverThreadHelperT.start()
+            self.serverThreadHelper(encodedMessage, senderAddr)
 
     def printAlcanzabilityTable(self):
         self.alcanzabilityTableLock.acquire()
         print ("Alcanzability table : ['Who' : 'Through' : 'Cost']")
         for k in self.alcanzabilityTable:
             print("("+str(k[0])+", "+str(self.alcanzabilityTable[k][0])+", "+str(k[1])+")"+" : "+str(self.alcanzabilityTable[k][1])+" : "+str(self.alcanzabilityTable[k][2]))
-        print('Nodes: ' + str(len(self.alcanzabilityTable))
+        print('Nodes: ' + str(len(self.alcanzabilityTable)))
         self.alcanzabilityTableLock.release()
 
     def printNeighborsList(self):
